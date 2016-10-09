@@ -1,0 +1,4 @@
+This package contains only one module for API functions, while all the other functions
+are package-internal. Being python however, strictly enforcing this would be frowned
+upon, so to remind me to think twice about using non-API functions, all non-API functions
+start with a single leading underscore.

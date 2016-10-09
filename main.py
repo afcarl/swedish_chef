@@ -19,7 +19,12 @@ def execute_based_on_args(args):
     if args.unit_test:
         # Just do the unit tests and quit
         debug_print("Running unit tests...")
-        return "testing..."  # TODO: add unit tests here as you go
+        # TODO: find all the python files in the project and run them
+        # TODO: look up how to do this
+        return "testing..."
+
+    # if any of the args are a preprocessor command, use the preprocessor:
+        # preprocessor.execute_commands(preprocessor_args)
 
 def get_valid_args():
     """
