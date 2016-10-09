@@ -8,7 +8,7 @@ import chef_global.config as config
 from chef_global.debug import assert_value_is_set
 from chef_global.debug import debug_print
 
-def apply_func_to_each_data_file(func):
+def _apply_func_to_each_data_file(func):
     """
     Applies the given function to each data file in the cookbook data
     directory.

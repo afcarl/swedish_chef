@@ -22,7 +22,7 @@ def assert_value_is_set(value, name_of_value):
 
 def debug_print(message):
     """
-    Prints the givene message, but only if the verbosity level allows it.
+    Prints the given message, but only if the verbosity level allows it.
     """
     if chef_global.config.VERBOSE:
         print(message)
