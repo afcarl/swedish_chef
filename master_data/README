@@ -1,0 +1,3 @@
+Don't touch anything in this file except to copy it out and put it somewhere else.
+This is the master copy of the data, so when debugging the preprocessor, you should not be
+using this data, but rather the "data" directory's data, which is copied from here.
