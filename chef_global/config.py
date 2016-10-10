@@ -8,6 +8,10 @@ are marked to be changed programmatically. Please pay attention.
 # @programmatic
 DATA_DIRECTORY = None
 
+# The master directory where we store data
+# @programmatic
+MASTER_DATA_DIRECTORY = None
+
 # Whether debug output should be printed as the program executes
 # @programmatic
 VERBOSE = False

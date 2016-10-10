@@ -25,7 +25,7 @@ def execute_based_on_args(args):
         return "testing..."
 
     # if any of the args are a preprocessor command, use the preprocessor:
-    if args.trim:
+    if args.trim or args.reset:
         preprocessor.execute_commands(args)
 
 def get_valid_args():
@@ -34,9 +34,16 @@ def get_valid_args():
     @return: args TODO
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--trim", help="Trim the recipe data down to just recipes and ingredients. You must also specify the data directory.", metavar="DATA_DIR")
-    parser.add_argument("-u", "--unit_test", help="Run the unit tests for each module.", action="store_true")
-    parser.add_argument("-v", "--verbose", help="Set verbose debug output.", action="store_true")
+    parser.add_argument("-r", "--reset", help="Reset the data directory " +
+                             "based on the given master copy directory.",
+                              nargs=2, metavar=("MASTER_DIR", "DATA_DIR"))
+    parser.add_argument("-t", "--trim", help="Trim the recipe data down " +
+                             "to just recipes and ingredients. You must " +
+                             "also specify the data directory.", metavar="DATA_DIR")
+    parser.add_argument("-u", "--unit_test", help="Run the unit tests " +
+                             "for each module.", action="store_true")
+    parser.add_argument("-v", "--verbose", help="Set verbose debug output.",
+                            action="store_true")
     return parser.parse_args()
 
 def print_result(result):
@@ -48,7 +55,7 @@ def print_result(result):
     if result is not None:
         print(result)
     else:
-        print("The program didn't do anything.")
+        print("The program didn't produce any displayable results.")
 
 if __name__ == "__main__":
     args = get_valid_args()

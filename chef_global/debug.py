@@ -18,7 +18,8 @@ def assert_value_is_set(value, name_of_value):
         print("ASSERTION FAILED:" + os.linesep + name_of_value + " is not set.")
         exit(-1)
     else:
-        debug_print("Assertion passed: " + name_of_value + " is set.")
+        debug_print("Assertion passed: " + name_of_value + " is set; value: " + \
+                                                            str(value))
 
 def debug_print(message):
     """

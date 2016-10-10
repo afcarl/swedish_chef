@@ -90,3 +90,6 @@ ENV/
 
 # Vim
 *.swp
+
+# OSX DS_Store thing
+*.DS_Store
