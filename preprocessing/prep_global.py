@@ -56,7 +56,7 @@ def _apply_func_to_each_data_file(func):
 
     # Collect each file in the directory
     assert_value_is_set(config.DATA_DIRECTORY, "config.DATA_DIRECTORY")
-    list_of_file_names = [file_name for
+    list_of_file_names = [os.path.join(config.DATA_DIRECTORY, file_name) for
                             file_name in os.listdir(config.DATA_DIRECTORY)]
 
     for f in list_of_file_names:
