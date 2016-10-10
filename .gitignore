@@ -93,3 +93,7 @@ ENV/
 
 # OSX DS_Store thing
 *.DS_Store
+
+# ctags
+ctags.sh
+tags
