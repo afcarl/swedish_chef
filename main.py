@@ -2,6 +2,7 @@
 The main file. Start the program with 'python3 main.py'.
 """
 import argparse
+import preprocessing.preprocessing as preprocessor
 import chef_global.config
 from chef_global.debug import debug_print
 
@@ -24,7 +25,8 @@ def execute_based_on_args(args):
         return "testing..."
 
     # if any of the args are a preprocessor command, use the preprocessor:
-        # preprocessor.execute_commands(preprocessor_args)
+    if args.trim:
+        preprocessor.execute_commands(args)
 
 def get_valid_args():
     """
@@ -32,6 +34,7 @@ def get_valid_args():
     @return: args TODO
     """
     parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--trim", help="Trim the recipe data down to just recipes and ingredients. You must also specify the data directory.", metavar="DATA_DIR")
     parser.add_argument("-u", "--unit_test", help="Run the unit tests for each module.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Set verbose debug output.", action="store_true")
     return parser.parse_args()
