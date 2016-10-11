@@ -1,13 +1,14 @@
 """
 This preprocessing module provides all methods associated with
-trimming the text files of the data.
+trimming and parsing the text files of the data.
 """
 
 import os
+import myio.myio as myio
 import preprocessing.prep_global as prep
 import chef_global.debug as debug
 
-def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path):
+def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path, append=False):
     """
     Parses out a chunk of text from the given file between the start tag and the
     stop tag and puts that text into the given tmp_file.
@@ -15,10 +16,12 @@ def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path):
     @param start_tag: The start tag
     @param stop_tag: The stop tag
     @param tmp_file_path: The path to the tmp file to write to
+    @param append: Whether or not to append to the tmp file (if not, overwrite)
     @return: void
     """
+    append_or_overwrite = 'a' if append else 'w'
     cookbook_file = open(file_path, 'r')
-    tmp_file = open(tmp_file_path, 'w')
+    tmp_file = open(tmp_file_path, append_or_overwrite)
     recipe_lines = []
     record = False
 
@@ -34,28 +37,35 @@ def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path):
             debug.debug_print("Hit stop tag.")
             record = False
             for line_from_recipe in recipe_lines:
-                debug.debug_print("Writing " + str(line_from_recipe) + "...")
-                tmp_file.write(line_from_recipe + os.linesep)
+                if start_tag in line_from_recipe and stop_tag in line_from_recipe:
+                    # If the line has BOTH the start and stop, then we only want a part of the
+                    # line. TODO
+                    # Keep in mind that the line may contain SEVERAL starts and stops.
+                    raise NotImplementedError("This line has both a stop and a start tag on " +
+                                              "it, which is not yet implemented. TODO")
+                else:
+                    # Otherwise, just write the line
+                    debug.debug_print("Writing " + str(line_from_recipe) + "...")
+                    tmp_file.write(line_from_recipe + os.linesep)
             recipe_lines = []
 
     cookbook_file.close()
     tmp_file.close()
 
 
-def __overwrite_file_contents(src_path, dest_path):
+def __parse_ingredients(cookbook_file_path):
     """
-    Take the contents of src_path and write them into dest_path, after erasing
-    all lines in dest_path.
-    @param src_path: The path to the source file
-    @param dest_path: The path to the destination file
+    Takes a cookbook data file path and parses it for its ingredients, storing
+    them as a list in ing_tmp by appending them to the end of it.
+    @param cookbook_file_path: A path to a cookbook data file (encoded in XML),
+                               may or may not be trimmed.
     @return: void
     """
-    src = open(src_path, 'r')
-    dest = open(dest_path, 'w')
-    for line in src:
-        dest.write(line + os.linesep)
-    src.close()
-    dest.close()
+    debug.debug_print("Attempting to parse " + str(cookbook_file_path) + " for ingredients.")
+    tmp_path = "ing_tmp"
+    __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
+                         tmp_path, append=True)
+    myio.append_to_file(tmp_path, cookbook_file_path)
 
 
 def __trim_non_recipe(cookbook_file_path):
@@ -68,8 +78,18 @@ def __trim_non_recipe(cookbook_file_path):
     debug.debug_print("Attempting to trim " + str(cookbook_file_path))
     tmp_path = "tmp"
     __parse_between_tags(cookbook_file_path, "<recipe", "</recipe>", tmp_path)
-    __overwrite_file_contents(tmp_path, cookbook_file_path)
+    myio.overwrite_file_contents(tmp_path, cookbook_file_path)
     os.remove(tmp_path)
+
+
+def _tabulate_ingredients():
+    """
+    Parses the ingredients out of each file (which may or may not be trimmed, but
+    trimmed files are more likely to produce results, and it will be faster). Then
+    pickles the resulting dictionary and sets the config file to know about the
+    dictionary.
+    """
+    prep._apply_func_to_each_data_file(__parse_ingredients)
 
 
 def _trim_all_files_to_recipes():
@@ -78,3 +98,10 @@ def _trim_all_files_to_recipes():
     @return: void
     """
     prep._apply_func_to_each_data_file(__trim_non_recipe)
+
+
+
+
+
+
+

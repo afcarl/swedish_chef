@@ -36,9 +36,17 @@ def __get_arg_value(args, sub_module, sub_module_err_string):
     @return: the arg value
     """
     if sub_module == "TRIMMER":
-        return args.trim
+        if args.trim:
+            return args.trim
+        elif args.tabulate:
+            return args.tabulate
+        else:
+            return args.prep[1]
     elif sub_module == "MOVER":
-        return args.reset[0]  # Get the master directory from the args
+        if args.reset:
+            return args.reset[0]  # Get the master directory from the args
+        else:
+            return args.prep[0]
     else:
         print(sub_module_err_string)
         raise ValueError

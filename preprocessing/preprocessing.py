@@ -10,6 +10,67 @@ import preprocessing.trimmer as trimmer
 import preprocessing.mover as mover
 
 
+def __do_pipeline(args):
+    """
+    Respond to the request to do the entire preprocessor pipeline.
+    @param args: ArgParse object
+    @return: void
+    """
+    __do_reset(args)
+    __do_trim(args)
+    __do_tabulate_ingredients(args)
+
+
+def __do_reset(args):
+    """
+    Respond to the request to reset data.
+    Reset the data directory from the given master copy location.
+    @param args: ArgParse object
+    @return: void
+    """
+    prep_global._sanitize_input(args, "MOVER", "DATA")
+    if args.reset:
+        config.MASTER_DATA_DIRECTORY = args.reset[0]
+        config.DATA_DIRECTORY = args.reset[1]
+    else:
+        config.MASTER_DATA_DIRECTORY = args.prep[0]
+        config.DATA_DIRECTORY = args.prep[1]
+    debug.debug_print("Mover activated...")
+    copy_master_to_data_location()
+
+
+def __do_tabulate_ingredients(args):
+    """
+    Respond to the request to tabulate ingredients.
+    Take each data file and parse it for ingredient items, putting
+    each one into a dictionary, and then pickles the dictionary.
+    @param ArgParse data
+    @return: void
+    """
+    prep_global._sanitize_input(args, "TRIMMER", "DATA")
+    if args.tabulate:
+        config.DATA_DIRECTORY = args.tabulate
+    else:
+        config.DATA_DIRECTORY = args.prep[1]
+    trimmer._tabulate_ingredients()
+
+
+def __do_trim(args):
+    """
+    Respond to the request to trim data.
+    If the data directory is valid, trim the xml files down to their recipes.
+    @param args: ArgParse object
+    @return: void
+    """
+    prep_global._sanitize_input(args, "TRIMMER", "DATA")
+    if args.trim:
+        config.DATA_DIRECTORY = args.trim
+    else:
+        config.DATA_DIRECTORY = args.prep[1]
+    debug.debug_print("Trimmer activated...")
+    trim_all_files_to_recipes()
+
+
 def copy_master_to_data_location():
     """
     Copies the master directory files to the data directory and deletes all the ones
@@ -18,25 +79,34 @@ def copy_master_to_data_location():
     """
     mover._copy_master_to_data_location()
 
+
 def execute_commands(args):
     """
     Executes preprocessor commands from the command line arguments.
+    Currently, args could contain several things for the preprocessor to do,
+    but if so, those things will be done in an unspecified order.
     @param args: The arguments from the command line (ArgParser)
     @return: void
     """
+    did_something = False
+
+    if args.prep:
+        __do_pipeline(args)
+        did_something = True
+    if args.tabulate:
+        __do_tabulate_ingredients(args)
+        did_something = True
     if args.trim:
-        # If the data directory is valid, trim the xml files down to their recipes
-        prep_global._sanitize_input(args, "TRIMMER", "DATA")
-        config.DATA_DIRECTORY = args.trim
-        debug.debug_print("Trimmer activated...")
-        trim_all_files_to_recipes()
+        __do_trim(args)
+        did_something = True
     if args.reset:
-        # Reset the data directory from the given master copy location
-        prep_global._sanitize_input(args, "MOVER", "DATA")
-        config.DATA_DIRECTORY = args.reset[1]
-        config.MASTER_DATA_DIRECTORY = args.reset[0]
-        debug.debug_print("Mover activated...")
-        copy_master_to_data_location()
+        __do_reset(args)
+        did_something = True
+
+    if not did_something:
+        print("A command was sent to the preprocessor that it didn't recognize.")
+        exit(-1)
+
 
 def trim_all_files_to_recipes():
     """
@@ -47,3 +117,5 @@ def trim_all_files_to_recipes():
     debug.debug_print("Calling trim_all_files_to_recipes...")
     debug.assert_value_is_set(config.DATA_DIRECTORY, "config.DATA_DIRECTORY")
     trimmer._trim_all_files_to_recipes()
+
+

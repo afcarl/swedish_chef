@@ -25,8 +25,9 @@ def execute_based_on_args(args):
         return "testing..."
 
     # if any of the args are a preprocessor command, use the preprocessor:
-    if args.trim or args.reset:
+    if args.trim or args.reset or args.prep or args.tabulate:
         preprocessor.execute_commands(args)
+        return "Preprocessor ran successfully."
 
 def get_valid_args():
     """
@@ -34,6 +35,12 @@ def get_valid_args():
     @return: args TODO
     """
     parser = argparse.ArgumentParser()
+    parser.add_argument("-a", "--tabulate", help="Tabulate the ingredients from the " +
+                             "list of recipes - helpful to trim it first.",
+                             metavar="DATA_DIR")
+    parser.add_argument("-p", "--prep", help="Preprocessor pipeline the data - " +
+                             "run the data through the whole preprocessor pipeline.",
+                             nargs=2, metavar="DATA_DIR")
     parser.add_argument("-r", "--reset", help="Reset the data directory " +
                              "based on the given master copy directory.",
                               nargs=2, metavar=("MASTER_DIR", "DATA_DIR"))
