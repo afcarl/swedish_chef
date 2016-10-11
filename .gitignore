@@ -97,3 +97,6 @@ ENV/
 # ctags
 ctags.sh
 tags
+
+# Working data directory
+data/
