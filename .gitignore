@@ -99,4 +99,4 @@ ctags.sh
 tags
 
 # Working data directory
-data/
+data/*
