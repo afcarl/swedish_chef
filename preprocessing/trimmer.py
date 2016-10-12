@@ -25,6 +25,39 @@ def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path, append=F
     recipe_lines = []
     record = False
 
+    buf = ""
+    tmp_buf = ""
+    recording = False
+    # New algorithm
+    # Take in the input file char by char, read into a buffer until that buffer
+    # is longer than 100 chars or the start tag is in the buffer. Either way, purge it.
+    # If the start tag was in the buffer though, we need to start saving the chars as we
+    # read them, until we reach the end tag, at which point we need to strip the buffer
+    # of the end tag and write the resulting buffer to the tmp file. Then continue.
+    for line_from_original in cookbook_file:
+        for char in line_from_original:
+            if recording:
+                tmp_buf += char
+                if stop_tag in tmp_buf:
+                    tmp_buf = tmp_buf[:-len(stop_tag)]
+                    debug.debug_print("Found stop tag. Writing to file: " + tmp_buf)
+                    tmp_file.write(tmp_buf + os.linesep)
+                    tmp_buf = ""
+                    recording = False
+            else:
+                buf += char
+                if buf[-len(start_tag):] == start_tag:
+                    debug.debug_print("Found start tag...")
+                    recording = True
+                    buf = ""
+                elif len(buf) > 10000:
+                    debug.debug_print("Purging buffer")
+                    buf = ""
+    cookbook_file.close()
+    tmp_file.close()
+    return
+
+    # Old algorithm
     for line_from_original in cookbook_file:
         if start_tag in line_from_original:
             record = True
