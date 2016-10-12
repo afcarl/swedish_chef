@@ -108,6 +108,14 @@ def execute_commands(args):
         exit(-1)
 
 
+def run_unit_tests():
+    """
+    Run the unit tests for the preprocessor.
+    @return: void
+    """
+    trimmer._clean_ingredient_test()
+
+
 def trim_all_files_to_recipes():
     """
     Trims all of the data files so that they have only recipes in them (with ingredients) and

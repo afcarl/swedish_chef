@@ -12,6 +12,10 @@ DATA_DIRECTORY = None
 # @programmatic
 MASTER_DATA_DIRECTORY = None
 
+# The unit test banner to print around a unit test start and ending
+# @manual
+UNIT_TEST_HEADER = "============================================="
+
 # Whether debug output should be printed as the program executes
 # @programmatic
 VERBOSE = False

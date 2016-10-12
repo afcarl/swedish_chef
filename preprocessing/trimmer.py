@@ -4,9 +4,71 @@ trimming and parsing the text files of the data.
 """
 
 import os
+import re
 import myio.myio as myio
 import preprocessing.prep_global as prep
 import chef_global.debug as debug
+import chef_global.config as config
+
+# Ingredient file
+__ing_tmp = "ing_tmp"
+
+
+def _clean_ingredient_test():
+    """
+    Run the __clean_ingredient_file method with some fake data and print the results.
+    @return: void
+    """
+    print(config.UNIT_TEST_HEADER)
+    print("RUNNING UNIT TEST: _clean_ingredient_test")
+    print(config.UNIT_TEST_HEADER)
+    dummy_file = open("clean_ing_file.test", 'w')
+    f = lambda x: dummy_file.write(x + os.linesep)
+    f("<tag color=blue>blah de bloop</tag>")
+    f("most delICIOUS ingredient!")
+    f("VERY GOOD PIE")
+    f("realy good stuff")
+    f("peanut butter, bathed in clams.")
+    f("money...")
+    f("...")
+    dummy_file.close()
+    __clean_ingredient_file(f="clean_ing_file.test")
+    print(config.UNIT_TEST_HEADER)
+    print("DONE WITH UNIT TEST: _clean_ingredient_test")
+    print(config.UNIT_TEST_HEADER)
+
+
+def __clean_ingredient_file(f=None):
+    """
+    Cleans up the ing_tmp file so that it no longer contains ingredients with xml tags,
+    uppercase letters, or trailing punctuation.
+    @param f: Optional file to read from (otherwise just uses __ing_tmp.
+    @return: void
+    """
+    # TODO Get this working!
+    ing_file = open(__ing_tmp, 'r') if not f else open(f, 'r')
+    tmp_tmp = open("tmp_tmp", 'w')
+
+    print("Cleaning ingredient file...")
+    for dirty_ingredient in ing_file:
+        debug.debug_print("Cleaning " + str(dirty_ingredient) + "...")
+        clean_ingredient = __remove_xml(dirty_ingredient)
+        clean_ingredient = clean_ingredient.lower()
+        clean_ingredient = clean_ingredient.rstrip('!@#$%^&*()_-.?><,:;\'\"[]}{=+\\|')
+        debug.debug_print("Writing clean ingredient " + str(clean_ingredient) + "...")
+        tmp_tmp.write(clean_ingredient)
+    ing_file.close()
+    tmp_tmp.close()
+
+    tmp_tmp = open("tmp_tmp", 'r')
+    ing_file = open(__ing_tmp, 'w') if not f else open(f, 'w')
+
+    for clean_ingredient in tmp_tmp:
+        ing_file.write(clean_ingredient)
+    ing_file.close()
+    tmp_tmp.close()
+    os.remove("tmp_tmp")
+
 
 def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path, append=False):
     """
@@ -55,35 +117,6 @@ def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path, append=F
                     buf = ""
     cookbook_file.close()
     tmp_file.close()
-    return
-
-    # Old algorithm
-    for line_from_original in cookbook_file:
-        if start_tag in line_from_original:
-            record = True
-            debug.debug_print("Recording...")
-
-        if record:
-            recipe_lines.append(line_from_original)
-
-        if stop_tag in line_from_original:
-            debug.debug_print("Hit stop tag.")
-            record = False
-            for line_from_recipe in recipe_lines:
-                if start_tag in line_from_recipe and stop_tag in line_from_recipe:
-                    # If the line has BOTH the start and stop, then we only want a part of the
-                    # line. TODO
-                    # Keep in mind that the line may contain SEVERAL starts and stops.
-                    raise NotImplementedError("This line has both a stop and a start tag on " +
-                                              "it, which is not yet implemented. TODO")
-                else:
-                    # Otherwise, just write the line
-                    debug.debug_print("Writing " + str(line_from_recipe) + "...")
-                    tmp_file.write(line_from_recipe + os.linesep)
-            recipe_lines = []
-
-    cookbook_file.close()
-    tmp_file.close()
 
 
 def __parse_ingredients(cookbook_file_path):
@@ -95,10 +128,18 @@ def __parse_ingredients(cookbook_file_path):
     @return: void
     """
     debug.debug_print("Attempting to parse " + str(cookbook_file_path) + " for ingredients.")
-    tmp_path = "ing_tmp"
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
-                         tmp_path, append=True)
-    myio.append_to_file(tmp_path, cookbook_file_path)
+                         __ing_tmp, append=True)
+
+
+def __remove_xml(s):
+    """
+    Removes xml tags from the given string.
+    @param s: The string to remove xml from.
+    @return: (str) s with xml stuff removed.
+    """
+    re.sub("<[^>]*>", "", s)
+    return s
 
 
 def __trim_non_recipe(cookbook_file_path):
@@ -123,6 +164,11 @@ def _tabulate_ingredients():
     dictionary.
     """
     prep._apply_func_to_each_data_file(__parse_ingredients)
+    # You now have an "ing_tmp" file with dirty ingredients
+    # So clean them up (remove xml tags, remove punctuation from ends, lowercase them all)
+    __clean_ingredient_file()
+    # TODO: do the rest of this function
+    raise NotImplementedError("Need to finish doing the _tabulate_ingredients method.")
 
 
 def _trim_all_files_to_recipes():
