@@ -19,23 +19,33 @@ def _clean_ingredient_test():
     Run the __clean_ingredient_file method with some fake data and print the results.
     @return: void
     """
-    print(config.UNIT_TEST_HEADER)
-    print("RUNNING UNIT TEST: _clean_ingredient_test")
-    print(config.UNIT_TEST_HEADER)
+    debug.print_test_banner("_clean_ingredient_test", False)
+
+    # Prep the test data
+    debug.debug_print("Prepping test data...")
+    test_data = ["<tag color=blue>blah de bloop</tag>", "most delICIOUS ingredient!",
+                 "VERY GOOD PIE", "really good stuff",
+                 "peanut butter, bathed in clams.", "money...", "..."]
     dummy_file = open("clean_ing_file.test", 'w')
     f = lambda x: dummy_file.write(x + os.linesep)
-    f("<tag color=blue>blah de bloop</tag>")
-    f("most delICIOUS ingredient!")
-    f("VERY GOOD PIE")
-    f("realy good stuff")
-    f("peanut butter, bathed in clams.")
-    f("money...")
-    f("...")
+    map(f, test_data)
     dummy_file.close()
+
+    # Do the test
+    debug.debug_print("Running test...")
     __clean_ingredient_file(f="clean_ing_file.test")
-    print(config.UNIT_TEST_HEADER)
-    print("DONE WITH UNIT TEST: _clean_ingredient_test")
-    print(config.UNIT_TEST_HEADER)
+
+    # Check the results
+    debug.debug_print("Checking results...")
+    dummy_file = open("clean_ing_file.test", 'r')
+    for line, i in enumerate(dummy_file):
+        result = (line == test_data[i])
+        res = "PASSED" if result else "FAILED"
+        print("Test " + str(i) + ": " + test_data[i] + " --> " + line + " --> " + res)
+    dummy_file.close()
+    os.remove("clean_ing_file.test")
+
+    debug.print_test_banner("_clean_ingredient_test", True)
 
 
 def __clean_ingredient_file(f=None):
