@@ -5,6 +5,7 @@ trimming and parsing the text files of the data.
 
 import os
 import re
+import string
 import myio.myio as myio
 import preprocessing.prep_global as prep
 import chef_global.debug as debug
@@ -24,24 +25,28 @@ def _clean_ingredient_test():
     # Prep the test data
     debug.debug_print("Prepping test data...")
     test_data = ["<tag color=blue>blah de bloop</tag>", "most delICIOUS ingredient!",
-                 "VERY GOOD PIE", "really good stuff",
-                 "peanut butter, bathed in clams.", "money...", "..."]
+                 "VERY GOOD PIE", "really good stuff", "wieners (the best you can get)",
+                 "(cookies)", "peanut butter, bathed in clams.", "money...", "..."]
+    clean_data = ["blah de bloop", "most delicious ingredient", "very good pie",
+                  "really good stuff", "wieners (the best you can get)", "(cookies)",
+                   "peanut butter, bathed in clams", "money", ""]
     dummy_file = open("clean_ing_file.test", 'w')
     f = lambda x: dummy_file.write(x + os.linesep)
-    map(f, test_data)
+    for d in test_data:
+        dummy_file.write(d + os.linesep)
     dummy_file.close()
 
     # Do the test
     debug.debug_print("Running test...")
     __clean_ingredient_file(f="clean_ing_file.test")
 
-    # Check the results
+    ## Check the results
     debug.debug_print("Checking results...")
     dummy_file = open("clean_ing_file.test", 'r')
-    for line, i in enumerate(dummy_file):
-        result = (line == test_data[i])
+    for i, line in enumerate(dummy_file):
+        result = (line.rstrip() == clean_data[i])
         res = "PASSED" if result else "FAILED"
-        print("Test " + str(i) + ": " + test_data[i] + " --> " + line + " --> " + res)
+        print("Test " + str(i) + ": " + res + " " +  test_data[i] + " --> " + line.rstrip())
     dummy_file.close()
     os.remove("clean_ing_file.test")
 
@@ -55,16 +60,21 @@ def __clean_ingredient_file(f=None):
     @param f: Optional file to read from (otherwise just uses __ing_tmp.
     @return: void
     """
-    # TODO Get this working!
     ing_file = open(__ing_tmp, 'r') if not f else open(f, 'r')
     tmp_tmp = open("tmp_tmp", 'w')
 
     print("Cleaning ingredient file...")
     for dirty_ingredient in ing_file:
         debug.debug_print("Cleaning " + str(dirty_ingredient) + "...")
-        clean_ingredient = __remove_xml(dirty_ingredient)
+        clean_ingredient = dirty_ingredient
+        clean_ingredient = __remove_xml(clean_ingredient)
         clean_ingredient = clean_ingredient.lower()
-        clean_ingredient = clean_ingredient.rstrip('!@#$%^&*()_-.?><,:;\'\"[]}{=+\\|')
+        clean_ingredient = clean_ingredient.rstrip()
+        clean_ingredient = clean_ingredient.strip(
+                                    string.punctuation.replace(")", "").replace("(", ""))
+        clean_ingredient = clean_ingredient.lstrip(string.punctuation.replace("(", ""))
+        clean_ingredient = clean_ingredient.rstrip(string.punctuation.replace(")", ""))
+        clean_ingredient = clean_ingredient + os.linesep
         debug.debug_print("Writing clean ingredient " + str(clean_ingredient) + "...")
         tmp_tmp.write(clean_ingredient)
     ing_file.close()
@@ -148,7 +158,7 @@ def __remove_xml(s):
     @param s: The string to remove xml from.
     @return: (str) s with xml stuff removed.
     """
-    re.sub("<[^>]*>", "", s)
+    s = re.sub("<[^>]*>", "", s)
     return s
 
 
@@ -173,6 +183,7 @@ def _tabulate_ingredients():
     pickles the resulting dictionary and sets the config file to know about the
     dictionary.
     """
+    print("Parsing ingredients...")
     prep._apply_func_to_each_data_file(__parse_ingredients)
     # You now have an "ing_tmp" file with dirty ingredients
     # So clean them up (remove xml tags, remove punctuation from ends, lowercase them all)
