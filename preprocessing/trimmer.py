@@ -98,7 +98,7 @@ def __clean_ingredient_file(f=None):
 
 
 def __parse_between_tags(file_path, start_tag, stop_tag,
-                         tmp_file_path, append=False, append_tag=""):
+                         tmp_file_path, append=False, append_tag="", keep=""):
     """
     Parses out a chunk of text from the given file between the start tag and the
     stop tag and puts that text into the given tmp_file.
@@ -108,6 +108,7 @@ def __parse_between_tags(file_path, start_tag, stop_tag,
     @param tmp_file_path: The path to the tmp file to write to
     @param append: Whether or not to append to the tmp file (if not, overwrite)
     @param append_tag: An optional string to add to the tmp_file after each parsed item.
+    @param keep: An optional string to keep instances of from original file
     @return: void
     """
     append_or_overwrite = 'a' if append else 'w'
@@ -143,6 +144,9 @@ def __parse_between_tags(file_path, start_tag, stop_tag,
                     debug.debug_print("Found start tag...")
                     recording = True
                     buf = ""
+                elif buf[-len(keep):] == keep:
+                    debug.debug_print("Found a keeper")
+                    tmp_file.write(keep + os.linesep)
                 elif len(buf) > 10000:
                     debug.debug_print("Purging buffer")
                     buf = ""
@@ -160,8 +164,10 @@ def __parse_ingredients(cookbook_file_path):
     """
     debug.debug_print("Attempting to parse " + str(cookbook_file_path) +
                              " for ingredients.")
+    # TODO: This needs to also retain all lines that say new_recipe or whatever
+    # Since the new_recipe tags are in the cookbook_file
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
-                         __ing_tmp, append=True)
+                         __ing_tmp, append=True, keep=__new_recipe_line)
 
 
 def __remove_xml(s):
