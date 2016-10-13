@@ -164,10 +164,46 @@ def __parse_ingredients(cookbook_file_path):
     """
     debug.debug_print("Attempting to parse " + str(cookbook_file_path) +
                              " for ingredients.")
-    # TODO: This needs to also retain all lines that say new_recipe or whatever
-    # Since the new_recipe tags are in the cookbook_file
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
                          __ing_tmp, append=True, keep=__new_recipe_line)
+
+
+def __remove_duplicates_between_bounds(file_path, bound):
+    """
+    Searches the file at file_path for bounds, treating the start of the file
+    as one, and removes duplicate lines within those bounds. So:
+
+    cream
+    money
+    cream
+    cream
+    peanuts
+    BOUND
+    cream
+    money
+    spinach
+    waffles
+    cream
+    BOUND
+
+    would turn in to:
+
+    cream
+    money
+    peanuts
+    BOUND
+    cream
+    money
+    spinach
+    waffles
+    BOUND
+
+    @param file_path: The path to the file that will be searched
+    @param bound: The bound
+    @return: void
+    """
+    #TODO
+    raise NotImplementedError("Haven't done the duplicate removal algorithm yet.")
 
 
 def __remove_xml(s):
@@ -208,7 +244,9 @@ def _tabulate_ingredients():
     # So clean them up (remove xml tags, remove punctuation from ends, lowercase them all)
     __clean_ingredient_file()
     # Some ingredients spelled "yolk" "yelk", so replace any yelk with yolk
-    # Remove any empty lines in the file
+    myio.find_replace(__ing_tmp, "yelk", "yolk")
+    # Remove all duplicates within each list
+    __remove_duplicates_between_bounds(__new_recipe_line)
     # TODO: do the rest of this function
     raise NotImplementedError("Need to finish doing the _tabulate_ingredients method.")
 

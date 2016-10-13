@@ -20,6 +20,34 @@ def append_to_file(src_path, dest_path):
     dest.close()
 
 
+def find_replace(file_path_to_search, to_replace, replace_with):
+    """
+    Search through file_path_to_search, find all instances of to_replace, and replace them with
+    replace_with.
+    @param file_path_to_search: The file path to the file to search.
+    @param to_replace: The item to replace
+    @param replae_with: The item to replace 'to_replace' with
+    @return: void
+    """
+    tmp_path = "__myio_tmp__"
+    file_to_search = open(file_path_to_search, 'r')
+    tmp_file = open(tmp_path, 'w')
+    for line in file_to_search:
+        new_line = line.replace(to_replace, replace_with)
+        tmp_file.write(new_line)
+    file_to_search.close()
+    tmp_file.close()
+
+    file_to_search = open(file_path_to_search, 'w')
+    tmp_file = open(tmp_path, 'r')
+    for line in tmp_file:
+        file_to_search.write(line)
+    file_to_search.close()
+    tmp_file.close()
+
+    os.remove(tmp_path)
+
+
 def overwrite_file_contents(src_path, dest_path):
     """
     Take the contents of src_path and write them into dest_path, after erasing
