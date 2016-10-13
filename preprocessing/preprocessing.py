@@ -28,6 +28,7 @@ def __do_reset(args):
     @param args: ArgParse object
     @return: void
     """
+    print("Reseting files...")
     prep_global._sanitize_input(args, "MOVER", "DATA")
     if args.reset:
         config.MASTER_DATA_DIRECTORY = args.reset[0]
@@ -47,6 +48,7 @@ def __do_tabulate_ingredients(args):
     @param ArgParse data
     @return: void
     """
+    print("Tabulating ingredients...")
     prep_global._sanitize_input(args, "TRIMMER", "DATA")
     if args.tabulate:
         config.DATA_DIRECTORY = args.tabulate
@@ -62,6 +64,7 @@ def __do_trim(args):
     @param args: ArgParse object
     @return: void
     """
+    print("Trimming the xml files to recipes...")
     prep_global._sanitize_input(args, "TRIMMER", "DATA")
     if args.trim:
         config.DATA_DIRECTORY = args.trim

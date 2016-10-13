@@ -90,13 +90,15 @@ def __clean_ingredient_file(f=None):
     ing_file = open(__ing_tmp, 'w') if not f else open(f, 'w')
 
     for clean_ingredient in tmp_tmp:
-        ing_file.write(clean_ingredient)
+        if clean_ingredient.strip() != "":
+            ing_file.write(clean_ingredient)
     ing_file.close()
     tmp_tmp.close()
     os.remove("tmp_tmp")
 
 
-def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path, append=False):
+def __parse_between_tags(file_path, start_tag, stop_tag,
+                         tmp_file_path, append=False, append_tag=""):
     """
     Parses out a chunk of text from the given file between the start tag and the
     stop tag and puts that text into the given tmp_file.
@@ -105,6 +107,7 @@ def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path, append=F
     @param stop_tag: The stop tag
     @param tmp_file_path: The path to the tmp file to write to
     @param append: Whether or not to append to the tmp file (if not, overwrite)
+    @param append_tag: An optional string to add to the tmp_file after each parsed item.
     @return: void
     """
     append_or_overwrite = 'a' if append else 'w'
@@ -129,7 +132,9 @@ def __parse_between_tags(file_path, start_tag, stop_tag, tmp_file_path, append=F
                 if stop_tag in tmp_buf:
                     tmp_buf = tmp_buf[:-len(stop_tag)]
                     debug.debug_print("Found stop tag. Writing to file: " + tmp_buf)
-                    tmp_file.write(tmp_buf + os.linesep)
+                    to_write = tmp_buf + os.linesep + append_tag + os.linesep
+                    to_write = to_write.strip() + os.linesep
+                    tmp_file.write(to_write)
                     tmp_buf = ""
                     recording = False
             else:
@@ -153,12 +158,10 @@ def __parse_ingredients(cookbook_file_path):
                                may or may not be trimmed.
     @return: void
     """
-    debug.debug_print("Attempting to parse " + str(cookbook_file_path) + " for ingredients.")
+    debug.debug_print("Attempting to parse " + str(cookbook_file_path) +
+                             " for ingredients.")
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
                          __ing_tmp, append=True)
-    f = open(__ing_tmp, 'a')
-    f.write(__new_cookbook_line + os.linesep)
-    f.close()
 
 
 def __remove_xml(s):
@@ -180,7 +183,8 @@ def __trim_non_recipe(cookbook_file_path):
     """
     debug.debug_print("Attempting to trim " + str(cookbook_file_path))
     tmp_path = "tmp"
-    __parse_between_tags(cookbook_file_path, "<recipe", "</recipe>", tmp_path)
+    __parse_between_tags(cookbook_file_path, "<recipe", "</recipe>",
+                                tmp_path, append=False, append_tag=__new_recipe_line)
     myio.overwrite_file_contents(tmp_path, cookbook_file_path)
     os.remove(tmp_path)
 
