@@ -167,43 +167,92 @@ def __parse_ingredients(cookbook_file_path):
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
                          __ing_tmp, append=True, keep=__new_recipe_line)
 
+def _remove_duplicates_between_bounds_test():
+    """
+    Unit test for __remove_duplicates_between_bounds.
+    """
+    #TODO - This is currently just a copy of the other test method - fix it
+    debug.print_test_banner("_clean_ingredient_test", False)
 
-def __remove_duplicates_between_bounds(file_path, bound):
+    # Prep the test data
+    debug.debug_print("Prepping test data...")
+    test_data = ["<tag color=blue>blah de bloop</tag>", "most delICIOUS ingredient!",
+                 "VERY GOOD PIE", "really good stuff", "wieners (the best you can get)",
+                 "(cookies)", "peanut butter, bathed in clams.", "money...", "..."]
+    clean_data = ["blah de bloop", "most delicious ingredient", "very good pie",
+                  "really good stuff", "wieners (the best you can get)", "(cookies)",
+                   "peanut butter, bathed in clams", "money", ""]
+    dummy_file = open("clean_ing_file.test", 'w')
+    f = lambda x: dummy_file.write(x + os.linesep)
+    for d in test_data:
+        dummy_file.write(d + os.linesep)
+    dummy_file.close()
+
+    # Do the test
+    debug.debug_print("Running test...")
+    __clean_ingredient_file(f="clean_ing_file.test")
+
+    ## Check the results
+    debug.debug_print("Checking results...")
+    dummy_file = open("clean_ing_file.test", 'r')
+    for i, line in enumerate(dummy_file):
+        result = (line.rstrip() == clean_data[i])
+        res = "PASSED" if result else "FAILED"
+        print("Test " + str(i) + ": " + res + " " +  test_data[i] + " --> " + line.rstrip())
+    dummy_file.close()
+    os.remove("clean_ing_file.test")
+
+    debug.print_test_banner("_clean_ingredient_test", True)
+
+
+
+def __remove_duplicates_between_bounds(file_path, bound, exceptions):
     """
     Searches the file at file_path for bounds, treating the start of the file
     as one, and removes duplicate lines within those bounds. So:
 
+    cream                               cream
+    money                               money
     cream
-    money
     cream
+    peanuts                             peanuts
+    BOUND                               BOUND
+    cream      would turn into -->      cream
+    money                               money
+    spinach                             spinach
+    waffles                             waffles
     cream
-    peanuts
-    BOUND
-    cream
-    money
-    spinach
-    waffles
-    cream
-    BOUND
-
-    would turn in to:
-
-    cream
-    money
-    peanuts
-    BOUND
-    cream
-    money
-    spinach
-    waffles
-    BOUND
+    BOUND                               BOUND
 
     @param file_path: The path to the file that will be searched
     @param bound: The bound
+    @param exceptions: All the exceptions to keep regardless of repeats
     @return: void
     """
     #TODO
-    raise NotImplementedError("Haven't done the duplicate removal algorithm yet.")
+    raise NotImplementedError("Need to do unit tests on this method to make sure it works.")
+    print("Removing duplicates...")
+    all_lines_to_keep = []
+    lines_to_keep = []
+    f = open(file_path, 'r')
+    for line in f:
+        if line == bound:
+            debug.debug_print("Found a bound, adding lines...")
+            lines_to_keep.append(line)
+            all_lines_to_keep.extend(lines_to_keep)
+            lines_to_keep = []
+        elif line in lines_to_keep and line not in exceptions:
+            debug.debug_print("Found a repeat, skipping it.")
+        else:
+            debug.debug_print("Keeping line: " + line)
+            lines_to_keep.append(line)
+
+    all_lines_to_keep.extend(lines_to_keep)
+    f.close()
+    f = open(file_path, 'w')
+    for line in all_lines_to_keep:
+        f.write(line)
+    f.close()
 
 
 def __remove_xml(s):
@@ -246,7 +295,7 @@ def _tabulate_ingredients():
     # Some ingredients spelled "yolk" "yelk", so replace any yelk with yolk
     myio.find_replace(__ing_tmp, "yelk", "yolk")
     # Remove all duplicates within each list
-    __remove_duplicates_between_bounds(__new_recipe_line)
+    __remove_duplicates_between_bounds(__ing_tmp, __new_recipe_line, [__new_recipe_line])
     # TODO: do the rest of this function
     raise NotImplementedError("Need to finish doing the _tabulate_ingredients method.")
 
