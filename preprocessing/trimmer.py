@@ -14,6 +14,12 @@ import chef_global.config as config
 # Ingredient file
 __ing_tmp = "ing_tmp"
 
+# New cookbook marker
+__new_cookbook_line = "NEW_COOKBOOK______________________________LINE"
+
+# New recipe marker
+__new_recipe_line = "NEW_RECIPE__________________________________LINE"
+
 
 def _clean_ingredient_test():
     """
@@ -150,6 +156,9 @@ def __parse_ingredients(cookbook_file_path):
     debug.debug_print("Attempting to parse " + str(cookbook_file_path) + " for ingredients.")
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
                          __ing_tmp, append=True)
+    f = open(__ing_tmp, 'a')
+    f.write(__new_cookbook_line + os.linesep)
+    f.close()
 
 
 def __remove_xml(s):
@@ -188,6 +197,8 @@ def _tabulate_ingredients():
     # You now have an "ing_tmp" file with dirty ingredients
     # So clean them up (remove xml tags, remove punctuation from ends, lowercase them all)
     __clean_ingredient_file()
+    # Some ingredients spelled "yolk" "yelk", so replace any yelk with yolk
+    # Remove any empty lines in the file
     # TODO: do the rest of this function
     raise NotImplementedError("Need to finish doing the _tabulate_ingredients method.")
 
