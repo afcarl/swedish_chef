@@ -21,49 +21,65 @@ __new_cookbook_line = "NEW_COOKBOOK______________________________LINE"
 __new_recipe_line = "NEW_RECIPE__________________________________LINE"
 
 
+def __unit_test(test_data, answer_data, test_name, test_function, *args):
+    """
+    Test framework for trimmer functions.
+    @param test_data: the data to test test_function on by writing to
+                      a test file and having the function read it.
+    @param answer_data: The data that should come out after the test
+    @param test_name: the name of the test
+    @param test_function: the function to test. It MUST take a file as its
+                          first parameter.
+    @param args: any other arguments to the test_function after the file
+                 name
+    @return: void
+    """
+    debug.print_test_banner(test_name, False)
+    dummy_file_path = test_name + ".test"
+
+    dummy_file = open(dummy_file_path, 'w')
+    for d in test_data:
+        dummy_file.write(d + os.linesep)
+    dummy_file.close()
+
+    if len(args) > 0:
+        l = [dummy_file_path]
+        l.extend(args)
+        func_args = tuple(l)
+        test_function(*func_args)
+    else:
+        test_function(dummy_file_path)
+
+    dummy_file = open(dummy_file_path, 'r')
+    for i, line in enumerate(dummy_file):
+        result = (line.rstrip() == answer_data[i])
+        res = "PASSED" if result else "FAILED"
+        print("Test " + str(i) + ": " + res + " " + test_data[i] + " --> " + line.rstrip())
+    dummy_file.close()
+    os.remove(dummy_file_path)
+
+    debug.print_test_banner(test_name, True)
+
+
 def _clean_ingredient_test():
     """
     Run the __clean_ingredient_file method with some fake data and print the results.
     @return: void
     """
-    debug.print_test_banner("_clean_ingredient_test", False)
-
-    # Prep the test data
-    debug.debug_print("Prepping test data...")
     test_data = ["<tag color=blue>blah de bloop</tag>", "most delICIOUS ingredient!",
                  "VERY GOOD PIE", "really good stuff", "wieners (the best you can get)",
                  "(cookies)", "peanut butter, bathed in clams.", "money...", "..."]
     clean_data = ["blah de bloop", "most delicious ingredient", "very good pie",
                   "really good stuff", "wieners (the best you can get)", "(cookies)",
                    "peanut butter, bathed in clams", "money", ""]
-    dummy_file = open("clean_ing_file.test", 'w')
-    f = lambda x: dummy_file.write(x + os.linesep)
-    for d in test_data:
-        dummy_file.write(d + os.linesep)
-    dummy_file.close()
-
-    # Do the test
-    debug.debug_print("Running test...")
-    __clean_ingredient_file(f="clean_ing_file.test")
-
-    ## Check the results
-    debug.debug_print("Checking results...")
-    dummy_file = open("clean_ing_file.test", 'r')
-    for i, line in enumerate(dummy_file):
-        result = (line.rstrip() == clean_data[i])
-        res = "PASSED" if result else "FAILED"
-        print("Test " + str(i) + ": " + res + " " +  test_data[i] + " --> " + line.rstrip())
-    dummy_file.close()
-    os.remove("clean_ing_file.test")
-
-    debug.print_test_banner("_clean_ingredient_test", True)
+    __unit_test(test_data, clean_data, "clean_ingredient", __clean_ingredient_file)
 
 
 def __clean_ingredient_file(f=None):
     """
     Cleans up the ing_tmp file so that it no longer contains ingredients with xml tags,
     uppercase letters, or trailing punctuation.
-    @param f: Optional file to read from (otherwise just uses __ing_tmp.
+    @param f: Optional file to read from (otherwise just uses __ing_tmp).
     @return: void
     """
     ing_file = open(__ing_tmp, 'r') if not f else open(f, 'r')
@@ -167,43 +183,19 @@ def __parse_ingredients(cookbook_file_path):
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
                          __ing_tmp, append=True, keep=__new_recipe_line)
 
+
+
 def _remove_duplicates_between_bounds_test():
     """
     Unit test for __remove_duplicates_between_bounds.
     """
-    #TODO - This is currently just a copy of the other test method - fix it
-    debug.print_test_banner("_clean_ingredient_test", False)
+    test_data = ["cream", "pie", "cream pie", "cream", "butter", "TEST_BOUND", "cream",
+                 "cream", "pie", "butter", "cheese"]
+    answer_data = ["cream", "pie", "cream pie", "butter", "TEST_BOUND", "cream",
+                  "butter", "cheese"]
 
-    # Prep the test data
-    debug.debug_print("Prepping test data...")
-    test_data = ["<tag color=blue>blah de bloop</tag>", "most delICIOUS ingredient!",
-                 "VERY GOOD PIE", "really good stuff", "wieners (the best you can get)",
-                 "(cookies)", "peanut butter, bathed in clams.", "money...", "..."]
-    clean_data = ["blah de bloop", "most delicious ingredient", "very good pie",
-                  "really good stuff", "wieners (the best you can get)", "(cookies)",
-                   "peanut butter, bathed in clams", "money", ""]
-    dummy_file = open("clean_ing_file.test", 'w')
-    f = lambda x: dummy_file.write(x + os.linesep)
-    for d in test_data:
-        dummy_file.write(d + os.linesep)
-    dummy_file.close()
-
-    # Do the test
-    debug.debug_print("Running test...")
-    __clean_ingredient_file(f="clean_ing_file.test")
-
-    ## Check the results
-    debug.debug_print("Checking results...")
-    dummy_file = open("clean_ing_file.test", 'r')
-    for i, line in enumerate(dummy_file):
-        result = (line.rstrip() == clean_data[i])
-        res = "PASSED" if result else "FAILED"
-        print("Test " + str(i) + ": " + res + " " +  test_data[i] + " --> " + line.rstrip())
-    dummy_file.close()
-    os.remove("clean_ing_file.test")
-
-    debug.print_test_banner("_clean_ingredient_test", True)
-
+    __unit_test(test_data, answer_data, "remove_duplicates",
+                __remove_duplicates_between_bounds, "TEST_BOUND", ["TEST_BOUND"])
 
 
 def __remove_duplicates_between_bounds(file_path, bound, exceptions):
@@ -229,8 +221,6 @@ def __remove_duplicates_between_bounds(file_path, bound, exceptions):
     @param exceptions: All the exceptions to keep regardless of repeats
     @return: void
     """
-    #TODO
-    raise NotImplementedError("Need to do unit tests on this method to make sure it works.")
     print("Removing duplicates...")
     all_lines_to_keep = []
     lines_to_keep = []

@@ -117,6 +117,7 @@ def run_unit_tests():
     @return: void
     """
     trimmer._clean_ingredient_test()
+    trimmer._remove_duplicates_between_bounds_test()
 
 
 def trim_all_files_to_recipes():
