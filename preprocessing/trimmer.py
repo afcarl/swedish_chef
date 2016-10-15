@@ -6,6 +6,7 @@ trimming and parsing the text files of the data.
 import os
 import re
 import string
+import shutil
 import myio.myio as myio
 import preprocessing.prep_global as prep
 import chef_global.debug as debug
@@ -13,6 +14,12 @@ import chef_global.config as config
 
 # Ingredient file
 __ing_tmp = "ing_tmp"
+
+# Unique ingredient file
+ingredient_file_name = "unique.txt"
+
+# Unique within recipe ingredient file
+within_file_name = "unique_within.txt"
 
 # New cookbook marker
 __new_cookbook_line = "NEW_COOKBOOK______________________________LINE"
@@ -294,6 +301,15 @@ def _tabulate_ingredients():
 
     print("Removing blank lines...")
     myio.strip_file(__ing_tmp)
+
+    # Now make a unique_within.txt that is all the recipes with duplicate
+    # ingredients removed and a unique.txt, which is all the unique ingredients
+    print("Creating a unique_within.txt and a unique.txt...")
+    os.rename(__ing_tmp, within_file_name)
+    shutil.copy(within_file_name, ingredient_file_name)
+    __remove_duplicates_between_bounds(ingredient_file_name, "SUPER_FAKE_BOUND", [])
+    myio.find_replace(ingredient_file_name, __new_recipe_line.lower(), "")
+    myio.strip_file(ingredient_file_name)
 
 
 def _trim_all_files_to_recipes():
