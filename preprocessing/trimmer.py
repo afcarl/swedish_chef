@@ -53,8 +53,9 @@ def __unit_test(test_data, answer_data, test_name, test_function, *args):
     dummy_file = open(dummy_file_path, 'r')
     for i, line in enumerate(dummy_file):
         result = (line.rstrip() == answer_data[i])
-        res = "PASSED" if result else "FAILED"
-        print("Test " + str(i) + ": " + res + " " + test_data[i] + " --> " + line.rstrip())
+        res = "passed" if result else "FAILED"
+        print("Test " + str(i) + ": " + res + " " + "expected: " + answer_data[i] +
+                    " --> got: " + line.rstrip())
     dummy_file.close()
     os.remove(dummy_file_path)
 
