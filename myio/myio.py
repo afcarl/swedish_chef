@@ -62,3 +62,41 @@ def overwrite_file_contents(src_path, dest_path):
         dest.write(line + os.linesep)
     src.close()
     dest.close()
+
+
+def strip_file(path):
+    """
+    Strips the given file of all blank lines.
+    @param path: The path to the file you want to strip.
+    @return: void
+    """
+    f = open(path, 'r')
+    tmp_path = "__myio__tmp__.txt"
+    tmp = open(tmp_path, 'w')
+
+    for line in f:
+        if line.rstrip() != "":
+            tmp.write(line)
+
+    f.close()
+    tmp.close()
+
+    f = open(path, 'w')
+    tmp = open(tmp_path, 'r')
+
+    for line in tmp:
+        f.write(line)
+
+    f.close()
+    tmp.close()
+    os.remove(tmp_path)
+
+
+
+
+
+
+
+
+
+
