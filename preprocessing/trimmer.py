@@ -190,10 +190,10 @@ def _remove_duplicates_between_bounds_test():
     """
     Unit test for __remove_duplicates_between_bounds.
     """
-    test_data = ["cream", "pie", "cream pie", "cream", "butter", "TEST_BOUND", "cream",
-                 "cream", "pie", "butter", "cheese"]
-    answer_data = ["cream", "pie", "cream pie", "butter", "TEST_BOUND", "cream",
-                  "butter", "cheese"]
+    test_data =   ["cream", "pie", "cream pie", "cream", "butter", "TEST_BOUND", "cream",
+                   "cream", "pie", "butter", "cheese"]
+    answer_data = ["cream", "pie", "cream pie", "",      "butter", "TEST_BOUND", "cream",
+                   "",      "pie", "butter", "cheese"]
 
     __unit_test(test_data, answer_data, "remove_duplicates",
                 __remove_duplicates_between_bounds, "TEST_BOUND", ["TEST_BOUND"])
@@ -233,9 +233,10 @@ def __remove_duplicates_between_bounds(file_path, bound, exceptions):
             all_lines_to_keep.extend(lines_to_keep)
             lines_to_keep = []
         elif line in lines_to_keep and line not in exceptions:
-            debug.debug_print("Found a repeat, skipping it.")
+            debug.debug_print("Found a repeat, skipping it. Repeat was: " + line.rstrip())
+            lines_to_keep.append(os.linesep)
         else:
-            debug.debug_print("Keeping line: " + line)
+            debug.debug_print("Keeping line: " + line.rstrip())
             lines_to_keep.append(line)
 
     all_lines_to_keep.extend(lines_to_keep)
