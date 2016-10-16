@@ -7,6 +7,7 @@ import os
 import re
 import string
 import shutil
+from chef_global.adt import BoolTable
 import myio.myio as myio
 import preprocessing.prep_global as prep
 import chef_global.debug as debug
@@ -273,20 +274,38 @@ def __remove_plurals(file_path):
     """
     # This method assumes that the file is small enough to read into memory
     f = open(file_path, 'r')
+    print("    |-> reading ingredients into memory...")
     ingredients = [line.rstrip() for line in f]
     f.close()
 
+    print("    |-> searching for plurals...")
     keep = []
+    already_removed = BoolTable()
     for ingredient in ingredients:
-        item_no_s = ingredient[:-1] if ingredient.endswith("s") else None
-        already_exists_no_s = item_no_s in ingredients \
-                                if ingredient.endswith("s") else False
-        if ingredient.endswith("s") and already_exists_no_s:
-            debug.debug_print("Removing " + ingredient)
+        item_no_s = None
+        already_exists_no_s = False
+        if ingredient.endswith("s"):
+            # Check if 1) we have already found and removed this before
+            # or       2) we have an ingredient that is exactly this but without the final s
+            item_no_s = ingredient[:-1]
+            debug.debug_print("    |-> checking for both '" + ingredient +
+                                "' and '" + item_no_s + "'...")
+            if already_removed.has(ingredient):
+                debug.debug_print("    |-> already removed '" + ingredient +
+                                    "', do it again.")
+                already_exists_no_s = True
+            elif item_no_s in ingredients:
+                debug.debug_print("    |-> found '" + item_no_s + "', so remove '" +
+                                    ingredient + "'.")
+                already_exists_no_s = True
+                already_removed.put(ingredient)
+        if already_exists_no_s:
+            debug.debug_print("    |-> --Removing " + ingredient + "--")
             keep.append("")
         else:
             keep.append(ingredient)
 
+    print("    |-> Writing remaining ingredients to file...")
     f = open(file_path, 'w')
     for ingredient in keep:
         f.write(ingredient + os.linesep)
