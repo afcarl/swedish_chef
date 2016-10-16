@@ -20,6 +20,23 @@ def append_to_file(src_path, dest_path):
     dest.close()
 
 
+def file_contains(path, item):
+    """
+    Opens the path and searches the file for the item.
+    If it exists, returns True, otherwise False.
+    @param path: The file path
+    @param item: The item to search for
+    @return: bool
+    """
+    f = open(path, 'r')
+    for line in path:
+        if item in line:
+            f.close()
+            return True
+    f.close()
+    return False
+
+
 def find_replace(file_path_to_search, to_replace, replace_with):
     """
     Search through file_path_to_search, find all instances of to_replace, and replace them with

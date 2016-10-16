@@ -254,6 +254,45 @@ def __remove_duplicates_between_bounds(file_path, bound, exceptions):
     f.close()
 
 
+def _remove_plurals_test():
+    """
+    Test for __remove_plurals method.
+    @return: void
+    """
+    test_data = ["money", "moneys", "moneys", "money", "fun", "funds", "funs"]
+    answer_data = ["money", "", "", "money", "fun", "funds", ""]
+    __unit_test(test_data, answer_data, "remove_plurals", __remove_plurals)
+
+
+def __remove_plurals(file_path):
+    """
+    Removes obvious pluarls (those things that end in s, but which have counterparts
+    which don't).
+    @param file_path: The path to the ingredient file.
+    @return: void
+    """
+    # This method assumes that the file is small enough to read into memory
+    f = open(file_path, 'r')
+    ingredients = [line.rstrip() for line in f]
+    f.close()
+
+    keep = []
+    for ingredient in ingredients:
+        item_no_s = ingredient[:-1] if ingredient.endswith("s") else None
+        already_exists_no_s = item_no_s in ingredients \
+                                if ingredient.endswith("s") else False
+        if ingredient.endswith("s") and already_exists_no_s:
+            debug.debug_print("Removing " + ingredient)
+            keep.append("")
+        else:
+            keep.append(ingredient)
+
+    f = open(file_path, 'w')
+    for ingredient in keep:
+        f.write(ingredient + os.linesep)
+    f.close()
+
+
 def __remove_xml(s):
     """
     Removes xml tags from the given string.
@@ -261,6 +300,7 @@ def __remove_xml(s):
     @return: (str) s with xml stuff removed.
     """
     s = re.sub("<[^>]*>", "", s)
+
     return s
 
 
@@ -285,6 +325,7 @@ def _tabulate_ingredients():
     trimmed files are more likely to produce results, and it will be faster). Then
     pickles the resulting dictionary and sets the config file to know about the
     dictionary.
+    @return: void
     """
     print("Parsing ingredients...")
     prep._apply_func_to_each_data_file(__parse_ingredients)
@@ -298,6 +339,9 @@ def _tabulate_ingredients():
     print("Removing duplicate ingredients...")
     __remove_duplicates_between_bounds(__ing_tmp, __new_recipe_line.lower(),
                                         [__new_recipe_line.lower()])
+
+    print("Collapsing obvious plurals...")
+    __remove_plurals(__ing_tmp)
 
     print("Removing blank lines...")
     myio.strip_file(__ing_tmp)
