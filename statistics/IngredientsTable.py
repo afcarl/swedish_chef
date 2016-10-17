@@ -64,36 +64,42 @@ class IngredientsTable:
             self.__next_int += 1
             return to_ret
 
-    def save_to_disk(self, path="ingredient_table"):
-        """
-        Saves this object to the disk in the given path - it overwrites
-        the given file if it exists.
-        @param path: The path to save at
-        @return: The path it was saved to
-        """
-        pickle.dump(self, open(path, 'wb'))
-        return path
-
     def __construct_from_file(self, path):
         """
         Constructs the table from the given ingredient file.
         @param path: The path to the ingredient file
         @return: void
         """
-        # First try loading from a pickle
-        try:
-            self = pickle.load(open(path, 'rb'))
-        except Exception as e:
-            print(str(e)) # TODO: catch whatever exception this prints out rather than catchall
 
-            debug.debug_print("Constructing IngredientsTable from " + path + "...")
-            f = open(path, 'r')
-            for line in f:
-                ingredient = line.rstrip()
-                debug.debug_print("Adding '" + ingredient + "' to table.")
-                self.put(ingredient)
-            f.close()
+        debug.debug_print("Constructing IngredientsTable from " + path + "...")
+        f = open(path, 'r')
+        for line in f:
+            ingredient = line.rstrip()
+            debug.debug_print("Adding '" + ingredient + "' to table.")
+            self.put(ingredient)
+        f.close()
 
+
+def save_to_disk(obj, path="ingredient_table"):
+    """
+    Saves the object to the disk in the given path - it overwrites
+    the given file if it exists.
+    @param obj: The object to save
+    @param path: The path to save at
+    @return: The path it was saved to
+    """
+    pickle.dump(obj, open(path, 'wb'))
+    return path
+
+
+def load_from_disk(path):
+    """
+    Loads the pickled object from the path.
+    @param path: The path to the pickled object
+    @return: The object
+    """
+    obj = pickle.load(open(path, 'rb'))
+    return obj
 
 
 def unit_test(path=None):
@@ -130,15 +136,15 @@ def unit_test(path=None):
             friendship_id = None
 
         print("Pickling the unit under test...")
-        pickle_path = uut.save_to_disk()
+        pickle_path = save_to_disk(uut)
         print("Saved to: " + str(pickle_path))
 
         print("Loading the unit under test back from pickle...")
-        uut = IngredientsTable(pickle_path)
+        uut = load_from_disk(pickle_path)
         print("Checking if successful...")
 
         enemy_id = uut.put("enemy")
-
+        chocolate_id_after_pickle = uut.get_id("chocolate")
 
         # Collect and print results
         test_print = "TEST "
@@ -181,6 +187,12 @@ def unit_test(path=None):
             print(test_print + "7: passed -> enemy ID is 7")
         else:
             print(test_print + "7: FAILED -> enemy ID is " + str(enemy_id))
+
+        if chocolate_id_after_pickle == 5:
+            print(test_print + "8: passed -> chocolate ID after pickle is 5")
+        else:
+            print(test_print + "8: FAILED -> chocolate ID after pickle is " +
+                        str(chocolate_id_after_pickle))
     except Exception as e:
         print(str(e))
         raise e
