@@ -3,7 +3,7 @@ This module provides the API functions for the preprocessing suite of tools
 for the chef. ALL API functions for this package are in this file.
 """
 
-from statistics.IngredientsTable import IngredientsTable
+import statistics.ingredients_table as ingredients_table
 import preprocessing.prep_global as prep_global
 import chef_global.debug as debug
 import chef_global.config as config
@@ -47,20 +47,18 @@ def __do_tabulate_ingredients(args):
     Take each data file and combine it, then parse the combination
     down into the unique ingredients used by each recipe as well as
     a list of all the ingredients used by all the recipes.
-    Then do some basic statistics on the ingredients and make an
-    IngredientsTable object out of them.
     @param ArgParse data
     @return: void
     """
-    print("Tabulating ingredients...")
     prep_global._sanitize_input(args, "TRIMMER", "DATA")
     if args.tabulate:
         config.DATA_DIRECTORY = args.tabulate
     else:
         config.DATA_DIRECTORY = args.prep[1]
+    print("Creating IngredientsTable and saving it to disk...")
     trimmer._prepare_tabulate_ingredients()
-    ing_table = IngredientsTable(config.UNIQUE)
-    config.INGREDIENT_TABLE_PATH = ing_table.save_to_disk()
+    ing_table = ingredients_table.IngredientsTable(config.UNIQUE)
+    config.INGREDIENT_TABLE_PATH = ingredients_table.save_to_disk(ing_table)
 
 
 def __do_trim(args):

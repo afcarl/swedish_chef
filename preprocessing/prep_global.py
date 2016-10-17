@@ -52,12 +52,14 @@ def __get_arg_value(args, sub_module, sub_module_err_string):
         raise ValueError
 
 
-def _apply_func_to_each_data_file(func):
+def _apply_func_to_each_data_file(func, print_info=False):
     """
     Applies the given function to each data file in the cookbook data
     directory.
     @param func: A function which takes a file path as an input (and
                  presumably, does something with the file)
+    @param print_info: If you would like this method to print a message whenever
+                       it moves to another file.
     @return: void
     """
     debug_print("Applying a function to each file in the data directory...")
@@ -68,6 +70,8 @@ def _apply_func_to_each_data_file(func):
                             file_name in os.listdir(config.DATA_DIRECTORY)]
 
     for f in list_of_file_names:
+        if print_info:
+            print("    |-> working on " + f + "...")
         func(f)
 
 

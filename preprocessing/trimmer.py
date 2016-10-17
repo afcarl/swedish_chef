@@ -285,19 +285,19 @@ def __remove_plurals(file_path):
             # Check if 1) we have already found and removed this before
             # or       2) we have an ingredient that is exactly this but without the final s
             item_no_s = ingredient[:-1]
-            debug.debug_print("    |-> checking for both '" + ingredient +
+            debug.debug_print("        |-> checking for both '" + ingredient +
                                 "' and '" + item_no_s + "'...")
             if already_removed.has(ingredient):
-                debug.debug_print("    |-> already removed '" + ingredient +
+                debug.debug_print("        |-> already removed '" + ingredient +
                                     "', do it again.")
                 already_exists_no_s = True
             elif item_no_s in ingredients:
-                debug.debug_print("    |-> found '" + item_no_s + "', so remove '" +
+                debug.debug_print("        |-> found '" + item_no_s + "', so remove '" +
                                     ingredient + "'.")
                 already_exists_no_s = True
                 already_removed.put(ingredient)
         if already_exists_no_s:
-            debug.debug_print("    |-> --Removing " + ingredient + "--")
+            debug.debug_print("        |-> --Removing " + ingredient + "--")
             keep.append("")
         else:
             keep.append(ingredient)
@@ -346,7 +346,7 @@ def _prepare_tabulate_ingredients():
     @return: void
     """
     print("Parsing ingredients...")
-    prep._apply_func_to_each_data_file(__parse_ingredients)
+    prep._apply_func_to_each_data_file(__parse_ingredients, print_info=True)
 
     print("Cleaning ingredients...")
     __clean_ingredient_file()
@@ -383,7 +383,7 @@ def _trim_all_files_to_recipes():
     Trims away all the non-recipe, non-ingredient stuff from the data files.
     @return: void
     """
-    prep._apply_func_to_each_data_file(__trim_non_recipe)
+    prep._apply_func_to_each_data_file(__trim_non_recipe, print_info=True)
 
 
 

@@ -30,6 +30,10 @@ def execute_based_on_args(args):
         preprocessor.execute_commands(args)
         return "Preprocessor ran successfully."
 
+    if args.math:
+        statistics.calculate_stats(args)
+        return "Statistics have been calculated."
+
 def get_valid_args():
     """
     Validates passed-in args and returns them as something...
@@ -39,6 +43,8 @@ def get_valid_args():
     parser.add_argument("-a", "--tabulate", help="Tabulate the ingredients from the " +
                              "list of recipes - helpful to trim it first.",
                              metavar="DATA_DIR")
+    parser.add_argument("-m", "--math", help="Do basic stats on the given ingredient table",
+                              nargs=3, metavar=("INGREDIENT_TABLE", "UNIQUE", "UNIQUE_WITHIN"))
     parser.add_argument("-p", "--prep", help="Preprocessor pipeline the data - " +
                              "run the data through the whole preprocessor pipeline.",
                              nargs=2, metavar="DATA_DIR")
