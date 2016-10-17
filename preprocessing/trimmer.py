@@ -45,10 +45,7 @@ def __unit_test(test_data, answer_data, test_name, test_function, *args):
     debug.print_test_banner(test_name, False)
     dummy_file_path = test_name + ".test"
 
-    dummy_file = open(dummy_file_path, 'w')
-    for d in test_data:
-        dummy_file.write(d + os.linesep)
-    dummy_file.close()
+    myio.write_list_to_file(dummy_file_path, test_data)
 
     if len(args) > 0:
         l = [dummy_file_path]
@@ -338,12 +335,14 @@ def __trim_non_recipe(cookbook_file_path):
     os.remove(tmp_path)
 
 
-def _tabulate_ingredients():
+def _prepare_tabulate_ingredients():
     """
     Parses the ingredients out of each file (which may or may not be trimmed, but
-    trimmed files are more likely to produce results, and it will be faster). Then
-    pickles the resulting dictionary and sets the config file to know about the
-    dictionary.
+    trimmed files are more likely to produce results, and it will be faster) and produces
+    two files: a unique.txt and a unique_within.txt, which are the unique ingredients
+    and the recipe ingredients with duplicates within each recipe removed.
+    After this method, the unique.txt can be used to tabulate all the ingredients and do
+    basic statistics on it.
     @return: void
     """
     print("Parsing ingredients...")
@@ -373,6 +372,10 @@ def _tabulate_ingredients():
     __remove_duplicates_between_bounds(ingredient_file_name, "SUPER_FAKE_BOUND", [])
     myio.find_replace(ingredient_file_name, __new_recipe_line.lower(), "")
     myio.strip_file(ingredient_file_name)
+
+    # Now tell the config file where you put the ingredient files
+    config.UNIQUE = ingredient_file_name
+    config.UNIQUE_WITHIN = within_file_name
 
 
 def _trim_all_files_to_recipes():

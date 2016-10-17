@@ -8,9 +8,21 @@ are marked to be changed programmatically. Please pay attention.
 # @programmatic
 DATA_DIRECTORY = None
 
+# The path to the saved IngredientsTable object
+# @programmatic
+INGREDIENT_TABLE_PATH = None
+
 # The master directory where we store data
 # @programmatic
 MASTER_DATA_DIRECTORY = None
+
+# The unique.txt ingredient file path
+# @programmatic
+UNIQUE = ""
+
+# The unique_within.txt ingredient file path
+# @programmatic
+UNIQUE_WITHIN = ""
 
 # The unit test banner to print around a unit test start and ending
 # @manual
