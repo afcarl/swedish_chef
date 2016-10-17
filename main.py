@@ -2,6 +2,7 @@
 The main file. Start the program with 'python3 main.py'.
 """
 import argparse
+import statistics.statistics as statistics
 import preprocessing.preprocessing as preprocessor
 import chef_global.config
 from chef_global.debug import debug_print
@@ -21,6 +22,7 @@ def execute_based_on_args(args):
         # Just do the unit tests and quit
         debug_print("Running unit tests...")
         preprocessor.run_unit_tests()
+        statistics.run_unit_tests()
         return "Done with unit tests."
 
     # if any of the args are a preprocessor command, use the preprocessor:

@@ -2,6 +2,7 @@
 Module to hold the class IngredientsTable.
 """
 
+import os
 import pickle
 import myio.myio as myio
 import chef_global.debug as debug
@@ -63,7 +64,7 @@ class IngredientsTable:
             self.__next_int += 1
             return to_ret
 
-    def save_to_disk(self, path="ingredient_table")
+    def save_to_disk(self, path="ingredient_table"):
         """
         Saves this object to the disk in the given path - it overwrites
         the given file if it exists.
@@ -81,7 +82,7 @@ class IngredientsTable:
         """
         # First try loading from a pickle
         try:
-            self = pickle.load(path)
+            self = pickle.load(open(path, 'rb'))
         except Exception as e:
             print(str(e)) # TODO: catch whatever exception this prints out rather than catchall
 
@@ -182,11 +183,11 @@ def unit_test(path=None):
             print(test_print + "7: FAILED -> enemy ID is " + str(enemy_id))
     except Exception as e:
         print(str(e))
+        raise e
     finally:
         debug.print_test_banner("IngredientsTable Test", True)
         if dummy_data:
             os.remove(path)
-
 
 
 
