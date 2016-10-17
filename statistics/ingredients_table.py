@@ -26,6 +26,12 @@ class IngredientsTable:
         self.__next_int = 0
         self.__construct_from_file(ingredient_file_path)
 
+    def __len__(self):
+        return len(self.__table)
+
+    def __str__(self):
+        return str(self.__table)
+
 
     def get_id(self, ingredient):
         """

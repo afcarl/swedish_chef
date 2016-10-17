@@ -3,6 +3,7 @@ Module to provide a place to gather my random io functions.
 """
 
 import os
+import chef_global.debug as debug
 
 def append_to_file(src_path, dest_path):
     """
@@ -63,6 +64,32 @@ def find_replace(file_path_to_search, to_replace, replace_with):
     tmp_file.close()
 
     os.remove(tmp_path)
+
+
+def get_lines_between_tags(file_path, tag):
+    """
+    Generator that returns all lines between two instances of
+    tag found in the file for each time that it finds another tag.
+    Blah
+    bloop
+    TAG
+    bloop
+    TAG
+    would return as a generator: [blah, bloop] then [bloop]
+    Note that you probably want a tag at the end of the file, as
+    it will otherwise just skip the last lines.
+    @param file_path: The path to the file
+    @param tag: The tag to look between
+    """
+    f = open(file_path, 'r')
+    next_yield = []
+    for line in f:
+        if line.rstrip() == tag:
+            yield next_yield
+            next_yield = []
+        else:
+            next_yield.append(line.rstrip())
+    f.close()
 
 
 def overwrite_file_contents(src_path, dest_path):

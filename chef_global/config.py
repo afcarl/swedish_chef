@@ -16,6 +16,14 @@ INGREDIENT_TABLE_PATH = None
 # @programmatic
 MASTER_DATA_DIRECTORY = None
 
+# The new cookbook marker
+# @manual
+NEW_COOKBOOK_LINE = "NEW_COOKBOOK______________________________LINE"
+
+# The new recipe marker
+# @manual
+NEW_RECIPE_LINE = "NEW_RECIPE__________________________________LINE"
+
 # The unique.txt ingredient file path
 # @programmatic
 UNIQUE = ""

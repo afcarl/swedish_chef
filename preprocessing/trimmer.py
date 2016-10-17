@@ -22,12 +22,6 @@ ingredient_file_name = "unique.txt"
 # Unique within recipe ingredient file
 within_file_name = "unique_within.txt"
 
-# New cookbook marker
-__new_cookbook_line = "NEW_COOKBOOK______________________________LINE"
-
-# New recipe marker
-__new_recipe_line = "NEW_RECIPE__________________________________LINE"
-
 
 def __unit_test(test_data, answer_data, test_name, test_function, *args):
     """
@@ -186,7 +180,7 @@ def __parse_ingredients(cookbook_file_path):
     debug.debug_print("Attempting to parse " + str(cookbook_file_path) +
                              " for ingredients.")
     __parse_between_tags(cookbook_file_path, "<ingredient>", "</ingredient>",
-                         __ing_tmp, append=True, keep=__new_recipe_line)
+                         __ing_tmp, append=True, keep=config.NEW_RECIPE_LINE)
 
 
 
@@ -330,7 +324,7 @@ def __trim_non_recipe(cookbook_file_path):
     debug.debug_print("Attempting to trim " + str(cookbook_file_path))
     tmp_path = "tmp"
     __parse_between_tags(cookbook_file_path, "<recipe", "</recipe>",
-                                tmp_path, append=False, append_tag=__new_recipe_line)
+                                tmp_path, append=False, append_tag=config.NEW_RECIPE_LINE)
     myio.overwrite_file_contents(tmp_path, cookbook_file_path)
     os.remove(tmp_path)
 
@@ -355,8 +349,8 @@ def _prepare_tabulate_ingredients():
     myio.find_replace(__ing_tmp, "yelk", "yolk")
 
     print("Removing duplicate ingredients...")
-    __remove_duplicates_between_bounds(__ing_tmp, __new_recipe_line.lower(),
-                                        [__new_recipe_line.lower()])
+    __remove_duplicates_between_bounds(__ing_tmp, config.NEW_RECIPE_LINE.lower(),
+                                        [config.NEW_RECIPE_LINE.lower()])
 
     print("Collapsing obvious plurals...")
     __remove_plurals(__ing_tmp)
@@ -370,7 +364,7 @@ def _prepare_tabulate_ingredients():
     os.rename(__ing_tmp, within_file_name)
     shutil.copy(within_file_name, ingredient_file_name)
     __remove_duplicates_between_bounds(ingredient_file_name, "SUPER_FAKE_BOUND", [])
-    myio.find_replace(ingredient_file_name, __new_recipe_line.lower(), "")
+    myio.find_replace(ingredient_file_name, config.NEW_RECIPE_LINE.lower(), "")
     myio.strip_file(ingredient_file_name)
 
     # Now tell the config file where you put the ingredient files
