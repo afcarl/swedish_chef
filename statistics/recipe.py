@@ -70,4 +70,4 @@ class Recipe:
         @param ingredient: An ingredient (str)
         @return: True if ingredient is present, False otherwise
         """
-        return self.__table.has(ingredient)
+        return ingredient in self.__ingredients_list

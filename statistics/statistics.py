@@ -27,9 +27,20 @@ def calculate_stats(args):
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
 
+    print("Generating the variables column...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
+
+    print("Generating the labels column...")
     labels = [ingredient for ingredient in table.get_ingredients_list()]
-    myio.write_list_to_file("FEATURE_VECTOR____", recipes[3456].get_feature_vector())
+
+    print(str(__generate_ingredient_feature_vector("tomato", recipes)))
+
+    #print("Generating the data matrix...")
+    #data_matrix = [__generate_ingredient_feature_vector(ingredient, recipes)
+    #                    for ingredient in labels]
+
+    #print("Generating the data frame...")
+    #df = pd.DataFrame(data_matrix, columns=variables, index=labels)
     # TODO
 
 
@@ -40,6 +51,26 @@ def run_unit_tests():
     @return: void
     """
     it.unit_test()
+
+
+def __generate_ingredient_feature_vector(ingredient, recipes):
+    """
+    Generates a vector of the form:
+    Recipe 0    Recipe 1    Recipe 2    ...
+        0          1           0
+    Where a 0 means the ingredient is not present in that recipe and a 1
+    means it is.
+    This means the return value is a list of the form [0, 1, 0, ...] where
+    each index represents a recipe and the value at that index represents
+    present or not.
+    @param ingredient: The ingredient for which to generate a feature vector
+    @param recipes: All of the recipes in the same order across multiple
+                    calls to this function
+    @return: The feature vector
+    """
+    print("    |-> generating '" + str(ingredient) + "'...")
+    to_ret = [1 if recipe.has(ingredient) else 0 for recipe in recipes]
+    return to_ret
 
 
 def __generate_recipes(table, unique_within_path):
