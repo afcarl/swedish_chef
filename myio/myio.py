@@ -146,7 +146,7 @@ def write_list_to_file(path, the_list):
     """
     f = open(path, 'w')
     for item in the_list:
-        f.write(item + os.linesep)
+        f.write(str(item) + os.linesep)
     f.close()
 
 

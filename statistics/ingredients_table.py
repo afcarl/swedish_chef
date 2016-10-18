@@ -32,7 +32,6 @@ class IngredientsTable:
     def __str__(self):
         return str(self.__table)
 
-
     def get_id(self, ingredient):
         """
         If the ingredient is in the table, this method returns
@@ -44,6 +43,28 @@ class IngredientsTable:
         """
         return self.__table[ingredient]
 
+    def get_ingredient(self, i_d):
+        """
+        Gets the corresponding ingredient from the given id.
+        @param i_d: The ID to use to retrieve an ingredient.
+        @return: The ingredient
+        @throws: KeyError if there is no corresponding ingredient
+        """
+        for ingredient, ing_id in self.__table.items():
+            if ing_id == i_d:
+                return ingredient
+        raise KeyError
+
+    def get_ingredients_list(self):
+        """
+        Gets a list of strings, each one being an ingredient from this list
+        in order of their ID.
+        @return: The list
+        """
+        ids = [i_d for _, i_d in self.__table.items()]
+        ids = sorted(ids)
+        to_ret = [self.get_ingredient(i_d) for i_d in ids]
+        return to_ret
 
     def has(self, ingredient):
         """

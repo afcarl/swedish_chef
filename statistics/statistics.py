@@ -2,6 +2,8 @@
 The main API for the statistics python package.
 """
 
+import pandas as pd
+import numpy as np
 import chef_global.debug as debug
 import myio.myio as myio
 import statistics.ingredients_table as it
@@ -24,6 +26,10 @@ def calculate_stats(args):
 
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
+
+    variables = ["Recipe " + str(i) for i in range(len(recipes))]
+    labels = [ingredient for ingredient in table.get_ingredients_list()]
+    myio.write_list_to_file("FEATURE_VECTOR____", recipes[3456].get_feature_vector())
     # TODO
 
 
@@ -45,7 +51,6 @@ def __generate_recipes(table, unique_within_path):
     @param unique_within_path: The path to the file containing the recipes
     @return: A list of recipe objects
     """
-    debug.debug_print("__generate_recipes has been called...")
     to_ret = []
     recipe_producer = \
         myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
@@ -55,9 +60,11 @@ def __generate_recipes(table, unique_within_path):
         recipe = Recipe(table, ingredients=ingredients)
         to_ret.append(recipe)
         debug.debug_print("Recipe Generated: " + str(recipe))
-        lines_between_tags = next(recipe_producer)
+        try:
+            lines_between_tags = next(recipe_producer)
+        except StopIteration:
+            lines_between_tags = None
 
-    debug.debug_print("__generate_recipes is done")
     return to_ret
 
 

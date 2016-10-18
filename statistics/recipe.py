@@ -41,7 +41,7 @@ class Recipe:
         contain that ingredient.
         @return: The feature vector
         """
-        fv = [0 for i in len(self.__table)]
+        fv = [0 for i in range(len(self.__table))]
         for ingredient in self.get_ingredients_list():
             i_d = self.__table.get_id(ingredient)
             fv[i_d] = 1
