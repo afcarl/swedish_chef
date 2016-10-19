@@ -2,6 +2,10 @@
 The main API for the statistics python package.
 """
 
+import os
+from tqdm import tqdm
+import pickle
+import scipy.sparse as sparse
 import pandas as pd
 import numpy as np
 import chef_global.debug as debug
@@ -23,7 +27,6 @@ def calculate_stats(args):
 
     unique = args.math[1]
     unique_within = args.math[2]
-
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
 
@@ -33,15 +36,56 @@ def calculate_stats(args):
     print("Generating the labels column...")
     labels = [ingredient for ingredient in table.get_ingredients_list()]
 
-    print(str(__generate_ingredient_feature_vector("tomato", recipes)))
+    print("Generating scipy version of sparse matrix...")
+    sparse_matrix = __retrieve_sparse_matrix(recipes, labels).tocoo()
 
-    #print("Generating the data matrix...")
-    #data_matrix = [__generate_ingredient_feature_vector(ingredient, recipes)
-    #                    for ingredient in labels]
+    print("Generating pandas version of sparse matrix...")
+    sparse_matrix_pandas = pd.SparseSeries.from_coo(sparse_matrix)
 
-    #print("Generating the data frame...")
-    #df = pd.DataFrame(data_matrix, columns=variables, index=labels)
+    print("Generating data frame...")
+    df = pd.SparseDataFrame(sparse_matrix_pandas, columns=variables, index=labels)
+
+    print("Printing dataframe...")
+    print(str(df))
+
+    #print("Try to generate data frame...")
+    #This does not work: It generates nonsense
+    #df = pd.DataFrame(sparse_matrix, columns=variables, index=labels)
+    #print(str(df))
+
     # TODO
+
+
+def __retrieve_sparse_matrix(recipes, ingredients):
+    """
+    Retrieves a sparse matrix representation of the recipes and ingredients.
+    That is, retrieves a sparse matrix of the form:
+        recipe 0    recipe 1    ...
+    ing0   1           0        ...
+    ing1   0           0        ...
+    Either generates it from given args or else finds
+    it on the disk.
+    @param recipes: All of the recipes
+    @param ingredients: All of the ingredients
+    @return: the matrix
+    """
+    if os.path.isfile("SPARSE_MATRIX"):
+        pfile = open("SPARSE_MATRIX", 'rb')
+        sparse_matrix = pickle.load(pfile)
+        pfile.close()
+        print("Found sparse matrix.")
+    else:
+        print("Generating sparse matrix...")
+        print("  |-> Generating the rows, this may take a while...")
+        rows = [__generate_ingredient_feature_vector_sparse(ingredient, recipes)
+                    for ingredient in tqdm(ingredients)]
+        print("  |-> Generating the matrix from the rows...")
+        sparse_matrix = sparse.vstack(rows)
+        print("Pickling the sparse matrix...")
+        output = open("SPARSE_MATRIX", 'wb')
+        pickle.dump(sparse_matrix, output)
+        output.close()
+    return sparse_matrix
 
 
 
@@ -68,9 +112,20 @@ def __generate_ingredient_feature_vector(ingredient, recipes):
                     calls to this function
     @return: The feature vector
     """
-    print("    |-> generating '" + str(ingredient) + "'...")
     to_ret = [1 if recipe.has(ingredient) else 0 for recipe in recipes]
     return to_ret
+
+
+def __generate_ingredient_feature_vector_sparse(ingredient, recipes):
+    """
+    Does exactly the same thing as __generate_ingredient_feature_vector, but
+    in a sparse format, specifically, it returns a csr_matrix.
+    """
+    #print("    |-> generating '" + str(ingredient) + "'...")
+    list_form = __generate_ingredient_feature_vector(ingredient, recipes)
+    lil_matrix_form = sparse.lil_matrix(list_form)
+    return lil_matrix_form.tocsr()
+
 
 
 def __generate_recipes(table, unique_within_path):
