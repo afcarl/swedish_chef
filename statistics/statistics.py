@@ -4,7 +4,6 @@ The main API for the statistics python package.
 
 import os
 from tqdm import tqdm
-import pickle
 import scipy.sparse as sparse
 import pandas as pd
 import numpy as np
@@ -36,24 +35,58 @@ def calculate_stats(args):
     print("Generating the labels column...")
     labels = [ingredient for ingredient in table.get_ingredients_list()]
 
-    print("Generating scipy version of sparse matrix...")
+    print("Retrieving scipy version of sparse matrix...")
     sparse_matrix = __retrieve_sparse_matrix(recipes, labels).tocoo()
 
-    print("Generating pandas version of sparse matrix...")
-    sparse_matrix_pandas = pd.SparseSeries.from_coo(sparse_matrix)
+    print("Retrieving dense representation of matrix...")
+    matrix = __retrieve_matrix(sparse_matrix)
 
-    print("Generating data frame...")
-    df = pd.SparseDataFrame(sparse_matrix_pandas, columns=variables, index=labels)
+    print("Retrieving dataframe...")
+    df = __retrieve_dataframe(matrix, variables, labels)
 
     print("Printing dataframe...")
     print(str(df))
 
-    #print("Try to generate data frame...")
-    #This does not work: It generates nonsense
-    #df = pd.DataFrame(sparse_matrix, columns=variables, index=labels)
-    #print(str(df))
-
     # TODO
+
+
+def __retrieve_dataframe(matrix, variables, labels):
+    """
+    Returns the given matrix as a dataframe or else finds one on the disk.
+    """
+    # Can't pickle an object this big. Use HDF5 instead if
+    # important.
+#    if os.path.isfile(config.DATA_FRAME):
+#        df = myio.load_pickle(config.DATA_FRAME)
+#        print("Found data frame.")
+#    else:
+#        print("Generating dataframe...")
+#        df = pd.DataFrame(matrix, columns=variables, index=labels)
+#        print("Saving dataframe...")
+#        myio.save_pickle(df, config.DATA_FRAME)
+    print("Generating dataframe...")
+    df = pd.DataFrame(matrix, columns=variables, index=labels)
+    return df
+
+
+def __retrieve_matrix(sparse_matrix):
+    """
+    Retrieves a dense (numpy) representation of the sparse matrix.
+    @param sparse_matrix: The matrix
+    @return: The numpy array
+    """
+#    if os.path.isfile(config.MATRIX):
+#        # This is too big on the disk - you might consider
+#        # using HDF5 if this gets to be a problem
+#        matrix = myio.load_pickle(config.MATRIX)
+#        print("Found matrix.")
+#    else:
+#        print("Generating dense matrix...")
+#        matrix = sparse_matrix.toarray()
+#        myio.save_pickle(matrix, config.MATRIX)
+    print("Generating dense matrix from sparse one...")
+    matrix = sparse_matrix.toarray()
+    return matrix
 
 
 def __retrieve_sparse_matrix(recipes, ingredients):
@@ -69,10 +102,8 @@ def __retrieve_sparse_matrix(recipes, ingredients):
     @param ingredients: All of the ingredients
     @return: the matrix
     """
-    if os.path.isfile("SPARSE_MATRIX"):
-        pfile = open("SPARSE_MATRIX", 'rb')
-        sparse_matrix = pickle.load(pfile)
-        pfile.close()
+    if os.path.isfile(config.MATRIX_SPARSE):
+        sparse_matrix = myio.load_pickle(config.MATRIX_SPARSE)
         print("Found sparse matrix.")
     else:
         print("Generating sparse matrix...")
@@ -82,9 +113,7 @@ def __retrieve_sparse_matrix(recipes, ingredients):
         print("  |-> Generating the matrix from the rows...")
         sparse_matrix = sparse.vstack(rows)
         print("Pickling the sparse matrix...")
-        output = open("SPARSE_MATRIX", 'wb')
-        pickle.dump(sparse_matrix, output)
-        output.close()
+        myio.save_pickle(sparse_matrix, config.MATRIX_SPARSE)
     return sparse_matrix
 
 

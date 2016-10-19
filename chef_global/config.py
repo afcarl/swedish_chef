@@ -8,6 +8,10 @@ are marked to be changed programmatically. Please pay attention.
 # @programmatic
 DATA_DIRECTORY = None
 
+# The dataframe
+# @manual
+DATA_FRAME = "tmp/dataframe"
+
 # The path to the saved IngredientsTable object
 # @programmatic
 INGREDIENT_TABLE_PATH = None
@@ -15,6 +19,14 @@ INGREDIENT_TABLE_PATH = None
 # The master directory where we store data
 # @programmatic
 MASTER_DATA_DIRECTORY = None
+
+# The path to the dense matrix
+# @manual
+MATRIX = "tmp/matrix"
+
+# The path to the sparse data matrix
+# @manual
+MATRIX_SPARSE = "tmp/sparsematrix"
 
 # The new cookbook marker
 # @manual

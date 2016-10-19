@@ -3,6 +3,7 @@ Module to provide a place to gather my random io functions.
 """
 
 import os
+import pickle
 import chef_global.debug as debug
 
 def append_to_file(src_path, dest_path):
@@ -92,6 +93,18 @@ def get_lines_between_tags(file_path, tag):
     f.close()
 
 
+def load_pickle(path):
+    """
+    Loads the pickled item from the path and returns it.
+    @param path: The pickled item.
+    @return: The unpickled item
+    """
+    pfile = open(path, 'rb')
+    to_ret = pickle.load(pfile)
+    pfile.close()
+    return to_ret
+
+
 def overwrite_file_contents(src_path, dest_path):
     """
     Take the contents of src_path and write them into dest_path, after erasing
@@ -106,6 +119,19 @@ def overwrite_file_contents(src_path, dest_path):
         dest.write(line + os.linesep)
     src.close()
     dest.close()
+
+
+def save_pickle(item, path):
+    """
+    Pickles the item into the given path.
+    To retrieve, use load_pickle.
+    @param item: The item to pickle
+    @param path: The path to pickle the item into
+    @return: void
+    """
+    output = open(path, 'wb')
+    pickle.dump(item, output)
+    output.close()
 
 
 def strip_file(path):
