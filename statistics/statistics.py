@@ -2,9 +2,12 @@
 The main API for the statistics python package.
 """
 
+import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
 import scipy.sparse as sparse
+from scipy.cluster.hierarchy import linkage, dendrogram
+from scipy.spatial.distance import pdist
 import pandas as pd
 import numpy as np
 import chef_global.debug as debug
@@ -44,9 +47,19 @@ def calculate_stats(args):
     print("Retrieving dataframe...")
     df = __retrieve_dataframe(matrix, variables, labels)
 
-    print("Printing dataframe...")
-    print(str(df))
+    print("Generating row_clusters (takes about 3 or 4 hours)...")
+    row_clusters = linkage(pdist(df, metric="euclidean"), method="complete")
 
+    print("Saving row_clusters...")
+    myio.save_pickle(row_clusters, config.CLUSTERS)
+
+#    This is, ludicrously, a recursive algorithm, so it stack overflows
+#    print("Generating dendrogram...")
+#    row_dendr = dendrogram(row_clusters, labels=labels)
+#    print("Plotting it...")
+#    plt.tight_layout()
+#    plt.ylabel("Eucliden Distance")
+#    plt.show()
     # TODO
 
 
