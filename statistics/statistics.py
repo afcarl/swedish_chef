@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+import preprocessing.preprocessing as preprocessor
 import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
@@ -17,10 +18,9 @@ import chef_global.config as config
 from statistics.recipe import Recipe
 
 
-def calculate_stats(args):
+def train_models():
     """
-    Calculates some basic statistics using the given ingredients table
-    and the unique and unique_within files given.
+    Trains the models and saves them to disk.
     @param args: ArgParse object
     @return: void
     """
@@ -29,9 +29,28 @@ def calculate_stats(args):
 
     unique = args.math[1]
     unique_within = args.math[2]
+
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
 
+    row_clusters = __generate_linkage(recipes, table)
+
+    print("Saving row_clusters...")
+    myio.save_pickle(row_clusters, config.CLUSTERS)
+
+#    This is, ludicrously, a recursive algorithm, so it stack overflows
+#    print("Generating dendrogram...")
+#    row_dendr = dendrogram(row_clusters, labels=labels)
+#    print("Plotting it...")
+#    plt.tight_layout()
+#    plt.ylabel("Eucliden Distance")
+#    plt.show()
+    # TODO
+
+def __generate_linkage(recipes, table):
+    """
+    Generate the hierarchical linkage matrix by the clustering algorithm.
+    """
     print("Generating the variables column...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
 
@@ -50,17 +69,8 @@ def calculate_stats(args):
     print("Generating row_clusters (takes about 3 or 4 hours)...")
     row_clusters = linkage(pdist(df, metric="euclidean"), method="complete")
 
-    print("Saving row_clusters...")
-    myio.save_pickle(row_clusters, config.CLUSTERS)
+    return row_clusters
 
-#    This is, ludicrously, a recursive algorithm, so it stack overflows
-#    print("Generating dendrogram...")
-#    row_dendr = dendrogram(row_clusters, labels=labels)
-#    print("Plotting it...")
-#    plt.tight_layout()
-#    plt.ylabel("Eucliden Distance")
-#    plt.show()
-    # TODO
 
 
 def __retrieve_dataframe(matrix, variables, labels):
@@ -130,13 +140,13 @@ def __retrieve_sparse_matrix(recipes, ingredients):
     return sparse_matrix
 
 
-
 def run_unit_tests():
     """
     Runs the statistics package's unit tests.
     @return: void
     """
     it.unit_test()
+    __training_test();
 
 
 def __generate_ingredient_feature_vector(ingredient, recipes):
@@ -169,7 +179,6 @@ def __generate_ingredient_feature_vector_sparse(ingredient, recipes):
     return lil_matrix_form.tocsr()
 
 
-
 def __generate_recipes(table, unique_within_path):
     """
     Generates a Recipe object from each recipe found in
@@ -196,8 +205,69 @@ def __generate_recipes(table, unique_within_path):
     return to_ret
 
 
+def __training_test():
+    """
+    Run the unit test for the training algorithms.
+    @return: void
+    """
+    test_name = "Training Test"
+    debug.print_test_banner(test_name, False)
+    # Use the same random seed to collect some random recipes and run the
+    # algorithm on those recipes.
+    if config.UNIQUE_WITHIN == "":
+        # You must first preprocess the cookbooks
+        print("The training test could not be run, because there is no unique_within file.")
+        print("Please generate a unique_within file by running the preprocessor pipeline.")
+    else:
+        num_recipes = 10
+        random_recipes = \
+            preprocessor.gather_random_recipes(config.UNIQUE_WITHIN, num_recipes, seed=245)
 
+        # Check if the length of the random recipes is correct:
+        if len(random_recipes) != num_recipes:
+            print("Test 0: FAIL --> The length of the recipe list returned did not match " +\
+                  "what was expected: Got len() == " + str(len(random_recipes)) +\
+                  " expected: len() == " + str(num_recipes))
+        else:
+            print("Test 1: passed --> len of random recipes is what was expected.")
 
+        # You should now have a list of lists of ingredients
+        # Append the new recipe line to the end of each recipe before saving it
+        tmp_recipes = []
+        ingredients = []
+        for recipe in random_recipes:
+            for ingredient in recipe:
+                ingredients.append(ingredient)
+                tmp_recipes.append(ingredient)
+            tmp_recipes.append(config.NEW_RECIPE_LINE.lower())
+
+        ingredients = set(ingredients)
+
+        print("Saving " + str(tmp_recipes))
+        print("Ingredients: " + str(ingredients))
+
+        # Save the temporary recipe file
+        unique_within = "tmp/unique_within.TEST"
+        myio.write_list_to_file(unique_within, tmp_recipes)
+
+        # Save the temporary ingredients file
+        unique = "tmp/unique.TEST"
+        myio.write_list_to_file(unique, ingredients)
+
+        # Next, make ingredient table from the recipes
+        table = it.IngredientsTable(unique)
+
+        # Now put the chosen recipes into a reasonable format
+        recipes = __generate_recipes(table, unique_within)
+
+        # Now generate the hierarchical linkage from the ingredients
+        linkage = __generate_linkage(recipes, table)
+
+        # Clean up
+        os.remove(unique_within)
+        os.remove(unique)
+
+    debug.print_test_banner(test_name, True)
 
 
 

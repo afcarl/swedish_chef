@@ -3,6 +3,8 @@ This module provides the API functions for the preprocessing suite of tools
 for the chef. ALL API functions for this package are in this file.
 """
 
+import myio.myio as myio
+import random
 import statistics.ingredients_table as ingredients_table
 import preprocessing.prep_global as prep_global
 import chef_global.debug as debug
@@ -10,72 +12,6 @@ import chef_global.config as config
 import preprocessing.trimmer as trimmer
 import preprocessing.mover as mover
 
-
-def __do_pipeline(args):
-    """
-    Respond to the request to do the entire preprocessor pipeline.
-    @param args: ArgParse object
-    @return: void
-    """
-    __do_reset(args)
-    __do_trim(args)
-    __do_tabulate_ingredients(args)
-
-
-def __do_reset(args):
-    """
-    Respond to the request to reset data.
-    Reset the data directory from the given master copy location.
-    @param args: ArgParse object
-    @return: void
-    """
-    print("Reseting files...")
-    prep_global._sanitize_input(args, "MOVER", "DATA")
-    if args.reset:
-        config.MASTER_DATA_DIRECTORY = args.reset[0]
-        config.DATA_DIRECTORY = args.reset[1]
-    else:
-        config.MASTER_DATA_DIRECTORY = args.prep[0]
-        config.DATA_DIRECTORY = args.prep[1]
-    debug.debug_print("Mover activated...")
-    copy_master_to_data_location()
-
-
-def __do_tabulate_ingredients(args):
-    """
-    Respond to the request to tabulate ingredients.
-    Take each data file and combine it, then parse the combination
-    down into the unique ingredients used by each recipe as well as
-    a list of all the ingredients used by all the recipes.
-    @param ArgParse data
-    @return: void
-    """
-    prep_global._sanitize_input(args, "TRIMMER", "DATA")
-    if args.tabulate:
-        config.DATA_DIRECTORY = args.tabulate
-    else:
-        config.DATA_DIRECTORY = args.prep[1]
-    print("Creating IngredientsTable and saving it to disk...")
-    trimmer._prepare_tabulate_ingredients()
-    ing_table = ingredients_table.IngredientsTable(config.UNIQUE)
-    config.INGREDIENT_TABLE_PATH = ingredients_table.save_to_disk(ing_table)
-
-
-def __do_trim(args):
-    """
-    Respond to the request to trim data.
-    If the data directory is valid, trim the xml files down to their recipes.
-    @param args: ArgParse object
-    @return: void
-    """
-    print("Trimming the xml files to recipes...")
-    prep_global._sanitize_input(args, "TRIMMER", "DATA")
-    if args.trim:
-        config.DATA_DIRECTORY = args.trim
-    else:
-        config.DATA_DIRECTORY = args.prep[1]
-    debug.debug_print("Trimmer activated...")
-    trim_all_files_to_recipes()
 
 
 def copy_master_to_data_location():
@@ -115,6 +51,51 @@ def execute_commands(args):
         exit(-1)
 
 
+def gather_random_recipes(recipe_file_path, num_recipes, seed=None):
+    """
+    Gathers num_recipes recipes from the file at recipe_file_path. The
+    particular recipes gathered will be uniformly random with no replacement.
+    An optional seed can be given to ensure the same recipes will be given
+    each call, assuming the same file path.
+    @param recipe_file_path: The path to the recipe file. The recipe file must
+                             be already preprocessed to have its recipes separated
+                             by the recipe separator from the config file.
+    @param num_recipes: The number of recipes to give back
+    @param seed: The random seed to use. Should be an integer or None.
+    @return: A list of recipes, which are just strings of whatever happen
+             to be between the file's recipe separator tags.
+    """
+    total_num_recipes = myio.count_occurrences(recipe_file_path, config.NEW_RECIPE_LINE.lower())
+
+    if total_num_recipes < num_recipes:
+        err_msg = "num_recipes cannot exceed the actual total number of recipes " +\
+                  "in the recipe file given to gather_random_recipes. You passed in " +\
+                  str(num_recipes) + ", but there are only " + str(total_num_recipes) +\
+                  " recipes in the recipe file."
+        raise ValueError(err_msg)
+    elif total_num_recipes == num_recipes:
+        debug.debug_print("num_recipes equals the total number of recipes in the " +\
+                          "recipe file. This is a little irregular, as this means that " +\
+                          "the 'random' recipes will actually just be ALL of the recipes.")
+        recipe_indeces = [i for i in range(0, num_recipes + 1)]
+    else:
+        # Generate the recipe indeces that we should gather:
+        random.seed(seed)
+        recipe_indeces = []
+        while len(recipe_indeces) != num_recipes:
+            next_index = None
+            while next_index in recipe_indeces or next_index is None:
+                next_index = random.randint(0, total_num_recipes - 1)
+            recipe_indeces.append(next_index)
+
+    recipes = []
+    for index in recipe_indeces:
+        recipe = trimmer._get_recipe_at_index(index, recipe_file_path)
+        recipes.append(recipe)
+
+    return recipes
+
+
 def run_unit_tests():
     """
     Run the unit tests for the preprocessor.
@@ -134,5 +115,75 @@ def trim_all_files_to_recipes():
     debug.debug_print("Calling trim_all_files_to_recipes...")
     debug.assert_value_is_set(config.DATA_DIRECTORY, "config.DATA_DIRECTORY")
     trimmer._trim_all_files_to_recipes()
+
+
+
+
+
+def __do_pipeline(args):
+    """
+    Respond to the request to do the entire preprocessor pipeline.
+    @param args: ArgParse object
+    @return: void
+    """
+    __do_reset(args)
+    __do_trim(args)
+    __do_tabulate_ingredients(args)
+
+
+def __do_reset(args):
+    """
+    Respond to the request to reset data.
+    Reset the data directory from the given master copy location.
+    @param args: ArgParse object
+    @return: void
+    """
+    print("Reseting files...")
+    prep_global._sanitize_input(args, "MOVER", "DATA")
+    if args.reset:
+        config.MASTER_DATA_DIRECTORY = args.reset[0]
+        config.DATA_DIRECTORY = args.reset[1]
+    else:
+        config.MASTER_DATA_DIRECTORY = args.prep[0]
+        config.DATA_DIRECTORY = args.prep[1]
+    debug.debug_print("Mover activated...")
+    copy_master_to_data_location()
+
+
+def __do_tabulate_ingredients(args):
+    """
+    Respond to the request to tabulate ingredients.
+    Take each data file and combine it, then parse the combination
+    down into the unique ingredients used by each recipe as well as
+    a list of all the ingredients used by all the recipes.
+    @param args: ArgParse data
+    @return: void
+    """
+    prep_global._sanitize_input(args, "TRIMMER", "DATA")
+    if args.tabulate:
+        config.DATA_DIRECTORY = args.tabulate
+    else:
+        config.DATA_DIRECTORY = args.prep[1]
+    print("Creating IngredientsTable and saving it to disk...")
+    trimmer._prepare_tabulate_ingredients()
+    ing_table = ingredients_table.IngredientsTable(config.UNIQUE)
+    config.INGREDIENT_TABLE_PATH = ingredients_table.save_to_disk(ing_table)
+
+
+def __do_trim(args):
+    """
+    Respond to the request to trim data.
+    If the data directory is valid, trim the xml files down to their recipes.
+    @param args: ArgParse object
+    @return: void
+    """
+    print("Trimming the xml files to recipes...")
+    prep_global._sanitize_input(args, "TRIMMER", "DATA")
+    if args.trim:
+        config.DATA_DIRECTORY = args.trim
+    else:
+        config.DATA_DIRECTORY = args.prep[1]
+    debug.debug_print("Trimmer activated...")
+    trim_all_files_to_recipes()
 
 

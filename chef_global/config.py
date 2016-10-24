@@ -9,8 +9,8 @@ are marked to be changed programmatically. Please pay attention.
 CLUSTERS = "tmp/clusters"
 
 # The directory wherein we can find the data for the chef
-# @programmatic
-DATA_DIRECTORY = None
+# @programmatic/manual - can be overwritten by user, but default is manually set
+DATA_DIRECTORY = "tmp"
 
 # The dataframe
 # @manual
@@ -41,12 +41,12 @@ NEW_COOKBOOK_LINE = "NEW_COOKBOOK______________________________LINE"
 NEW_RECIPE_LINE = "NEW_RECIPE__________________________________LINE"
 
 # The unique.txt ingredient file path
-# @programmatic
-UNIQUE = ""
+# @programmatic/manual - will overwrite with user input
+UNIQUE = "tmp/unique.txt"
 
 # The unique_within.txt ingredient file path
-# @programmatic
-UNIQUE_WITHIN = ""
+# @programmatic/manual - will overwrite with user input
+UNIQUE_WITHIN = "tmp/unique_within.txt"
 
 # The unit test banner to print around a unit test start and ending
 # @manual

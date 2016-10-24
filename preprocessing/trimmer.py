@@ -23,43 +23,6 @@ ingredient_file_name = "unique.txt"
 within_file_name = "unique_within.txt"
 
 
-def __unit_test(test_data, answer_data, test_name, test_function, *args):
-    """
-    Test framework for trimmer functions.
-    @param test_data: the data to test test_function on by writing to
-                      a test file and having the function read it.
-    @param answer_data: The data that should come out after the test
-    @param test_name: the name of the test
-    @param test_function: the function to test. It MUST take a file as its
-                          first parameter.
-    @param args: any other arguments to the test_function after the file
-                 name
-    @return: void
-    """
-    debug.print_test_banner(test_name, False)
-    dummy_file_path = test_name + ".test"
-
-    myio.write_list_to_file(dummy_file_path, test_data)
-
-    if len(args) > 0:
-        l = [dummy_file_path]
-        l.extend(args)
-        func_args = tuple(l)
-        test_function(*func_args)
-    else:
-        test_function(dummy_file_path)
-
-    dummy_file = open(dummy_file_path, 'r')
-    for i, line in enumerate(dummy_file):
-        result = (line.rstrip() == answer_data[i])
-        res = "passed" if result else "FAILED"
-        print("Test " + str(i) + ": " + res + " " + "expected: " + answer_data[i] +
-                    " --> got: " + line.rstrip())
-    dummy_file.close()
-    os.remove(dummy_file_path)
-
-    debug.print_test_banner(test_name, True)
-
 
 def _clean_ingredient_test():
     """
@@ -73,6 +36,140 @@ def _clean_ingredient_test():
                   "really good stuff", "wieners (the best you can get)", "(cookies)",
                    "peanut butter, bathed in clams", "money", ""]
     __unit_test(test_data, clean_data, "clean_ingredient", __clean_ingredient_file)
+
+
+def _get_recipe_at_index(index, recipe_file_path):
+    """
+    Gets all the lines between new recipe tag at index - 1
+    to new recipe tag at index from the recipe_file given.
+    @param index: The index of the new recipe tag.
+    @param recipe_file_path: The recipe file to look through.
+    @return: The lines.
+    """
+    print("Recipe file: " + str(recipe_file_path))
+    recipe_file = open(recipe_file_path, 'r')
+    line_location = 0
+
+    # First, read the file until we find the new recipe tag at index - 1
+    if index == 0:
+        # if index is 0, just use the start of the file as index - 1
+        pass
+    else:
+        count_of_new_file_line = 0
+        # Read the file until we find the right new recipe line
+        print("Looking for new recipe index " + str(index - 1) + "...")
+        while count_of_new_file_line != index - 1:
+            for line in recipe_file:
+                line_location += 1
+                if line.strip() == config.NEW_RECIPE_LINE.lower():
+                    count_of_new_file_line += 1
+                    if count_of_new_file_line == index - 1:
+                        print("Found right index at file line " + str(line_location))
+                        break
+    recipe_file.close()
+
+    print("Now retrieving lines...")
+    number_of_lines = myio.get_number_of_lines(recipe_file_path)
+    recipe_file = open(recipe_file_path, 'r')
+    print("Spooling to line " + str(line_location) + " out of a total " + str(number_of_lines))
+    recipe = []
+    found = False
+    for line_number, line in enumerate(recipe_file):
+        if found:
+            print("Gathering ingredient: " + str(line.strip()) + " at line " + str(line_number))
+            if line.strip() == config.NEW_RECIPE_LINE.lower():
+                recipe_file.close()
+                print("Found the recipe. Returning: ")
+                print(str(recipe))
+                return recipe
+            else:
+                recipe.append(line.strip())
+        elif line_number == line_location:
+            found = True
+            print("Found line " + str(line_location))
+
+    # If we have gotten here, something went wrong
+    raise ValueError("Logic error. There's a bug in this method.")
+
+
+def _prepare_tabulate_ingredients():
+    """
+    Parses the ingredients out of each file (which may or may not be trimmed, but
+    trimmed files are more likely to produce results, and it will be faster) and produces
+    two files: a unique.txt and a unique_within.txt, which are the unique ingredients
+    and the recipe ingredients with duplicates within each recipe removed.
+    After this method, the unique.txt can be used to tabulate all the ingredients and do
+    basic statistics on it.
+    @return: void
+    """
+    print("Parsing ingredients...")
+    prep._apply_func_to_each_data_file(__parse_ingredients, print_info=True)
+
+    print("Cleaning ingredients...")
+    __clean_ingredient_file()
+
+    print("Replacing 'yelk' with 'yolk'...")
+    myio.find_replace(__ing_tmp, "yelk", "yolk")
+
+    print("Removing duplicate ingredients...")
+    __remove_duplicates_between_bounds(__ing_tmp, config.NEW_RECIPE_LINE.lower(),
+                                        [config.NEW_RECIPE_LINE.lower()])
+
+    print("Collapsing obvious plurals...")
+    __remove_plurals(__ing_tmp)
+
+    print("Removing blank lines...")
+    myio.strip_file(__ing_tmp)
+
+    # Now make a unique_within.txt that is all the recipes with duplicate
+    # ingredients removed and a unique.txt, which is all the unique ingredients
+    print("Creating a unique_within.txt and a unique.txt...")
+    os.rename(__ing_tmp, within_file_name)
+    shutil.copy(within_file_name, ingredient_file_name)
+    __remove_duplicates_between_bounds(ingredient_file_name, "SUPER_FAKE_BOUND", [])
+    myio.find_replace(ingredient_file_name, config.NEW_RECIPE_LINE.lower(), "")
+    myio.strip_file(ingredient_file_name)
+
+    # Now tell the config file where you put the ingredient files
+    config.UNIQUE = ingredient_file_name
+    config.UNIQUE_WITHIN = within_file_name
+
+
+def _remove_duplicates_between_bounds_test():
+    """
+    Unit test for __remove_duplicates_between_bounds.
+    """
+    test_data =   ["cream", "pie", "cream pie", "cream", "butter", "TEST_BOUND", "cream",
+                   "cream", "pie", "butter", "cheese", "TEST_BOUND", "TEST_BOUND",
+                   "money", "dollars", "children", "children", "children", "dollars"]
+    answer_data = ["cream", "pie", "cream pie", "",      "butter", "TEST_BOUND", "cream",
+                   "",      "pie", "butter", "cheese", "TEST_BOUND", "TEST_BOUND",
+                   "money", "dollars", "children", "", "", "", ""]
+
+    __unit_test(test_data, answer_data, "remove_duplicates",
+                __remove_duplicates_between_bounds, "TEST_BOUND", ["TEST_BOUND"])
+
+
+def _remove_plurals_test():
+    """
+    Test for __remove_plurals method.
+    @return: void
+    """
+    test_data = ["money", "moneys", "moneys", "money", "fun", "funds", "funs"]
+    answer_data = ["money", "", "", "money", "fun", "funds", ""]
+    __unit_test(test_data, answer_data, "remove_plurals", __remove_plurals)
+
+
+def _trim_all_files_to_recipes():
+    """
+    Trims away all the non-recipe, non-ingredient stuff from the data files.
+    @return: void
+    """
+    prep._apply_func_to_each_data_file(__trim_non_recipe, print_info=True)
+
+
+
+
 
 
 def __clean_ingredient_file(f=None):
@@ -183,22 +280,6 @@ def __parse_ingredients(cookbook_file_path):
                          __ing_tmp, append=True, keep=config.NEW_RECIPE_LINE)
 
 
-
-def _remove_duplicates_between_bounds_test():
-    """
-    Unit test for __remove_duplicates_between_bounds.
-    """
-    test_data =   ["cream", "pie", "cream pie", "cream", "butter", "TEST_BOUND", "cream",
-                   "cream", "pie", "butter", "cheese", "TEST_BOUND", "TEST_BOUND",
-                   "money", "dollars", "children", "children", "children", "dollars"]
-    answer_data = ["cream", "pie", "cream pie", "",      "butter", "TEST_BOUND", "cream",
-                   "",      "pie", "butter", "cheese", "TEST_BOUND", "TEST_BOUND",
-                   "money", "dollars", "children", "", "", "", ""]
-
-    __unit_test(test_data, answer_data, "remove_duplicates",
-                __remove_duplicates_between_bounds, "TEST_BOUND", ["TEST_BOUND"])
-
-
 def __remove_duplicates_between_bounds(file_path, bound, exceptions):
     """
     Searches the file at file_path for bounds, treating the start of the file
@@ -244,16 +325,6 @@ def __remove_duplicates_between_bounds(file_path, bound, exceptions):
     for line in all_lines_to_keep:
         f.write(line)
     f.close()
-
-
-def _remove_plurals_test():
-    """
-    Test for __remove_plurals method.
-    @return: void
-    """
-    test_data = ["money", "moneys", "moneys", "money", "fun", "funds", "funs"]
-    answer_data = ["money", "", "", "money", "fun", "funds", ""]
-    __unit_test(test_data, answer_data, "remove_plurals", __remove_plurals)
 
 
 def __remove_plurals(file_path):
@@ -329,59 +400,42 @@ def __trim_non_recipe(cookbook_file_path):
     os.remove(tmp_path)
 
 
-def _prepare_tabulate_ingredients():
+def __unit_test(test_data, answer_data, test_name, test_function, *args):
     """
-    Parses the ingredients out of each file (which may or may not be trimmed, but
-    trimmed files are more likely to produce results, and it will be faster) and produces
-    two files: a unique.txt and a unique_within.txt, which are the unique ingredients
-    and the recipe ingredients with duplicates within each recipe removed.
-    After this method, the unique.txt can be used to tabulate all the ingredients and do
-    basic statistics on it.
+    Test framework for trimmer functions.
+    @param test_data: the data to test test_function on by writing to
+                      a test file and having the function read it.
+    @param answer_data: The data that should come out after the test
+    @param test_name: the name of the test
+    @param test_function: the function to test. It MUST take a file as its
+                          first parameter.
+    @param args: any other arguments to the test_function after the file
+                 name
     @return: void
     """
-    print("Parsing ingredients...")
-    prep._apply_func_to_each_data_file(__parse_ingredients, print_info=True)
+    debug.print_test_banner(test_name, False)
+    dummy_file_path = test_name + ".test"
 
-    print("Cleaning ingredients...")
-    __clean_ingredient_file()
+    myio.write_list_to_file(dummy_file_path, test_data)
 
-    print("Replacing 'yelk' with 'yolk'...")
-    myio.find_replace(__ing_tmp, "yelk", "yolk")
+    if len(args) > 0:
+        l = [dummy_file_path]
+        l.extend(args)
+        func_args = tuple(l)
+        test_function(*func_args)
+    else:
+        test_function(dummy_file_path)
 
-    print("Removing duplicate ingredients...")
-    __remove_duplicates_between_bounds(__ing_tmp, config.NEW_RECIPE_LINE.lower(),
-                                        [config.NEW_RECIPE_LINE.lower()])
+    dummy_file = open(dummy_file_path, 'r')
+    for i, line in enumerate(dummy_file):
+        result = (line.rstrip() == answer_data[i])
+        res = "passed" if result else "FAILED"
+        print("Test " + str(i) + ": " + res + " " + "expected: " + answer_data[i] +
+                    " --> got: " + line.rstrip())
+    dummy_file.close()
+    os.remove(dummy_file_path)
 
-    print("Collapsing obvious plurals...")
-    __remove_plurals(__ing_tmp)
-
-    print("Removing blank lines...")
-    myio.strip_file(__ing_tmp)
-
-    # Now make a unique_within.txt that is all the recipes with duplicate
-    # ingredients removed and a unique.txt, which is all the unique ingredients
-    print("Creating a unique_within.txt and a unique.txt...")
-    os.rename(__ing_tmp, within_file_name)
-    shutil.copy(within_file_name, ingredient_file_name)
-    __remove_duplicates_between_bounds(ingredient_file_name, "SUPER_FAKE_BOUND", [])
-    myio.find_replace(ingredient_file_name, config.NEW_RECIPE_LINE.lower(), "")
-    myio.strip_file(ingredient_file_name)
-
-    # Now tell the config file where you put the ingredient files
-    config.UNIQUE = ingredient_file_name
-    config.UNIQUE_WITHIN = within_file_name
-
-
-def _trim_all_files_to_recipes():
-    """
-    Trims away all the non-recipe, non-ingredient stuff from the data files.
-    @return: void
-    """
-    prep._apply_func_to_each_data_file(__trim_non_recipe, print_info=True)
-
-
-
-
+    debug.print_test_banner(test_name, True)
 
 
 

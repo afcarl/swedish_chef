@@ -2,6 +2,8 @@
 Module to provide a place to gather my random io functions.
 """
 
+import mmap
+import re
 import os
 import pickle
 import chef_global.debug as debug
@@ -22,21 +24,30 @@ def append_to_file(src_path, dest_path):
     dest.close()
 
 
+def count_occurrences(path, item):
+    """
+    Counts how many times the given item occurs in the
+    given file and returns that number.
+    @param path: The path to the file of interest
+    @param item: A regular expression to find.
+    @return: The number of times the given item occurs.
+    """
+    with open(path, 'r') as f:
+        data = mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ)
+        re_item = re.compile(item.encode("utf-8"))
+        all_matches = re.findall(re_item, data)
+        return len(all_matches)
+
+
 def file_contains(path, item):
     """
-    Opens the path and searches the file for the item.
-    If it exists, returns True, otherwise False.
+    Opens the path and searches the file for the given
+    regex. If it exists, returns True, otherwise False.
     @param path: The file path
-    @param item: The item to search for
-    @return: bool
+    @param item: The regular expression to search for
+    @return: True if item is in file, otherwise False
     """
-    f = open(path, 'r')
-    for line in path:
-        if item in line:
-            f.close()
-            return True
-    f.close()
-    return False
+    return len(count_occurrences(path, item)) > 0
 
 
 def find_replace(file_path_to_search, to_replace, replace_with):
@@ -91,6 +102,21 @@ def get_lines_between_tags(file_path, tag):
         else:
             next_yield.append(line.rstrip())
     f.close()
+
+
+def get_number_of_lines(path):
+    """
+    Gets the total number of lines in the file.
+    @param path: The path to the file
+    @return: The number of lines in the file
+    """
+    num_lines = 0
+    f = open(path, 'r')
+    for line in f:
+        num_lines += 1
+    f.close()
+
+    return num_lines
 
 
 def load_pickle(path):
