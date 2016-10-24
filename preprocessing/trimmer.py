@@ -46,7 +46,7 @@ def _get_recipe_at_index(index, recipe_file_path):
     @param recipe_file_path: The recipe file to look through.
     @return: The lines.
     """
-    print("Recipe file: " + str(recipe_file_path))
+    debug.debug_print("Recipe file: " + str(recipe_file_path))
     recipe_file = open(recipe_file_path, 'r')
     line_location = 0
 
@@ -57,36 +57,36 @@ def _get_recipe_at_index(index, recipe_file_path):
     else:
         count_of_new_file_line = 0
         # Read the file until we find the right new recipe line
-        print("Looking for new recipe index " + str(index - 1) + "...")
+        debug.debug_print("Looking for new recipe index " + str(index - 1) + "...")
         while count_of_new_file_line != index - 1:
             for line in recipe_file:
                 line_location += 1
                 if line.strip() == config.NEW_RECIPE_LINE.lower():
                     count_of_new_file_line += 1
                     if count_of_new_file_line == index - 1:
-                        print("Found right index at file line " + str(line_location))
+                        debug.debug_print("Found right index at file line " + str(line_location))
                         break
     recipe_file.close()
 
-    print("Now retrieving lines...")
+    debug.debug_print("Now retrieving lines...")
     number_of_lines = myio.get_number_of_lines(recipe_file_path)
     recipe_file = open(recipe_file_path, 'r')
-    print("Spooling to line " + str(line_location) + " out of a total " + str(number_of_lines))
+    debug.debug_print("Spooling to line " + str(line_location) + " out of a total " + str(number_of_lines))
     recipe = []
     found = False
     for line_number, line in enumerate(recipe_file):
         if found:
-            print("Gathering ingredient: " + str(line.strip()) + " at line " + str(line_number))
+            debug.debug_print("Gathering ingredient: " + str(line.strip()) + " at line " + str(line_number))
             if line.strip() == config.NEW_RECIPE_LINE.lower():
                 recipe_file.close()
-                print("Found the recipe. Returning: ")
-                print(str(recipe))
+                debug.debug_print("Found the recipe. Returning: ")
+                debug.debug_print(str(recipe))
                 return recipe
             else:
                 recipe.append(line.strip())
         elif line_number == line_location:
             found = True
-            print("Found line " + str(line_location))
+            debug.debug_print("Found line " + str(line_location))
 
     # If we have gotten here, something went wrong
     raise ValueError("Logic error. There's a bug in this method.")

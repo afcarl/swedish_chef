@@ -47,58 +47,70 @@ def train_models():
 #    plt.show()
     # TODO
 
-def __generate_linkage(recipes, table):
+def __generate_linkage(recipes, table, testing=False):
     """
     Generate the hierarchical linkage matrix by the clustering algorithm.
+    @param recipes: A list of recipe objects
+    @param table: An IngredientsTable object containing all the ingredients
+                  found in the list of recipes.
+    @param testing: Whether to use any files found on disk/overwrite
+                    those files. If not, temporary ones will be created.
     """
-    print("Generating the variables column...")
+    print("Generating the variables heading...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
+    debug.debug_print("Variables: " + str(variables))
 
     print("Generating the labels column...")
     labels = [ingredient for ingredient in table.get_ingredients_list()]
+    debug.debug_print("Labels: " + str(labels))
 
     print("Retrieving scipy version of sparse matrix...")
-    sparse_matrix = __retrieve_sparse_matrix(recipes, labels).tocoo()
+    sparse_matrix = __retrieve_sparse_matrix(recipes, labels, testing).tocoo()
+    debug.debug_print("Sparse matrix: " + str(sparse_matrix))
 
     print("Retrieving dense representation of matrix...")
-    matrix = __retrieve_matrix(sparse_matrix)
+    matrix = __retrieve_matrix(sparse_matrix, testing)
+    debug.debug_print("Dense matrix: " + str(matrix))
 
     print("Retrieving dataframe...")
-    df = __retrieve_dataframe(matrix, variables, labels)
+    df = __retrieve_dataframe(matrix, variables, labels, testing)
+    debug.debug_print("Data frame: " + str(df))
 
     print("Generating row_clusters (takes about 3 or 4 hours)...")
     row_clusters = linkage(pdist(df, metric="euclidean"), method="complete")
 
-    return row_clusters
+    return row_clusters, labels
 
 
 
-def __retrieve_dataframe(matrix, variables, labels):
+def __retrieve_dataframe(matrix, variables, labels, testing=False):
     """
     Returns the given matrix as a dataframe or else finds one on the disk.
     """
     # Can't pickle an object this big. Use HDF5 instead if
     # important.
-#    if os.path.isfile(config.DATA_FRAME):
+#    if not testing and os.path.isfile(config.DATA_FRAME):
 #        df = myio.load_pickle(config.DATA_FRAME)
 #        print("Found data frame.")
 #    else:
 #        print("Generating dataframe...")
 #        df = pd.DataFrame(matrix, columns=variables, index=labels)
-#        print("Saving dataframe...")
-#        myio.save_pickle(df, config.DATA_FRAME)
+#        if not testing:
+    #        print("Saving dataframe...")
+    #        myio.save_pickle(df, config.DATA_FRAME)
     print("Generating dataframe...")
     df = pd.DataFrame(matrix, columns=variables, index=labels)
     return df
 
 
-def __retrieve_matrix(sparse_matrix):
+def __retrieve_matrix(sparse_matrix, testing=False):
     """
     Retrieves a dense (numpy) representation of the sparse matrix.
     @param sparse_matrix: The matrix
+    @param testing: If True, generate a new matrix and don't save it.
     @return: The numpy array
     """
-#    if os.path.isfile(config.MATRIX):
+#    if not testing and os.path.isfile(config.MATRIX):
 #        # This is too big on the disk - you might consider
 #        # using HDF5 if this gets to be a problem
 #        matrix = myio.load_pickle(config.MATRIX)
@@ -106,13 +118,14 @@ def __retrieve_matrix(sparse_matrix):
 #    else:
 #        print("Generating dense matrix...")
 #        matrix = sparse_matrix.toarray()
-#        myio.save_pickle(matrix, config.MATRIX)
+#        if not testing:
+#            myio.save_pickle(matrix, config.MATRIX)
     print("Generating dense matrix from sparse one...")
     matrix = sparse_matrix.toarray()
     return matrix
 
 
-def __retrieve_sparse_matrix(recipes, ingredients):
+def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
     """
     Retrieves a sparse matrix representation of the recipes and ingredients.
     That is, retrieves a sparse matrix of the form:
@@ -123,9 +136,11 @@ def __retrieve_sparse_matrix(recipes, ingredients):
     it on the disk.
     @param recipes: All of the recipes
     @param ingredients: All of the ingredients
+    @param testing: Whether to find a matrix on the disk or generate a tmp one.
+                    True to generate a tmp one.
     @return: the matrix
     """
-    if os.path.isfile(config.MATRIX_SPARSE):
+    if not testing and os.path.isfile(config.MATRIX_SPARSE):
         sparse_matrix = myio.load_pickle(config.MATRIX_SPARSE)
         print("Found sparse matrix.")
     else:
@@ -135,8 +150,9 @@ def __retrieve_sparse_matrix(recipes, ingredients):
                     for ingredient in tqdm(ingredients)]
         print("  |-> Generating the matrix from the rows...")
         sparse_matrix = sparse.vstack(rows)
-        print("Pickling the sparse matrix...")
-        myio.save_pickle(sparse_matrix, config.MATRIX_SPARSE)
+        if not testing:
+            print("Pickling the sparse matrix...")
+            myio.save_pickle(sparse_matrix, config.MATRIX_SPARSE)
     return sparse_matrix
 
 
@@ -243,9 +259,6 @@ def __training_test():
 
         ingredients = set(ingredients)
 
-        print("Saving " + str(tmp_recipes))
-        print("Ingredients: " + str(ingredients))
-
         # Save the temporary recipe file
         unique_within = "tmp/unique_within.TEST"
         myio.write_list_to_file(unique_within, tmp_recipes)
@@ -259,9 +272,21 @@ def __training_test():
 
         # Now put the chosen recipes into a reasonable format
         recipes = __generate_recipes(table, unique_within)
+        print("Generated the following recipes: ")
+        for r in recipes:
+            print(str(r))
 
         # Now generate the hierarchical linkage from the ingredients
-        linkage = __generate_linkage(recipes, table)
+        linkage, labels = __generate_linkage(recipes, table, testing=True)
+
+        # Now do something interesting with the linkage
+        print("Generating dendrogram...")
+        row_dendr = dendrogram(linkage, labels=labels)
+
+        print("Plotting it...")
+        plt.tight_layout()
+        plt.ylabel("Euclidean Distance")
+        plt.show()
 
         # Clean up
         os.remove(unique_within)
