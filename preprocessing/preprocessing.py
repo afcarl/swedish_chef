@@ -3,6 +3,7 @@ This module provides the API functions for the preprocessing suite of tools
 for the chef. ALL API functions for this package are in this file.
 """
 
+from tqdm import tqdm
 import myio.myio as myio
 import random
 import statistics.ingredients_table as ingredients_table
@@ -80,6 +81,7 @@ def gather_random_recipes(recipe_file_path, num_recipes, seed=None):
         recipe_indeces = [i for i in range(0, num_recipes + 1)]
     else:
         # Generate the recipe indeces that we should gather:
+        print("    |-> Generating the indeces...")
         random.seed(seed)
         recipe_indeces = []
         while len(recipe_indeces) != num_recipes:
@@ -89,7 +91,8 @@ def gather_random_recipes(recipe_file_path, num_recipes, seed=None):
             recipe_indeces.append(next_index)
 
     recipes = []
-    for index in recipe_indeces:
+    print("    |-> Retrieving those recipes...")
+    for index in tqdm(recipe_indeces):
         recipe = trimmer._get_recipe_at_index(index, recipe_file_path)
         recipes.append(recipe)
 

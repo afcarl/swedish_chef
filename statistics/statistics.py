@@ -235,7 +235,8 @@ def __training_test():
         print("The training test could not be run, because there is no unique_within file.")
         print("Please generate a unique_within file by running the preprocessor pipeline.")
     else:
-        num_recipes = 10
+        num_recipes = 100
+        print("Gathering the " + str(num_recipes) + " random recipes...")
         random_recipes = \
             preprocessor.gather_random_recipes(config.UNIQUE_WITHIN, num_recipes, seed=245)
 
