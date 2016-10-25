@@ -253,7 +253,6 @@ salmon
 mushroom
 orange
 stewed mushrooms
-yolk of 1 egg
 yolk of the egg
 lettuce
 dandelion
@@ -1224,13 +1223,11 @@ ale
 lemon's juice
 raspberry syrup
 applejack
-juice of 1 lemon
 fruit syrup
 applejack brandy
 lime juice
 porter
 stout
-juice of 1 lime
 apollinaris water
 batavia arrack
 jamaica rum
@@ -1260,7 +1257,6 @@ vanilla cordial
 kuemmel
 bourbon whiskey
 santa cruz
-juice of 6 lemons
 guinness stout
 vermouth
 sloe gin
@@ -1277,9 +1273,6 @@ giner ale
 whiskey
 boker's or angostura bitters
 plain soda
-juice of 2 limes
-peeled rinds of 5 lemons
-juice of 12 lemons
 lemon skin
 lemon or lime juice
 seltzer or apollinaris water
@@ -1289,9 +1282,7 @@ cut loaf sugar
 cognac brandy
 pineappple syrup
 california sherry
-juice of 1 orange
 california wine
-juice 1 lime
 old bourbon whiskey
 sweet soda
 catawba wine
@@ -1302,17 +1293,13 @@ grape fruit
 strawberry syrup
 sparkling wine
 claret wine
-juice of 25 lemons
 chartreuse (green)
-white of 1 egg
 cusenier grenadine
 sir robert burnette's old tom gin
 sweet catawba
 new england rum
 preserved peach
-juice of 24 lemons
 sweet and dry catawba
-juice of 1/2 lemon
 lemonade
 cordial
 ice cream
@@ -1334,12 +1321,9 @@ apricot brandy
 anricontine
 old tom gin
 acid phosphate
-yolks of 20 eggs
-juice 1/2 lime
 grape fruit juice
 gordon gin
 calamus root
-juice of 1/2 of a lime
 pineapple juice
 rock candy syrup
 bevo
@@ -1352,8 +1336,6 @@ old country club brandy
 berncastler berg
 cook's imperial champagne
 hungarian apricot brandy
-juice of 1/2 lime
-juice 1/2 lemon
 imported club soda
 burnette's tom gin
 juice of a lime
@@ -1365,7 +1347,6 @@ curacao
 yellow chartreuse
 dr. siegert's genuine angostura bitters
 juice of the lemons and oranges
-rind of 1 orange
 orange water
 crystal ice
 remsen scotch whiskey
@@ -1989,7 +1970,6 @@ sour cream or buttermilk
 melted lard
 white corn meal
 rice or grits
-yolks of 3 eggs
 meal made from the white corn
 home-made yeast
 butter or nice sweet lard
@@ -2013,13 +1993,11 @@ spanish chestnuts
 chicken stock
 clams and use the meat and liquor
 lean of coarse beef
-stock from 1 chicken
 chicken soup
 green pepper
 cans of okra
 minced parsley
 can of oysters
-fil&#233;e powder
 black and cayenne pepper
 clear stock
 beef stock
@@ -2047,11 +2025,9 @@ white fish
 can of salmon
 tomato catsup or worcestershire sauce
 hot toast
-can of oysters or 1 dozen fresh oysters
 tabasco sauce
 loaf of bread
 oysters fried
-pickles or 1 dozen olives
 hot fried oysters
 pickles or olives
 cracker-dust
@@ -2072,9 +2048,7 @@ boiled, or roasted chicken
 liquor on for the mushrooms
 fresh pork
 white sauce
-cr&#233;me
 dissolved gelatine
-white sauce for cr&#233;me de volaille
 raw chicken
 champignons in their own liquor
 can of truffles
@@ -2086,9 +2060,7 @@ ground turkey heart
 veal stock
 can of champignons
 liquor from the peas
-breast of 1 large chicken
 bread, soaked in cream
-yolks of 5 eggs
 timbale sauce
 cream or chicken stock
 stale bread-crumbs
@@ -2102,7 +2074,6 @@ chicken or brains
 liquor from the broiler
 liquor the chicken
 light-colored celery-leaves or fringed celery
-yolks of 2 raw eggs
 hot boiling lard
 chicken or hen
 cold boiled chicken
@@ -2131,7 +2102,6 @@ soda water
 powdered allspice
 sirloin of beef
 roast
-juice from 1 quart of tomatoes
 ground allspice
 apple or sweet potato
 green parsley or watercress
@@ -2140,15 +2110,12 @@ ground black pepper
 pig's head
 green tomato catsup
 old biscuit or light bread soaked in the gravy the beef was cooked in
-yolks of 3 hard-boiled eggs
 terrapin
 sherry or madeira wine
 lean veal
 raw ham
 shredded candied orange
 cooked meat
-yolks of 4 eggs
-tomato pur&#233;e
 boiled meats, or meats served in jelly
 boudins
 champignons
@@ -2160,10 +2127,8 @@ boiling hot water
 cream, or rich milk
 tarragon
 cold chicken or meats
-yolks of 2 hard-boiled eggs
 can of tomatoes
 bay-leaf
-meats or entr&#233;es
 ground mace
 mutton gravy
 dry beans
@@ -2173,13 +2138,10 @@ head of cabbage
 grated parmesan cheese
 cracker powder
 ears of sweet corn
-new milk (or use 1/2 milk and cream)
 egg-plant
-yolks of 6 hard-boiled eggs
 grated cracker
 cream sauce
 cold boiled hominy
-cream (or 1 pint of new milk
 butter)
 grated biscuit
 tomato dressing
@@ -2207,11 +2169,9 @@ rich cream, sour or sweet
 lemon juice or vinegar
 dry mustard
 vinegar, or lemon juice
-yolks of 6 eggs
 strawberry preserves
 wine or sherry
 raisins or cherries
-juice of 5 lemons and 1 orange
 waxy macaroons
 crushed macaroons
 maple syrup
@@ -2219,21 +2179,16 @@ melted chocolate
 crystallized fruit or candied fruit
 candied citron
 maraschino cordial
-yolks 12 eggs
-yolks of 12 eggs
 spanish chestnuts or equal in common chestnuts
 waxy meringues
 morning's milk
-juice of 5 oranges
 orange juice with the grated rind of one orange
-juice and the rind of 1 lemon
 cold
 cans of pineapple or two ripe pineapples
 pure fruit coloring
 rich whipped cream
 almond extract
 rum, or some rum and sherry mixed
-juice of 3 oranges and 1 lemon
 old jamaica rum
 lemon sherbet or ice
 creme de mint
@@ -2241,12 +2196,7 @@ creme de mint cherries
 juice from fresh grapes
 lemons, juice only
 berries to make a quart of juice
-juice of 3 lemons
 strong lemonade
-whites of 4 eggs
-juice of 3 oranges
-juice of 6 oranges
-sweet and 1 ounce of bitter almonds
 foundation of pastry
 whipped cream, or a very rich ice cream
 polonaise
@@ -2254,12 +2204,8 @@ boiling
 vanilla or rose water)
 pippin apples
 juice of lemon
-juice of 4 lemons
-whites of 3 eggs
 english walnuts or cream nuts
 cocoanut cake
-crushed shells of 2 eggs
-whites of 2 eggs
 yolks of two well-beaten eggs
 cake of chocolate
 frozen whipped cream
@@ -2269,8 +2215,6 @@ cranberries, or cherries
 raw crust
 eggs--yolks only
 whites for a meringue
-juice of 2 lemons
-juice and rind of 2 lemons
 seeded raisins
 lemons, grated rind and juice
 brandy or good whisky
@@ -2281,11 +2225,8 @@ pear preserves
 ginger preserves
 dried peaches, stewed
 yolks of the three eggs
-meringue of whites of 2 eggs
 boiled sweet potato
-juice and grated rind of 1 lemon
 rich pastry
-yolks of 8 eggs
 whites as a meringue
 rich sweet cream
 wine or whisky
@@ -2294,12 +2235,9 @@ preserved fruit
 bars of chocolate
 grated vanilla chocolate
 rich sauce
-whites of 6 eggs
-eggs (3 whites, 2 yolks)
 lemon or whisky
 rich sauce for cottage pudding
 cream or sauce
-grated rind of 1 orange or lemon
 hard sauce
 lemon or nutmeg
 raisins or currants
@@ -2307,7 +2245,6 @@ almonds or pecans
 heavy whipped cream
 whisky or brandy
 bread-crumbs or flour
-grated peel and juice of 2 lemons
 conserved oranges
 shredded beef suet
 gravy from the roast-beef pan
@@ -2319,7 +2256,6 @@ pudding
 brown caramel sugar
 whisky or wine
 bitter almond essence
-whites of 12 eggs
 icing sugar
 blackberry jam or preserves
 lemons (juice)
@@ -2333,8 +2269,6 @@ fine lard
 milk (skimmed)
 royal baking-powder
 pulverized cinnamon
-whites of 7 eggs
-yolks of 7 eggs
 mace or allspice
 thick icing
 juice of fresh lemon
@@ -2346,10 +2280,8 @@ powdered sugar or powdered cinnamon
 liquor-any kind preferred
 sponge layer cake
 sour milk or cream
-hard-boiled yolks of 10 eggs
 vanilla or cinnamon
 pistachio nut
-white of 12 eggs
 extract of almond
 light-brown sugar
 almonds in the shell
@@ -2365,7 +2297,6 @@ pulverized chocolate
 or rich milk
 ground coffee
 fresh-roasted coffee
-liquor (say 3 of good whisky and 2 of jamaica rum)
 eggs, using only the yolks
 fine, straight, old kentucky bourbon whisky
 sprigs of mint
@@ -2373,13 +2304,10 @@ dry, cracked flint ice
 syrup of sugar
 dry champagne
 well-drawn tea
-rind and juice of 1 lemon
-rind and juice of 1 orange
 lemons, juice
 crushed ice
 old whisky
 strong tea
-grated rind of 1 lemon
 syracuse rum
 apple brandy
 peach-stones
@@ -2424,8 +2352,6 @@ alum water
 clear water
 heads of cabbage
 black mustard
-green peppers, or 1 spoon of cayenne
-ginger or 2 tablespoons ground ginger
 ginger pears
 plain cream
 pastry puffs
@@ -2452,13 +2378,9 @@ prepared cocoa
 cooking brandy
 fruit juice
 lemon syrup
-juice 3 lemons
-juice 8 lemons
 mint leaves
 chopped pineapple
 tea infusion
-juice 5 lemons
-juice 5 oranges
 maraschino cherries
 canton ginger
 yeast cake
@@ -2472,10 +2394,6 @@ quaker rolled oats
 rye-meal
 granulated corn-meal
 arlington meal
-white 1 egg
-yolk 1 egg
-yolks 2 eggs
-whites 2 eggs
 extract lemon
 confectioners' sugar
 raised muffin mixture
@@ -2524,7 +2442,6 @@ milk toast
 grated mild cheese
 buttered egg
 lard, pork, ham, or bacon fat
-yellow b&#233;chamel sauce
 tomato or white sauce
 white sauce i
 devilled ham
@@ -2551,12 +2468,10 @@ hot boiled rice
 turkey carcass
 white stock i. or ii
 baker's small stale loaf
-yolks 3 hard boiled eggs
 breast meat from a boiled chicken
 white stock i., ii., or iii
 marrowfat peas
 chicken meat
-yolks 4 eggs
 white stock ii. or iii
 white stock i., ii.,or iii
 egg yolk
@@ -2572,8 +2487,6 @@ egg balls
 force-meat balls
 beef, poorer part of round
 liquor in which a fowl
-consomm&#233
-parmesan p&#226;tes &#224; chou
 italian pastes
 flageolets
 poached egg
@@ -2600,11 +2513,8 @@ pilot bread
 liquor drained from bones
 clam water
 liver of lobster
-yolks 2 hard boiled eggs
 raw egg yolk
 mock turtle soup
-yolks 3 eggs
-p&#226;te au chou mixture
 raw fish
 cold flaked salmon
 fish force-meat
@@ -2625,20 +2535,16 @@ egg sauce i. or ii
 hollandaise sauce
 scrod
 cucumber or horseradish sauce
-ma&#238;tre d'h&#244;tel butter
 drawn butter, egg or hollandaise sauce
 shrimp sauce
 mushroom liquor
-sauce &#224; l'italienne
 oyster sauce
 hollandaise sauce i
 lobster sauce
-sauce b&#233;arnaise
 shad roe
 tomato sauce i. and ii
 hollandaise sauce ii
 brown sauce i
-b&#233;chamel sauce
 yolks of two hard boiled eggs
 welsh rarebit
 fish or chicken force-meat
@@ -2649,7 +2555,6 @@ chopped mushrooms
 terrapin meat
 entrails
 eggs of terrapin
-terrapin &#224; la baltimore
 yolks two eggs
 toast or puff paste points
 cold flaked fish
@@ -2691,13 +2596,11 @@ mushroom sauce
 tomato and mushroom sauce
 sirloin steak
 fillets of beef
-chestnut pur&#233;e
 fried potato balls
 sauce trianon
 lean raw beef
 shallot
 lean beef, cut from round
-grated rind 1/2 lemon
 brown mushroom sauce i
 chicago butt
 sirloin or rib roast
@@ -2740,7 +2643,6 @@ leg of mutton
 poultry seasoning
 currant jelly sauce
 loins containing ribs
-pur&#233;e of chestnuts
 fore-quarter of mutton
 steamed rice
 lamb from the fore-quarter
@@ -2749,7 +2651,6 @@ cold roast lamb
 buttered cracker
 remnants of cooked lamb
 table sauce
-cro&#251;tons
 potato border
 cold lamb gravy
 worcestershire, harvey, or elizabeth sauce
@@ -2820,7 +2721,6 @@ celery-salt
 cold cooked sliced chicken
 boiled macaroni or rice
 white, brown, or tomato sauce
-whites 2 hard boiled eggs
 stale soft bread crumbs
 white mushroom sauce
 buttered graham toast
@@ -2829,10 +2729,8 @@ remnants of cold roast turkey
 turkey meat
 cold roast turkey
 cold roast duck
-velout&#233; sauce
 yolk one egg
 brown sauce i. or ii
-juice 2 oranges
 espagnole sauce
 uncooked ham
 hot sauce
@@ -2849,10 +2747,8 @@ cooked flowerets from a small cauliflower
 gherkin
 artichoke
 boiling, salted, acidulated water
-b&#233;chamel or hollandaise sauce
 boiled artichokes
 batter i
-hollandaise or b&#233;chamel sauce
 chicken force-meat i. or ii
 boiled asparagus
 buttered or milk toast
@@ -2876,11 +2772,9 @@ softened bread crumbs
 round radishes
 boiled spinach
 fried egg-plant i
-yolk 1 hard boiled egg
 tomato pulp
 new french turnips
 buttered dry toast
-brown or b&#233;chamel sauce
 hot boiled potatoes
 riced potatoes
 creamed meat or fish
@@ -2894,7 +2788,6 @@ cold mashed potato
 creamed potatoes
 potatoes au gratin
 french loaf
-yolks 5 eggs
 stock in which a fowl has been cooked
 yolk of another egg
 yolk of hard boiled egg
@@ -2944,7 +2837,6 @@ chocolate cream filling
 fruit preserve
 preserve
 quince marmalade
-gruy&#232;re cheese
 rice croquette mixture
 grated rind one-half lemon
 tomato cream sauce
@@ -2959,26 +2851,20 @@ cold boiled macaroni
 allemande sauce
 creamed oysters, chicken, sweetbreads, or chicken and sweetbreads
 salmon force-meat
-lobster, b&#233;chamel, or hollandaise sauce i
 boiled spaghetti
 lobster sauce ii
 fish force-meat i
 creamed lobster
-lobster or b&#233;chamel sauce
 lobster shell
 chicken force-meat i
 creamed chicken and mushrooms
-b&#233;chamel or yellow b&#233;chamel sauce
 breast and second joints of uncooked chicken
-supr&#234;me or b&#233;chamel sauce
 buttered scallop shells
 crab shells
 reserved liquor
 chicken force-meat
 breasts of three partridges
-supr&#234;me sauce
 old english or young america cheese
-cheese souffl&#233; mixture
 cooked peaches
 macaroon dust
 peach syrup
@@ -2987,7 +2873,6 @@ cooked pears
 pear syrup
 creamed vegetables
 creamed fish
-whites 4 eggs
 creamed oysters
 oysters in brown sauce
 creamed sweetbreads
@@ -2998,7 +2883,6 @@ cooked ham
 swiss cheese
 american cheese
 white meat
-juice 1 lemon
 meat stock
 vegetable or chicken salad
 aspic jelly mixture
@@ -3015,13 +2899,11 @@ brioche dough
 cerealine
 pearl tapioca
 baker's loaf
-grated rind and juice of 1/2 lemon
 hard or creamy sauce
 hard or cream sauce i
 vanilla or hard sauce
 orange sauce
 creamy or foamy sauce
-grated rind and juice 1 lemon
 lemon rind and juice
 fruit pulp, peach, apricot, or quince
 hot fruit pulp
@@ -3032,9 +2914,7 @@ warm apple sauce
 grated rind one lemon
 strawberry sauce
 sterling sauce
-juice and rind 2 oranges
 blood oranges
-grated rind and juice 1/2 lemon
 irish moss
 irish moss blanc-mange
 yellow sauce i. or ii
@@ -3044,7 +2924,6 @@ sweet oranges
 meringue i
 baked apples
 apple pulp
-whites 5 eggs
 caramel sauce
 juice one orange
 grated rind and juice one-half lemon
@@ -3062,20 +2941,12 @@ spanish cream
 pounded macaroons
 cooked prunes
 thin and heavy cream
-whip from 3 1/2 cups thin cream
-grated rind 1 orange
-whip from 3 1/2 cups cream
 orange jelly
 orange trifle mixture
-whip from 3 cups cream
 sugar caramelized
 ginger syrup
-whip from 2 1/2 cups cream
 whip
 orange juice and pulp
-whites 3 egg
-whip from 2 cups &gt;cream
-whip from 2 cups cream
 charlotte russe mixture
 lemon, grated rind and juice
 orange baskets
@@ -3087,9 +2958,7 @@ whip from two cups cream
 coarse rock salt
 cool water
 grated rind and juice of two oranges
-cr&#234;me de menthe cordial
 burnett's leaf green
-cura&#231;oa
 rind one lemon
 grated rind two oranges
 angelica wine
@@ -3103,9 +2972,7 @@ dried brown bread crumbs
 hickory nut
 pistachio ice cream
 claret sauce
-whites 6 eggs
 brandied peaches
-yolks 7 eggs
 cream whip
 delmonico ice cream
 sherbet
@@ -3125,7 +2992,6 @@ evaporated apples
 cream filling
 sugar dates
 rolled common crackers
-grated rind 1 lemon
 rind and juice of lemon
 grated rind of lemon
 meringue iii
@@ -3137,7 +3003,6 @@ boiled cider
 stock in which meat was cooked
 barberry jelly
 steamed and strained squash
-juice and grated rind 1 lemon
 sweet and sour milk
 puff or plain paste
 parmesan and edam cheese
@@ -3149,9 +3014,7 @@ remnants of puff paste
 raspberry jam
 mince meat
 fine granulated
-meringue glac&#233;e mixture
 nut meat
-meringues glac&#233;es
 chicken fat tried out and clarified
 yellow ginger
 nut meat, hickory or english walnut
@@ -3162,8 +3025,6 @@ flavoring
 brown paper
 cooked frostings
 hot or cold cake
-yolks 6 eggs
-whites 10 eggs
 frozen desserts
 lady finger mixture
 bread dough
@@ -3179,15 +3040,12 @@ porto rico molasses
 pecan meat
 jelly (apple
 cold boiled coffee
-meat from 1 lb. pecans
 corn-starch cake mixture
 prune almond filling
 marshmallow cream
 fig filling
-fig &#233;clair mixture
 whites six eggs
 white frosting
-whites 8 eggs
 orange extract
 sponge cake mixture
 cream cakes
@@ -3195,11 +3053,8 @@ cream cake mixture
 strawberry cream filling
 melted fondant
 opera caramel frosting
-yolks 10 eggs
 coffee extract
 white one egg
-grated rind 2 lemons
-grated rind 1/2 orange
 chopped walnuts
 lemon juice and rind
 corn-starch cake
@@ -3213,7 +3068,6 @@ candied violets
 pound cake mixture
 almond paste
 macaroon mixture
-white 1 small egg
 cinnamon bar mixture
 glucose
 castanea nuts
@@ -3244,10 +3098,8 @@ halves of walnuts
 halves of pecan
 maple
 bonbons
-glac&#233; nuts
 mandarins
 grape
-syrup made as for glac&#233; nuts
 frozen creams and ices
 white, entire wheat, graham, or brown bread
 whites of hard boiled eggs
@@ -3262,9 +3114,7 @@ yolks and whites of hard boiled eggs
 anchovies
 crab mixture
 puff paste points
-yolks 4 hard boiled eggs
 cold boiled flaked fish
-ma&#238;tre d' h&#244;tel or lemon butter
 brown bread sandwiches
 mild soft cheese
 lager beer
@@ -3273,7 +3123,6 @@ cold boiled corned tongue
 cold cooked ham
 cold cooked mutton
 cooked mutton
-yolks 6 hard boiled eggs
 drumsticks, second joints, and wings of a cooked chicken
 chutney
 german toast
@@ -3301,7 +3150,6 @@ stale bread toasted
 preserved tamarinds
 concord grapes
 flaxseed
-juice 1 orange
 lime water
 wheat coffee
 steak from top of round
@@ -3466,7 +3314,6 @@ corn flour
 fig
 white figs
 beef marrow
-peel of 1 orange
 beef-suet
 extract of bitter almond
 bitter almond extract
@@ -3480,14 +3327,12 @@ white skin
 glue
 lemon leaves
 walnuts and hickory nuts
-yolks of 5 eggs, whites
 peel of an orange
 almond and citron
 lemon icing
 almonds in boiling water
 mixed cloves
 mixed mace
-whites of 10 eggs
 cream butter
 lemon and nutmeg
 molasses fruit
@@ -4498,7 +4343,6 @@ corner
 drippings from sugar hogsheads
 rinsings of molasses barrels
 drippings of sugar hogsheads
-small beer, lager beer, ale, &#38;c., which have become sour
 small beer
 acetic acid
 rain water
@@ -4561,7 +4405,6 @@ simple syrup
 oils of wintergreen and sassafras
 oil or extract of lemon
 loaf or crushed sugar
-extract of lemon, orange, rose, pine-apple, peach, sarsaparilla, strawberry, &#38;c
 super-carbonate of soda
 extract of nutmeg
 oils of other fruits
@@ -4596,7 +4439,6 @@ oswego corn starch
 stalks
 juice of tomatoes
 white currant
-alcohol of 98 per cent
 root
 rye whisky
 lawton blackberry
@@ -4624,9 +4466,7 @@ white coarsely-pulverized sugar
 whites and yolks
 skim milk
 pork gravy
-whites of 1 doz. eggs
 english currants
-whites of 8 eggs
 soda-saleratus
 lively yeast
 indian corn bread
@@ -4646,8 +4486,6 @@ ear
 apple-juice
 sugar syrup
 black-berry
-oil of lemon 1 oz
-peel of 2 lemons
 magnesia
 distilled water
 oil globules
@@ -4810,24 +4648,14 @@ oolong
 lung sue
 gyukura
 pearl dews
-sak&#233
 rice wine
-walter baker &#38; co.'s premium no. 1 chocolate
 condensed milk
-walter baker &#38; co.'s vanilla chocolate
 plain chocolate
-walter baker &#38; co,'s breakfast cocoa
-walter baker &#38; co,'s premium no. 1 chocolate
-walter baker &#38; co.'s premium no. 1chocolate
-walter baker &#38; co.'s chocolate
 white-and-brown mixture
-walter baker &#38; co's premium no. 1 chocolate
-walter baker &#38; co.'s premium no.1 chocolate
 yellow rind
 vanilla icing
 hot icing
 hot chocolate
-walter baker &#38; co.'s no. 1 premium chocolate
 shaved chocolate
 soaked gelatine
 sea-moss farina
@@ -4835,18 +4663,13 @@ cooled milk
 soft cream
 vanilla cream sauce
 walter baker and co.'s chocolate
-chocolate creams, no. 2
-walter baker &amp; co.'s premium no. 1 chocolate
 creamed sugar
 dissolved chocolate
 cream chocolate caramels
 chocolate coating
 chocolate cones
-walter baker &#38; co.'s soluble chocolate
 chocolate syrup
-walter baker &#38; co.'s cocoa
 baker's cracked cocoa
-walter baker &#38; co.'s vanilla sweet chocolate
 unsweetened whipped cream
 rich pie crust
 chocolate filling
@@ -4868,7 +4691,6 @@ smoking-hot fat
 sifted powdered sugar
 blanched and ground almonds
 soft paste
-walter baker &#38; co.'s breakfast cocoa
 unsweetened chocolate
 stiff yet pliable paste
 unbeaten
@@ -4906,7 +4728,6 @@ french candied fruit
 unbuttered bread
 pecan nut meats
 maple or brown sugar
-baker's premium no. 1 chocolate
 pure corn syrup
 paraffine
 whole milk
@@ -5101,7 +4922,6 @@ egg bread
 wild raspberries
 cranberry-syrup
 cocoanut milk
-whites of 5 egg
 almond macaroons
 coriander
 caraway
@@ -5323,7 +5143,6 @@ oil of lavender
 turkey rhubarb
 pastes for lozenges
 liquid colour
-pastes for peppermint lozenges from no. 1 to 4
 spanish juice
 liquorice
 treble-refined sugar
@@ -5429,7 +5248,6 @@ elder flowers
 preserved dried fruits
 prepared conchineal
 citron peel
-essence of c&#233;drat
 rind of a fresh citron
 rind of of a lemon
 custard cream
@@ -5467,7 +5285,6 @@ jamaica or china ginger
 rectified spirit
 dried leaves
 cake or residue of the almonds
-peel of oranges, lemons, or c&#233;drats
 coloured sugars
 pastes for meringues
 light icing
@@ -5489,7 +5306,6 @@ bronze
 confectioners' or almond pastes
 rock sugar
 caramel sugar
-papier m&#226;ch&#233;e
 common gum-paste
 cork
 flocks
@@ -5533,7 +5349,6 @@ rosemary
 yellow rind of lemon and orange peels
 orris-root
 myrtle
-balm-meliss&#230
 rosemary flowers
 lavender flowers
 black wild cherries
@@ -5549,10 +5364,8 @@ treble refined sugar
 spirit of rosemary
 essence of bergamot
 balm water
-essence of c&#233;drats and citrons
 neroli
 oil of rosemary
-of c&#233;drats
 of neroli
 of bergamot
 yellow peel of seville oranges
@@ -6703,7 +6516,6 @@ powdered florence iris
 angelica powder
 kirshwasser
 bohemian angelica roots
-sugar au grand perl&#233
 angelica leaves
 red anise
 green anise
@@ -6711,7 +6523,6 @@ egg-water
 green aniseed
 pistachio nuts blanched
 timbale paste
-pur&#233;e of apples
 spirits of lemon
 apricots, peel
 fine apricots
@@ -6978,10 +6789,7 @@ bread stuffing
 fine corn meal
 bacon grease
 essence of mushrooms
-sauce no. 13
 spanish mackerel
-sauce a l'aurore no. 14
-sauces no. 13 and no. 3
 dressed celery
 toasted, well-buttered bread
 oyster paste
@@ -6994,7 +6802,6 @@ livers of three or four turkeys, or geese
 fat ham
 livers of veal or fowl
 liquor in which the fowl was cooked
-butter sauce no. 10
 pompano
 spawn of a lobster
 white soup stock
@@ -7013,7 +6820,6 @@ gravy-soup
 tarragon leaves
 gravy made from the bones of the minced meat
 liver forcemeat
-veal consom&#233
 celery leaves
 pepper (black and red)
 gravy made from the bones, etc., of the veal
@@ -7025,7 +6831,6 @@ acid or piquant sauce
 salsifies
 fat round of beef
 pickled capers
-caper sauce no. 11
 hind quarter of lamb or mutton
 celery, oyster, or egg sauce
 boiled tongue or ham
@@ -7048,7 +6853,6 @@ fat veal dressing
 turkey giblets
 puree of celery
 gravy from the duck
-brown duck sauce no. 1
 mashed and seasoned irish potatoes
 broth or gravy made from veal, or from water in which the ducks or chickens have been boiled
 sage and onion stuffing
@@ -7073,7 +6877,6 @@ squashes
 smoked meat
 drawn butter or white sauce
 cream gravy
-white sauce no. 10
 whites and yolks of six eggs
 vingar
 white-heart lettuce
@@ -7103,7 +6906,6 @@ carbonate soda
 plum or currant jelly
 lemon, rose, or vanilla extracts
 any delicate extract
-whites of 17 eggs
 powdered volatile salts
 thick milk
 rind of a grated lemon
@@ -7619,17 +7421,14 @@ large hominy
 small hominy
 of bread
 juice of a tomato
-sal&#230;ratus
 small bunch cymling
 long striped pumpkin, with a thick long neck
 potato pumpkin
 turnip beet
 winter beet
 common flour
-sal&#230;ratus water
 hop-water
 shortened flour
-powdered sal&#230;ratus
 white of a fresh egg
 light rising
 soft boiled rice
@@ -7781,7 +7580,6 @@ borax
 mustard flour
 raspberry syrup (red)
 anisette (white)
-orange cura&#231;oa
 maraschino (white)
 brandy (golden)
 california prunes
@@ -8694,7 +8492,6 @@ yolks of three eggs, boiled hard
 common stock
 bones and remains of the fowls
 juice of one can of clams
-ma&#238;;tre d' hotel butter
 juice of one-half a lemon
 juice of one-half lemon
 tomato ketchup
@@ -8704,8 +8501,6 @@ pepper (cayenne)
 liquor of three terrapins
 terrapin juice
 meat of one terrapin
-no. 2 can of deviled crabs
-liquor from crosse &#38; blackwell's chow-chow
 eschalot vinegar
 boiling butter
 sweet table butter
@@ -8714,7 +8509,6 @@ whites of the boiled eggs
 filets of beef
 fat pickled pork
 minced salt pork
-224; la jardiniere
 stock with half the juice from the can of mushrooms
 filet of beef
 cauliflower blossoms
@@ -8906,12 +8700,9 @@ shell beans
 creamed peas
 dover egg
 salad greens
-yolk 1/2 egg
-yolks 2 "hard-boiled" eggs
 hard-boiled" egg
 boiled dressing
 red radishes
-neufch&#226;tel cheese
 crisp lettuce leaves
 quince or apple jelly
 orange or quince marmalade
@@ -8921,7 +8712,6 @@ apple tapioca
 cup popped corn
 canned peach
 holly bearing berries
-white of 1/2 egg
 steamed custard
 canned pear
 wine jelly mixture
@@ -8940,7 +8730,6 @@ lemon cup
 dried apricot sauce
 grape seeds
 hamburg cream
-white 1/2 egg
 skimmed cream
 saccharine
 gluten food
@@ -8954,7 +8743,6 @@ mushroom caps
 lambchops
 sauce fineste
 water-cress
-roquefort and neufch&#226;tel cheese
 flaked cod
 cucumber cubes
 saccharine tablet
@@ -8999,7 +8787,6 @@ butter substitute
 toast triangles
 chicken or turkey broth
 green or wax beans
-juice of 1/4 lemon
 salted, boiling water
 canned peas and beans
 yellow corn meal
@@ -9066,10 +8853,8 @@ sauce cardinal
 sauce homard
 sauce crevette
 juice of the fish
-maitre d'h&#244;tel
 sauce mayonnaise
 sauce remoulade
-juice of 1/6 of the lemon
 brook trout
 hashed parsley
 heads, bones, and parings of the fillets
@@ -9094,7 +8879,6 @@ salted cod
 steak of sturgeon
 white and red pepper
 cooked lobsters
-tails and the claws of 2 cooked lobsters
 juice of the mushrooms
 pepper, white and red
 red and white pepper
@@ -9123,7 +8907,6 @@ sauce bordelaise
 beef (tenderloin, roll or steak)
 olives (pickled)
 echalotte
-pat&#233; de foie gras
 beef (shoulder pieces)
 beef (steak)
 beef (shoulder, rump, round, etc.)
@@ -9162,7 +8945,6 @@ teragon vinegar
 ham (cold boiled)
 gerkins
 fried potato
-gravy (no. 193) of the tenderloin
 saussage
 kidney beans (white)
 riz a la georgienne
@@ -9172,7 +8954,6 @@ pintado hen
 pintado
 young ducks
 leaf lard
-juice of 1/6 of a lemon
 pickling
 sauce poivrade
 gravy of the saddle
@@ -9236,7 +9017,6 @@ sage leaf
 gravy of the fish
 balls made of fish
 horse
-sauce, no. 31
 pease-pudding
 buttered turnips
 boiled greens
@@ -9955,7 +9735,6 @@ sheep's-tail
 ox>-tail
 sheep's-neck
 white-pepper
-gruy&#232;re
 pine-apple cheese
 herb-broth
 fish-broth
@@ -9998,7 +9777,6 @@ blue-fish
 hake
 pollack
 torsk
-b&#233;chamel
 hollandaise
 vinaigrette
 oiled paper
@@ -10045,7 +9823,6 @@ porter-house steak
 steaks of venison
 horse-radish butter
 poivrade
-ma&#238;tre d'h&#244;tel
 tartar
 fillets of bacon
 calf's-kidney
@@ -10080,7 +9857,6 @@ canadian hare
 hare's liver
 prairie-chicken
 prairie hen
-proven&#231;ale
 skunk
 buttered or oiled paper
 robert
@@ -10286,7 +10062,6 @@ trout steaks
 fat fish
 fillet of carp
 potatoes and lettuce
-yolks of 10 eggs
 fish lard
 fish rice
 butter wheat bread toast
@@ -10312,7 +10087,6 @@ eggs flour
 almonds or vanilla
 brussels rice
 wine cream sauce
-yolks of 9 eggs
 wheat bread sugar
 mace crab butter
 whites of hte eggs
@@ -10340,7 +10114,6 @@ lemon and cloves
 wings head
 feet stock
 wine jellies
-peel of 3 lemons
 wine jelly of gelatine
 currant syrup
 wine wine
@@ -10352,7 +10125,6 @@ pineapple cream
 swiss cream
 wine cream
 lemon cream
-yolks of 11 eggs
 chocolate milk
 macaroon cream
 apple cream
@@ -10363,7 +10135,6 @@ currant cream
 preserved cranberries
 wild strawberries
 whites of fresh eggs
-whites of 1 egg
 fine wheat bread
 flour butter
 poppy seed milk
@@ -10381,7 +10152,6 @@ preserved sour plums
 potatoes  and beets
 potatoes and veal
 roast pheasant
-yolks of 3 raw eggs
 bacon sauce
 sauce of milk
 white anchovy sauce
@@ -10398,7 +10168,6 @@ head of veal
 cauliflower water
 seasoning of lemon juice
 syrup sauce
-yolk of 1 raw egg
 chives sauce
 pepper eschalots
 sago sauce
@@ -10409,19 +10178,14 @@ juice of preserved berries
 dried sour cherries
 yolks of egg
 farina biscuits
-whites of 9 eggs
 almonds and lemon peel
 cream paste
 dried prune
 lemon and grated bread
 date
 cardamom biscuits
-yolks of 16 eggs
-whites of 13 eggs
-yolks of 15 eggs
 almond syrup
 swiss chocolate bread
-peels of 2 lemons
 muscadine almonds
 almonds with sugar
 peel of a lemon cinnamon
@@ -10474,7 +10238,6 @@ apple wine
 currant vinegar
 corn water
 dried bread
-yolks of 2 egg
 white pea bean
 neck squash
 potato and meat
@@ -10483,7 +10246,6 @@ walnuts catsup
 white hominy
 fruit pound cake
 nut-meats
-whites of 11 eggs
 chocolate jelly
 spice ginger
 fruit ginger
@@ -10517,14 +10279,12 @@ cantaloupe pulp
 boiled soup hen
 fresh-ground black pepper
 sauce au vin blanc
-sauce mad&#232;re
 boiled chestnuts
 stuffing onions
 bermuda
 sauce mornay
 croquettes
 sauce colbert
-velout&#233; of chicken
 force meat of veal
 rind of four lemons
 seedless grapes
@@ -10548,9 +10308,6 @@ cream of chicken
 raspberry ice cream
 pepper berries
 shoulder of salt pork
-sirloin steaksaut&#233
-b&#233;arnaise sauce
-pur&#233;e of tomatoes
 potato croquette
 julienne potatoes
 tartelettes
@@ -10559,22 +10316,15 @@ pink mayonnaise sauce
 flageolet beans
 shoulder and breast of lean lamb
 chutney sauce
-pur&#233;e of white beans
-consomm&#233; tapioca
-cr&#233;ole sauce
 french carrots
 tartelette dough
 bar le duc jelly
 beans in salt water
-fil&#233; sugar
-pur&#233;e of sweet-and-sour bananas
 boiledcelery roots
 spring turnips
 lobster dumplings
 fried egg
 chocolate ice cream
-cr&#232;me &#224; la reine soup
-consomm&#233; brunoise
 potato soup
 julienne of carrots
 broiled tenderloin steak
@@ -10591,7 +10341,6 @@ fried bacon
 broiled tomatoes
 pacific crabs
 cocktail sauce
-233;crevisse butter
 fleurons
 rooster kidneys
 rooster combs
@@ -10602,11 +10351,7 @@ tunny fish
 potatoes and truffles
 french gelatine
 grapefruit
-marron glac&#233
 candied chestnut
-potage cr&#233;cy
-c&#232;pes
-clams cr&#233;ole
 vanilla bavarois
 english muffin
 alaskan fish
@@ -10625,42 +10370,27 @@ cold chili sauce
 leg of young lamb
 fillets of flounder
 juice of one dozen oysters
-onions saut&#233
-potatoes rissol&#233;es
-chestnuts glac&#233; au mad&#232;re
-chestnuts glac&#233
 cream of celery soup
 pacific pompano
 florida pompano
-mushroom pur&#233;e
-pur&#233;e of mushrooms
 rind and juice of six lemons
 juice of three oranges
 rhein wine
 burgundy, moselle wine
-b&#233;n&#233;dictine
 fine champagne
-russian k&#252;mmel
 poulette sauce
 breast of a roasted pheasant
 pheasant breast
 candied mixed fruit
 raspberry water ice
-pur&#233;e of tomato soup
 clam broth
 macaroni in cream
-pur&#233;e de foie gras
-goose liver p&#226;t&#233
-sauce p&#233;rigord
-233;clairs
 fruit tartelettes
 moka cake
 napoleons
 apple turnovers
 pont neuf cakes
 jalousie
-pur&#233;e of peas
-pur&#233;e cr&#233;cy
 goosebreast
 fillets of a sole
 green hollandaise sauce
@@ -10677,19 +10407,10 @@ dry sherry wine
 parboiled salt pork
 stewing chicken
 moka filling
-ma&#238;tre d'h&#244;tel sauce
 frogs' legs
-pur&#233;e of game
-sauce p&#233;rigueux
 reindeer
 shallow sauce
-sauce g&#233;noise
-233;crevisses
-onions glac&#233;s
-strong beef consomm&#233
 colbert
-b&#233;arnaise
-mad&#232;re
 soft pears
 sweet apple sauce
 cream of frogs
@@ -11012,9 +10733,7 @@ sweet almonds with four bitter ones
 candied cedar
 sweet almonds with three bitter
 paste of cinnamon or lemon peel
-sweet almonds with 3 bitter ones
 lady-finger biscuits
-sweet almonds with 10 or 12 bitter ones
 bones of a sirloin of beef
 cow heel
 black onion
@@ -11308,7 +11027,6 @@ orenge flower water
 white and black, mustard seed
 lemon marmalade
 stock-meat
-velont&#233
 red haricot beans
 coffee white sugar
 lemon candied peel
@@ -11639,7 +11357,6 @@ whiskey sauce
 cake, fritters or puddings
 kirsch wine
 pistache
-red cura&#231;oapa
 maraschino liquor
 ice cream salt
 yolk of five eggs
@@ -11660,7 +11377,6 @@ whole cinnamon
 made tea
 ceylon tea
 mint-leaves
-red cura&#231;ao
 whole spice
 sugared cherries
 home-made grape wine
@@ -12143,7 +11859,6 @@ peels of the apples
 fruit; peel
 sugar biscuit
 lemon and seville orange
-white of 7 eggs
 corn and milk
 almond-powder
 pine apple cream
@@ -12181,10 +11896,7 @@ plum cheese
 juice of strawberries
 preserve fruit
 carraway-seed
-yolks of 14 eggs
-white of 5 eggs
 almond bread
-yolks of 18 eggs
 currant buns
 ginger pound cake
 sweet carraway
@@ -12285,7 +11997,6 @@ browned sugar
 hind shin of beef
 beef, from the middle of the round
 eggs, whites and shells
-bones and trimmings from a 6-pound roast of beef
 cold mutton chops
 the flank end of a sirloin steak, uncooked
 cold fried egg
@@ -12312,7 +12023,6 @@ raw sweet corn
 sliced potatoes
 sliced tomatoes
 crisped crackers
-ma&#238;;tre d'h&#244;tel, tartare, tomato, or curry sauce
 stale (not dried) bread crumbs
 seasoned and buttered cracker crumbs
 tomato or hollandaise sauce
@@ -12334,7 +12044,6 @@ rich white stock, either veal or
 rich, highly seasoned brown stock
 coarse bread crumbs
 white sauce made with milk or cream
-yolks 2 raw eggs
 chopped olives
 chopped capers
 chopped cucumber pickles
@@ -12351,8 +12060,6 @@ potted or devilled ham
 chicken or veal gravy
 tip or second cut of the sirloin
 drippings from the beef
-ma&#238;;tre d' h&#244;tel butter
-ma&#238;;tre d' h&#244;tel sauce
 beef from the lower part of the round or face of the rump
 under part of the round of beef
 aitch bone
@@ -12389,7 +12096,6 @@ thick tomato sauce
 well-beaten yolk of one egg
 beaten yolk of one egg
 rich cream cheese
-ma&#238;;tre d'h&#244;tel butter
 leaves and stalks of young beets, milkweed, dandelions, and narrow dock
 canned lima beans
 french turnips
@@ -12436,7 +12142,6 @@ raspberry or pomegranate sherbet
 charlotte russe cream
 plain ice-cream
 tutti frutti
-m&#233;ringue
 blood-red oranges
 sugar, powdered or fine granulated
 extract of lemon or orange
@@ -12449,7 +12154,6 @@ n. o. molasses
 grated meat of two cocoanuts
 hard pears, or "windfalls
 good, sharp vinegar
-rind of 1/2 watermelon
 strongly salted water
 beaten white of one egg
 hecker's farina
@@ -12600,7 +12304,6 @@ cream sugar
 yolks of eggs, whites
 molasses ginger bread
 whites of eggs sugar
-whites of 6 eggs, yolks
 flour fruit
 almond flavoring
 cream yolks
@@ -12646,15 +12349,12 @@ roasted grouse
 green corn from the cob
 white of one raw egg
 young cod
-beurre noir, ma&#238;;tre d' h&#244;tel
 tartare
 sharp
 tomato and curry
 tartare or hollandaise sauce
 solid block of ice
 english bacon
-ma&#238;;tre d' h&#244;tel
-ma&#238;;tre d' h&#244;telbutter
 horse-radish sauce
 sirloin roast
 ham force-meat
@@ -12756,7 +12456,6 @@ canned apricot
 preparation for vanilla ice cream
 cream the same as for vanilla
 meat of walnuts
-strawberry or raspberry sherbet, no. 2
 juice from the pineapple
 juice of twenty oranges
 juice of the pineapple
@@ -12809,7 +12508,6 @@ lambs' or sheep's kidneys
 cold boiled or roasted ham
 potted meat
 haxall flour
-mixture for waffles, no. 2
 jelly (currant or grape
 cold boiled corn
 raw egg, and six hard-boiled
@@ -13103,20 +12801,12 @@ cherry pickle
 cucumber catsup
 catsup of walnuts
 green pickled capers
-whites of 20 eggs
-whites of 16 eggs
-whites of 14 eggs
-whites of 18 eggs
 lemon or brandy
 oil of bitter almond
 pulverized cloves
-yolks of 24 eggs
 almonds and palm nuts
 mountain cocoanut
-whites of 12 eggs, yolks
 lemon and vinegar
-peel of 2 oranges
-whites of 13 eggs, yolks
 white of another egg
 whites of thirteen eggs
 molasses pound cake
@@ -13124,7 +12814,6 @@ ginger bunns
 spice nuts
 dried apple
 preserved damsons
-yolks of 10 eggs; whites
 unboiled custard of milk
 potatoes and milk
 yolks of four eggs, white
@@ -13188,34 +12877,23 @@ dry onions (or green onions
 pressed parsley
 bones, especially from the leg or aitchbone of beef, the tail
 meat trimmings
-tomatoes ............. 3 (or 3 to 4 tablespoonfuls of canned tomatoes)
 cream of wheat
 croutons of fried or well toasted bread
-tomatoes ...... 1, ripe (or 2 to 3 tablespoonfuls of canned tomatoes)
-giblets ............................. of 2 or 3 chickens or turkeys
 chicken, turkey or beef broth
 powdered mint
-tomatoes ........... 3 (or 3 to 4 tablespoonfuls of canned tomatoes)
 chick pea
 wheat starch
-tomatoes ..... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 tarhana
 dry mint
-tomatoes .. 3 to 4, ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
 rice or cracked wheat
 rice or the cracked wheat
 plain water (hot water
-tomatoes .... 4, ripe (or 5 to 6 tablespoonfuls of canned tomatoes)
 heated butter
 blue fish
 mastic
-fat meat ......................... 1/2 pound, of mutton or lamb
 fistuck
 kishnish
 washed rice
-tomatoes .... 2 to 3, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-tomatoes ..... 3 ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
-tomatoes ... 3, ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
 red mulletts
 finely crushed biscuits
 well crushed biscuits
@@ -13230,11 +12908,7 @@ water in which the fish was boiled
 hot butter or olive oil
 juice of one head
 salty water
-ripe tomatoes ....... 3 (or 4 to 5 tablespoonfuls of canned tomatoes)
-ripe tomatoes ....3(or 4 to 5 tablespoonfuls of canned tomatoes)
-ripe tomatoes .......5 (or 6 to 7 tablespoonfuls of canned tomatoes)
 butter or olive oil
-tomatoes .... 3 to 4, ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
 biscuits finely crushed
 yolks of the hard boiled eggs
 boilingsalty water
@@ -13246,129 +12920,53 @@ well-grated balkan cheese
 well-crushed crackers
 minced boiled meat
 shehri
-meat ............................. 1 pound, of lamb or chicken
 fillet of lamb or chicken, or turkey meat
-tomatoes ........ 2 ripe, (2 to 3 tablespoonfuls of canned tomatoes)
 grated hard cheese
-tomatoes .... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 plain boiling water
-meat ........................ 1/2 pound of >lamb or mutton, ground
 broth (or plain water)
-tomatoes .. 2, ripe (or 2 to 3 tablespoonfuls of canned tomatoes)
 fried minced meat
 skinned rabbit
 dripping fat
 butter in which the quail was fried
 turkey or the chicken
-meat ................... 1 pound fillet of beef, mutton or lamb
-meat--2 pounds, beef or mutton or lamb
-meat .................................... 1/2 pound fillet of lamb
 pideh
 fillet of mutton or lamb
 (flat bread)
-meat .......... 1/2 pound fillet of beef, mutton or lamb
-meat .......................... 1/2 pound fillet of beef, mutton or lamb
 fried meat
-meat .................. 1/2 pound fillet of mutton or lamb
-meat ......................... 1 pound fillet of beef, mutton or lamb
 fillet or any kind of meat
-meat ........................... 1 pound fillet of beef, mutton or lamb
-meat ......................... 4 to 6 chops of mutton or lamb
-tomatoes ........ 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-meat ...... 2 pounds of beef, mutton, lamb, turkey, chicken or game
 broiled meat
 toasted bread slices
-fowls .... 1 chicken or wild duck, also pigeon, quail, woodcock, black or golden plover, partridge, pheasant, teal
 dry or green onions
 chicken, or several of the small birds
 plain water--or broth
-meat .................................... 1 pound of mutton or lamb
-meat ...................... 1/2 pound fillet of mutton or lamb
-tomatoes ...... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 plain water to it--or broth
-meat ................ 1/2 pound fillet of mutton or lamb
 liver of the turkey
 fat drippings
-fowls...............1 turkey, 1 chicken, 1 quail and 1 partridge
 fancy vegetable
-quails.... 6 (any other small fowl
-pigeons... 6 (any other small fowl
-meat......... 4 to 5 pounds fillet of beef, mutton or lamb
-tomatoes.... 3 to 4, ripe (or 5 to 6 tablespoonfuls of canned tomatoes)
-meat.......... 2 to 3 pounds of beef, mutton or lamb
-tomatoes...... 2 to 3, ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
-quails.... 2 (any other small fowl
 giblets of the duck
-meat ............................ 1 whole leg of lamb
 liver and the heart of the lamb
 oninons
-head........................ 1, of sheep, lamb, or calf
 juice of onion
-brains ........................ 2 to 3, of lamb or calf
-tongue.... 1 of beef (or 5 to 6 tongues of lamb)
 strong sauce
-tongues............................ 6, of sheep or lamb
 black raisin
-meat..... 3 to 4 pounds, leg, haunch or shoulder of beef, mutton or lamb
-tomatoes....... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-meat......... 3 to 4 pounds, leg, haunch or shoulder of beef, mutton or lamb
-tomatoes.......... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 cold boiled meat
 boiled meat
-tomatoes...........2 to 3, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-head........................... 1, of sheep or lamb
-head...................... 1, of sheep or lamb
-shins..2 to 3 pounds, of sheep, lamb, veal or beef
 shin broth
-meat........... 1 pound, fat, of mutton or lamb
-meat................... 1 pound, of mutton or lamb
-meat........... 1/2 pound, fat, of mutton or lamb
-tomatoes........ 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-meat.... 1/2 pound, fat, of beef, mutton or lamb
-meat....................... 1/2 pound, of lamb
-tomatoes..... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 can of green beans
-meat............. 1/2 pound, fat, of mutton or lamb
-meat......................... 1/2 pound, of lamb
 dry ocra
 juice of the remaining lemon
-tomatoes... 1 to 2, ripe (or 2 to 3 tablespoonfuls of canned tomatoes)
-tomatoes..... 1 to 2, ripe (or 2 to 3 tablespoonfuls of canned tomatoes)
-meat.......1/2 pound, fat, of beef, mutton or lamb
-tomatoes.... 2 to 3, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-meat...... 1 pound, fat, of beef, mutton or lamb
-meat..... 1/2 pound, fat, of beef, mutton or lamb
-meat............... 1 pound, fat, of mutton or lamb
 broth or plain water
-meat.......... 1/2 pound, fat, of mutton or lamb
-tomatoes... 2 to 3, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-meat............ 1/2 pound, fat, of mutton or lamb
-meat................. 1 pound, fat, of mutton or lamb
-minced meat............ 1/2 pound, of lamb
-meat.............. 1 pound, fat, of mutton or lamb
-tomatoes......... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 fava beans
-meat................ 1 pound, fat, of mutton or lamb
-meat............. 1 pound, fat, of mutton or lamb
 broth of the basdi
-meat......... 1/2 pound, fat, of mutton or lamb
-meat................... 1/2 pound, of lamb
-tomatoes ............ 3 to 4 tablespoonfuls of canned tomatoes
-tomatoes...1 to 2, ripe (or 2 to 3 tablespoonfuls of canned tomatoes)
 gravy of the basdi
-meat.......................... 1/2 pound, of lamb
 bulbs of garlic
 butter, or olive oil
 broth (or milk)
 stale bread slices
-tomatoes......3, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
-tomatoes.......2, ripe (or 2 to 3 tablespoonfuls of canned tomatoes)
 can of asparagus
 plain warm water
-tomatoes...... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 plain hot water
 the plain hot water
-tomatoes...... 3, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 plain flour
 burning hot butter
 olive oil (or butter)
@@ -13379,54 +12977,32 @@ sesame extract
 hard cheese (kasher)
 well-gratedhard cheese--kasher
 fresh green peas
-tomatoes...2 to 3, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 fresh green peas (or hard peas
 tomato sauce (ketchup)
 can of peas
-meat................... 1 pound, fat and ground, of lamb or mutton
 dolma" mixture
-tomatoes (or 4 to 5 tablespoonfuls of canned tomatoes)
 tomatoes, cut into small pieces (or three to four tablespoonfuls of canned tomatoes)
 broth, or plain water
 tomatoes (or three to four tablespoonfuls of canned tomatoes)
 juice of two or three ripe tomatoes
 stalk of rhubarb
 oyster shell
-tongues...................... 6, of sheep or lamb
 well-washed rice
-tomatoes........... 2, ripe (or 3 to 4 tablespoonfuls of canned tomatoes)
 cabbage or vegetable marrows, or cucumbers, or eggplants, or leeks
 eggplants (or the vegetable marrows, or the cucumbers)
 eggplants (or cabbage)
-tomatoes..... 2, ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
 plainwater
-meat............ 1 pound, beef, mutton or lamb
 cummin (spice)
-meat............ 1 pound, of beef, mutton or lamb
-meat... 1 pound, boiled, of beef, mutton or lamb
 well crushed crackers or flour
 smoking hot butter
-meat ....... 1 pound, fat, of beef, mutton or lamb
 wine or the tomato juice
-meat...2 pounds, fat, of mutton or lamb
 boulghour--"cracked wheat
 cracked wheat"--boulghour
-meat, minced........ 1/2 pound, of lamb or mutton
-tomatoes... 2 to 3, ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
 pideh" (or toasted slices of bread)
-liver..................1 pound, of lamb or calf
 smoking hot butter, or olive oil
-liver............... 1, whole, of mutton or lamb
-tomatoes... 3 to 4 ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
 butter--or olive oil
-tripe................. 1 pound, of mutton or lamb
 broth of the tripe
-liver................... 1 pound, of calf or lamb
-tomatoes... 3 to 4, ripe (or 4 to 5 tablespoonfuls of canned tomatoes)
-minced meat...... 1/2 pound, of mutton or lamb
-meat..................... 10 pounds, fillet of beef
 sirloin, rump or buttock parts of beef
-meat........... 5 pounds, of beef, mutton or lamb
 well-ground meat
 sheep's gut
 fat of any fried meat or fowl, or the drippings of broiled meat or fowl
@@ -13443,9 +13019,7 @@ heads of garlic, bulbs
 stalk of celery
 boiled white wine
 cogniac or brandy
-eggs ...............................3, the whites of
 powdered sugar or sugar syrup
-eggs ................................6, the yolks of
 shredded flour paste
 shredded paste
 plain sugar or sugar syrup
@@ -13455,8 +13029,6 @@ crushed walnuts
 imrik
 grape or maple syrup
 boiled pears
-chicken ...........................1, the white meat
-eggs ...........................4 to 5, the yolks of
 juice of one (or more) lemon
 fancy candy
 boiled wheat
@@ -13466,8 +13038,6 @@ thread of the rolled orange skins
 crushed strawberries
 mandarin skins .........................the juice of
 juice of the pressed mandarin skins
-pineapple ......................1, medium, the juice
-eggs ...................................5, the yolks
 powdered cream of tartar
 powdered starch
 vanilla or rose water
@@ -13747,7 +13317,6 @@ tomato-pulp
 yolks of four
 rich
 alt
-synonym1="chervil">chevril
 green string-bean pulp
 fritter-beans
 fritter
@@ -13763,9 +13332,6 @@ white or red wine
 pickle, or any kind of fish sauce
 fine or sifted
 bread, or cracker crumbs
-224; la parisienne
-ma&#238;tre-d
-h&#244;telsauce
 juice and the grated rind of half a lemon
 sour wine
 claret or white
@@ -13779,16 +13345,13 @@ lobster, shrimp, or
 coral of
 the lobster
 button
-ma&#238;tre-d'h&#244;tel, pickle
 caper, anchovy, or a horse-radish sauce
 rend="italic">tartare sauce
 acidulated
 herb or a bechamel
-rend="italic">ma&#238;tre-d'h&#244;tel sauce
 tartare or a pickle
 ship-crackers
 tomato or a
-tomato sauce no. 2
 salted corn-meal
 tomato, a
 pickle, or a
@@ -13830,7 +13393,6 @@ port or sherry wine
 loin of beef
 sauce in which the beef was cooked
 american
-rend="italic">jardini&#232;re of vegetables
 fat from
 the top of the water in which the beef is cooked
 french canned mushrooms
@@ -13838,7 +13400,6 @@ fillet of
 loin of
 porter-house-steaks
 juice from the can of mushrooms
-224; la jardini&#232;re
 stuffed
 sweet salad-oil
 cooking-stock
@@ -13866,7 +13427,6 @@ rib cutlets
 cutlets cut from the
 fat salt
 casserole
-rend="italic">ma&#238;tre-d'h&#244;telsauce
 trimmings of
 tomato or bechamel sauce
 tomato or cream sauce
@@ -13888,7 +13448,6 @@ stuffing of cold chicken, tongue, and celery
 rend="italic">mayonnaisedressing
 rend="italic">mayonnaise dressing
 cranberry (see receipt
-page 204), currant, or plum jelly
 currant or plum jelly
 sausage-balls
 boiled, mashed, and seasoned
@@ -13909,7 +13468,6 @@ yellow peel of half a lemon
 bone taken from the leg
 string-beans (haricots verts)
 espagnole or brown sauce
-224; la neige
 lemon-slices
 carbonate
 of ammonia
@@ -13953,10 +13511,8 @@ hearts of the
 cottage
 yolks of the
 fresh or the canned fruit
-fritter batter (no. 1)
 lemon-zest
 fritter batter no
-1 or no. 2
 rend="italic">yellow part of the peel
 juice and grated rind of a fresh lemon
 under-crusts
@@ -13976,8 +13532,6 @@ rend="italic">bechamel or a cream sauce
 shrimp-sauce
 hollandaise, shrimp, pickle, or any
 red and white
-preserved<pb n="244
-id="/projects/cookbooks/coldfusion/display.cfm?id=pcdg&#38;pagenum=250"/>fruit
 patty-shells
 corn-starch pudding described for fried cream
 pits
@@ -14101,7 +13655,6 @@ vanilla, chocolate, and strawberry
 french candied
 or preserved fruits
 whipped and sweetened cream
-pur&#233;e of
 peaches, strawberries, raspberries, or pine-apple
 yolks of twelve
 dried
@@ -14133,7 +13686,6 @@ french canned pease
 triumph" pease
 leg of chicken
 chicken-sauce
-mashed potatoes (&#224; la neige)
 tomato, currant-jelly, or wine
 of milk
 wilson strawberry
@@ -14152,7 +13704,6 @@ melted beef fat
 salt side pork
 bread dice
 heart, liver and neck of chicken, and other fowls
-juice of 2 large tomatoes
 bread and butter
 flour porridges
 wheat flour porridges
@@ -14300,8 +13851,6 @@ or rich sweet milk
 or vanilla extract
 moist
 soda)
-white<pb n="70
-id="/projects/cookbooks/coldfusion/display.cfm?id=pres&#38;pagenum=83"/>sugar
 coddled apples
 rind of
 any kind of fruit, cherries
@@ -14352,7 +13901,6 @@ yellow rind of one orange, grated, and the
 arrow
 oranges, and grated rind of three
 juice of two<pb
-n="91" id="/projects/cookbooks/coldfusion/display.cfm?id=pres&#38;pagenum=120"/>lemons
 juice of eight oranges, and two lemons
 cream, or ice cream
 lemon or peppermint
@@ -14376,7 +13924,6 @@ grated pulp of one
 milk (use that of the
 cocoanut)
 pink<pb
-n="111" id="/projects/cookbooks/coldfusion/display.cfm?id=pres&#38;pagenum=140"/>sugar
 twelve eggs
 sour milk or
 seven eggs
@@ -14391,8 +13938,6 @@ caroway seed
 blanched
 home made yeast
 cinnamon or
-sweet<pb n="122
-id="/projects/cookbooks/coldfusion/display.cfm?id=pres&#38;pagenum=151"/>buttermilk
 cinnamon or caraway
 whites of eight eggs,or four whole ones beaten
 very light
@@ -14536,8 +14081,6 @@ cinnamon-water
 yolks hard
 almond-flour
 hard toasted
-1 teaspoonful of salt
-1 quart of stock
 stock salt
 beans and tomato
 artichoke pulp
@@ -14557,7 +14100,6 @@ potato or rice
 roe herring
 liverpool salt
 salt and boiling water
-1 teaspoonful of kitchen bouquet
 essence of nutmeg
 round of toast
 chopped bouquet
@@ -14643,7 +14185,6 @@ powdered sugar whites of three eggs
 pecan-nuts
 coffee sauce
 lemon or jelly sauce
-lemon souffl&#233
 lemon or ginger sauce
 white of beaten egg
 cider sauce
@@ -14675,10 +14216,7 @@ sausage balls
 chicken custard
 boiling clam
 meat of a chicken
-hot consomm&#233
 rabbit stock
-beef consomm&#233
-yolks of 1 eggs
 chopped chicken
 strong veal
 giblets of a fowl
@@ -14692,12 +14230,10 @@ melted aspic jelly
 almonds and currants
 bayleaves
 forcemeat of bread
-yolk of 2 eggs
 forcemeat of fish
 forcemeat of bread-crumbs
 forcemeat tails
 sauce of tomatoes
-grated gruy&#232;re cheese
 tomatoes or spinach
 lemon and salt pork
 meat of a fowl
@@ -14753,7 +14289,6 @@ custard sauce
 fron
 tignac
 tansy-leaves
-rind of 2 lemons
 melted jam
 red strawberries
 maraschino or kirsch cordial
@@ -14795,10 +14330,7 @@ lungwort
 woodruff
 german rhine wine
 straw-berries
-rind of 6 oranges
 rock candy
-rind of 1 lemon
-rind of 8 oranges
 gooseberry brandy
 wood violets
 pearl wheat
@@ -15155,8 +14687,6 @@ blueberry
 whites eggs
 beef rump
 anise, seed
-white of 3 eggs
-white of 2 eggs
 yolks lemon rind
 walnuts or pecan meats
 black raspberry jam
@@ -15655,7 +15185,6 @@ cabbage and celery
 stalks of tender celery
 mellow apple
 purest olive oil, or melted butter
-california cher&#38;ries, preferably the dark ones,)
 white inside, leaves of head lettuce
 cooked salad dressing
 neufchatel or cream cheese
@@ -16131,29 +15660,23 @@ cream or water
 con-confectioner's sugar
 cold, boiled ham
 cold, boiled potatoes
-uncooked yolk of 1 egg
 boiling hot cider vinegar
 flour, or corn starch
-grated rind of 1 and chopped pulp of 2 lemons
 pistachio or almond extract
 pistachio nuts or almonds
-juice of 4 grapefruits
 raw minced veal
 cheese] (california or ]swiss,)
 mayonnaise or french salad dressing
 potatoes with skins on
 pepper (i use cayenne)
 cream, either sweet or sour
-lemon juice of 12 lemons, and 3 oranges
 home-made bread
 java and mocha, mixed
 meat of one cold, boiled chicken
 cheese (california or swiss,)
 lightly-seasoned mustard
-chicken 4 months old (light brahma preferred,)
 butter of cotto suet
 chopped nuts or raisins
-juice of 3 lemons and thinly-peeled rind of one
 freshly-boiling water
 granulated sugar (white,)
 glycerine
@@ -16164,7 +15687,6 @@ melted white fondant
 white or colored fondant or cream
 wintergreen
 white or colored cream
-a-1 cake of baker's bitter chocolate
 coco butter
 white and colored creams
 bars of cream
@@ -16266,7 +15788,6 @@ drippings from bacon
 vinegar dressing
 pigs feet and hocks
 neuchatel cheese
-yeast no. 2
 graham flour and half white
 bakers' ammonia
 cotosuet
@@ -16368,7 +15889,6 @@ flour rubber
 liquor the chicken was boiled in
 fairchilds' essence of pepsin
 gelatine (knox)
-juice of 8 oranges
 cookies
 mapleine
 bacon or ham fat
@@ -16390,8 +15910,6 @@ liquor from salmon can
 liquor from can
 roundsteak
 beef neck
-juice 4 lemons
-rind 2 lemons
 roast ribs
 cramp-bone
 rib of pork

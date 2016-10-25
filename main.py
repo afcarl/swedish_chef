@@ -30,7 +30,7 @@ def execute_based_on_args(args):
         preprocessor.execute_commands(args)
         return "Preprocessor ran successfully."
 
-    if args.math:
+    if args.train:
         statistics.train_models(args)
         return "Models have been trained"
 

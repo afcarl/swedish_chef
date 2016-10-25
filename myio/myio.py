@@ -24,6 +24,18 @@ def append_to_file(src_path, dest_path):
     dest.close()
 
 
+def copy_file(src, dest):
+    """
+    Overwrites dest with src.
+    """
+    s = open(src, 'r')
+    d = open(dest, 'w')
+    for line in s:
+        d.write(line)
+    s.close()
+    d.close()
+
+
 def count_occurrences(path, item):
     """
     Counts how many times the given item occurs in the

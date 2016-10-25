@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+import time
 import preprocessing.preprocessing as preprocessor
 import matplotlib.pyplot as plt
 import os
@@ -18,17 +19,17 @@ import chef_global.config as config
 from statistics.recipe import Recipe
 
 
-def train_models():
+def train_models(args):
     """
     Trains the models and saves them to disk.
     @param args: ArgParse object
     @return: void
     """
-    it_path = args.math[0]
+    it_path = args.train[0]
     table = it.load_from_disk(it_path)
 
-    unique = args.math[1]
-    unique_within = args.math[2]
+    unique = args.train[1]
+    unique_within = args.train[2]
 
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
@@ -72,12 +73,31 @@ def __generate_linkage(recipes, table, testing=False):
     matrix = __retrieve_matrix(sparse_matrix, testing)
     debug.debug_print("Dense matrix: " + str(matrix))
 
+    print("Running PCA on the matrix to reduce dimensionality...")
+    # TODO
+
+    print("Normalizing row vectors...")
+    # Normalize the row vector (ingredients), so that they
+    # all have the same length, which means that ones that
+    # are in all kinds of recipes will have a much smaller
+    # score in any particular dimension, whereas those
+    # that only show up in a couple of recipes will have very
+    # strong scores in those
+    # TODO
+
+    print("Now scaling the row vectors so that they aren't tiny numbers...")
+    # multiply each vector by like a thousand or something to make for reasonably
+    # sized numbers
+    # TODO
+
     print("Retrieving dataframe...")
     df = __retrieve_dataframe(matrix, variables, labels, testing)
     debug.debug_print("Data frame: " + str(df))
 
     print("Generating row_clusters (takes about 3 or 4 hours)...")
-    row_clusters = linkage(pdist(df, metric="euclidean"), method="complete")
+    print("Started at " + str(time.strftime("%I:%M:%S")))
+    #row_clusters = linkage(pdist(df, metric="euclidean"), method="complete")
+    row_clusters = linkage(pdist(df, metric="jaccard"), method="ward")
 
     return row_clusters, labels
 
@@ -235,7 +255,7 @@ def __training_test():
         print("The training test could not be run, because there is no unique_within file.")
         print("Please generate a unique_within file by running the preprocessor pipeline.")
     else:
-        num_recipes = 100
+        num_recipes = 5
         print("Gathering the " + str(num_recipes) + " random recipes...")
         random_recipes = \
             preprocessor.gather_random_recipes(config.UNIQUE_WITHIN, num_recipes, seed=245)

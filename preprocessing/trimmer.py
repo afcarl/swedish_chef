@@ -3,6 +3,7 @@ This preprocessing module provides all methods associated with
 trimming and parsing the text files of the data.
 """
 
+from tqdm import tqdm
 import os
 import re
 import string
@@ -31,10 +32,11 @@ def _clean_ingredient_test():
     """
     test_data = ["<tag color=blue>blah de bloop</tag>", "most delICIOUS ingredient!",
                  "VERY GOOD PIE", "really good stuff", "wieners (the best you can get)",
-                 "(cookies)", "peanut butter, bathed in clams.", "money...", "..."]
+                 "(cookies)", "peanut butter, bathed in clams.", "money...", "...",
+                 "pie...1/2", "beep"]
     clean_data = ["blah de bloop", "most delicious ingredient", "very good pie",
                   "really good stuff", "wieners (the best you can get)", "(cookies)",
-                   "peanut butter, bathed in clams", "money", ""]
+                   "peanut butter, bathed in clams", "money", "", "", "beep"]
     __unit_test(test_data, clean_data, "clean_ingredient", __clean_ingredient_file)
 
 
@@ -118,6 +120,9 @@ def _prepare_tabulate_ingredients():
     print("Collapsing obvious plurals...")
     __remove_plurals(__ing_tmp)
 
+    print("Removing empty recipes...")
+    __remove_empty_recipes(__ing_tmp)
+
     print("Removing blank lines...")
     myio.strip_file(__ing_tmp)
 
@@ -182,10 +187,13 @@ def __clean_ingredient_file(f=None):
     ing_file = open(__ing_tmp, 'r') if not f else open(f, 'r')
     tmp_tmp = open("tmp_tmp", 'w')
 
+    has_numbers = lambda x: any(char.isdigit() for char in x)
+
     for dirty_ingredient in ing_file:
         debug.debug_print("Cleaning " + str(dirty_ingredient) + "...")
         clean_ingredient = dirty_ingredient
         clean_ingredient = __remove_xml(clean_ingredient)
+        clean_ingredient = "" if has_numbers(clean_ingredient) else clean_ingredient
         clean_ingredient = clean_ingredient.lower()
         clean_ingredient = clean_ingredient.rstrip()
         clean_ingredient = clean_ingredient.strip(
@@ -193,7 +201,7 @@ def __clean_ingredient_file(f=None):
         clean_ingredient = clean_ingredient.lstrip(string.punctuation.replace("(", ""))
         clean_ingredient = clean_ingredient.rstrip(string.punctuation.replace(")", ""))
         clean_ingredient = clean_ingredient + os.linesep
-        debug.debug_print("Writing clean ingredient " + str(clean_ingredient) + "...")
+        debug.debug_print("Writing clean ingredient " + str(clean_ingredient.rstrip()) + "...")
         tmp_tmp.write(clean_ingredient)
     ing_file.close()
     tmp_tmp.close()
@@ -202,8 +210,7 @@ def __clean_ingredient_file(f=None):
     ing_file = open(__ing_tmp, 'w') if not f else open(f, 'w')
 
     for clean_ingredient in tmp_tmp:
-        if clean_ingredient.strip() != "":
-            ing_file.write(clean_ingredient)
+        ing_file.write(clean_ingredient)
     ing_file.close()
     tmp_tmp.close()
     os.remove("tmp_tmp")
@@ -327,6 +334,34 @@ def __remove_duplicates_between_bounds(file_path, bound, exceptions):
     f.close()
 
 
+def __remove_empty_recipes(file_path):
+    """
+    Removes empty recipes from the file at file_path.
+    @param file_path: The path to the ingredient file.
+    @return: void
+    """
+    f = open(file_path, 'r')
+    # Read each line into a buffer,
+    # if you come across a new_recipe line,
+    # and if the line before it was new_recipe_line,
+    # ignore the line
+
+    f_tmp = open(file_path + "TMP_REMOVE_EMPTY", 'w')
+
+    last_line = ""
+    for line in f:
+        if line.strip() == last_line and last_line == config.NEW_RECIPE_LINE.lower():
+            pass
+        else:
+            last_line = line.strip()
+            f_tmp.write(line)
+    f.close()
+    f_tmp.close()
+
+    myio.copy_file(file_path + "TMP_REMOVE_EMPTY", file_path)
+    os.remove(file_path + "TMP_REMOVE_EMPTY")
+
+
 def __remove_plurals(file_path):
     """
     Removes obvious pluarls (those things that end in s, but which have counterparts
@@ -343,7 +378,7 @@ def __remove_plurals(file_path):
     print("    |-> searching for plurals...")
     keep = []
     already_removed = BoolTable()
-    for ingredient in ingredients:
+    for ingredient in tqdm(ingredients):
         item_no_s = None
         already_exists_no_s = False
         if ingredient.endswith("s"):
@@ -393,7 +428,7 @@ def __trim_non_recipe(cookbook_file_path):
     @return: void
     """
     debug.debug_print("Attempting to trim " + str(cookbook_file_path))
-    tmp_path = "tmp"
+    tmp_path = "TEMPORARY_FILE_____"
     __parse_between_tags(cookbook_file_path, "<recipe", "</recipe>",
                                 tmp_path, append=False, append_tag=config.NEW_RECIPE_LINE)
     myio.overwrite_file_contents(tmp_path, cookbook_file_path)
@@ -436,6 +471,5 @@ def __unit_test(test_data, answer_data, test_name, test_function, *args):
     os.remove(dummy_file_path)
 
     debug.print_test_banner(test_name, True)
-
 
 
