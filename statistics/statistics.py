@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+from sklearn.preprocessing import normalize
 import time
 import preprocessing.preprocessing as preprocessor
 import matplotlib.pyplot as plt
@@ -83,15 +84,18 @@ def __generate_linkage(recipes, table, testing=False):
     # score in any particular dimension, whereas those
     # that only show up in a couple of recipes will have very
     # strong scores in those
-    # TODO
+    normalized_matrix = __normalize_rows(matrix)
+    debug.debug_print("Normalized matrix: " + str(pd.DataFrame(normalized_matrix)))
 
     print("Now scaling the row vectors so that they aren't tiny numbers...")
     # multiply each vector by like a thousand or something to make for reasonably
     # sized numbers
-    # TODO
+    scale_factor = 1000
+    scaled_matrix = normalized_matrix * scale_factor
+    debug.debug_print("Scaled matrix: " + str(scaled_matrix))
 
     print("Retrieving dataframe...")
-    df = __retrieve_dataframe(matrix, variables, labels, testing)
+    df = __retrieve_dataframe(scaled_matrix, variables, labels, testing)
     debug.debug_print("Data frame: " + str(df))
 
     print("Generating row_clusters (takes about 3 or 4 hours)...")
@@ -101,6 +105,22 @@ def __generate_linkage(recipes, table, testing=False):
 
     return row_clusters, labels
 
+
+def __normalize_rows(m):
+    """
+    Takes each row from the matrix and normalizes them into a vector
+    of unit length.
+    @param m: The matrix to normalize
+    @return: The matrix, but with each row normalized.
+    """
+    normalized_matrix = []
+    ma = np.matrix(m)
+    for i, row in enumerate(ma):
+        row_flat = row.getA1()
+        normalized_row = row_flat / np.linalg.norm(row_flat)
+        normalized_matrix.append(normalized_row)
+
+    return np.matrix(normalized_matrix)
 
 
 def __retrieve_dataframe(matrix, variables, labels, testing=False):
@@ -182,6 +202,7 @@ def run_unit_tests():
     @return: void
     """
     it.unit_test()
+    __normalize_rows_test()
     __training_test();
 
 
@@ -316,6 +337,36 @@ def __training_test():
     debug.print_test_banner(test_name, True)
 
 
+def __normalize_rows_test():
+    """
+    Tests the normalize rows function.
+    """
+    test_name = "Normalize Rows Test"
+    debug.print_test_banner(test_name, False)
+
+    matrix = [
+                [0, 1, 0],
+                [2, 0, 1],
+                [3, 1, 4],
+                [0, 1, 1]
+             ]
+    expected = [
+                [0, 1, 0],
+                [0.894427, 0, 0.447214],
+                [0.588348, 0.1966116, 0.784465],
+                [0, 0.707107, 0.707107]
+               ]
+
+    matrix = np.matrix(matrix)
+    expected = np.matrix(expected)
+
+    result = __normalize_rows(matrix)
+
+    print("Normalized : " + os.linesep + str(matrix))
+    print("Got back : " + os.linesep + str(result))
+    print("Expected : " + os.linesep + str(expected))
+
+    debug.print_test_banner(test_name, True)
 
 
 
