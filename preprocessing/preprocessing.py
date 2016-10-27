@@ -189,4 +189,26 @@ def __do_trim(args):
     debug.debug_print("Trimmer activated...")
     trim_all_files_to_recipes()
 
+    # Now you have all of the recipes, but in different files
+    # word2vec wants one big recipe file in plain English, so
+    # make that and save it.
+    print("Creating the big recipe file " + config.RECIPE_FILE_PATH)
+    mover._append_all_recipe_files()
+
+    print("Trimming big recipe file...")
+    trimmer._remove_xml_from_file(config.RECIPE_FILE_PATH)
+
+    print("Removing all new_recipe lines from the big recipe file...")
+    myio.find_replace(config.RECIPE_FILE_PATH, config.NEW_RECIPE_LINE, "")
+
+    print("Stripping big recipe file...")
+    myio.strip_file(config.RECIPE_FILE_PATH)
+
+
+
+
+
+
+
+
 

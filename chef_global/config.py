@@ -40,6 +40,15 @@ NEW_COOKBOOK_LINE = "NEW_COOKBOOK______________________________LINE"
 # @manual
 NEW_RECIPE_LINE = "NEW_RECIPE__________________________________LINE"
 
+# The name of the file that will contain all of the recipes in human
+# readable format.
+# @manual
+RECIPE_FILE_NAME = "all_of_the_recipes.txt"
+
+# The path to the recipe file
+# @manual
+RECIPE_FILE_PATH = DATA_DIRECTORY + "/" + RECIPE_FILE_NAME
+
 # The unique.txt ingredient file path
 # @programmatic/manual - will overwrite with user input
 UNIQUE = "tmp/unique.txt"

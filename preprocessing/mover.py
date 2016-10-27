@@ -2,11 +2,28 @@
 Module for moving files around for the preprocessor.
 """
 
+import glob
 import os
 import shutil
+import myio.myio as myio
 import preprocessing.prep_global as prep_global
 import chef_global.debug as debug
 import chef_global.config as config
+
+
+def _append_all_recipe_files():
+    """
+    Takes each file in the config.DATA_DIRECTORY folder and
+    appends them onto a single recipe file which will then
+    contain plain English recipes all in one file.
+    @return: void
+    """
+    if not os.path.isdir(config.DATA_DIRECTORY):
+        raise ValueError("config.DATA_DIRECTORY not set.")
+    else:
+        files = glob.glob(config.DATA_DIRECTORY + "/*.xml")
+        myio.join_all_files(files, config.RECIPE_FILE_PATH)
+
 
 def _copy_master_to_data_location():
     """

@@ -131,6 +131,21 @@ def get_number_of_lines(path):
     return num_lines
 
 
+def join_all_files(list_of_file_paths, new_file_path):
+    """
+    Joins all the files in the list by opening each one
+    one at a time, and copying its contents onto the
+    end of new_file.
+    @param list_of_file_paths: The list of file paths to use
+    @param new_file_path: The path to the file that will be
+                          appended to. If it doesn't exist,
+                          it will be created.
+    @return: void
+    """
+    for path in list_of_file_paths:
+        append_to_file(path, new_file_path)
+
+
 def load_pickle(path):
     """
     Loads the pickled item from the path and returns it.

@@ -165,6 +165,17 @@ def _remove_plurals_test():
     __unit_test(test_data, answer_data, "remove_plurals", __remove_plurals)
 
 
+def _remove_xml_from_file(path):
+    """
+    Removes all xml tags from the given file at path.
+    @param path: The path to the file to clean.
+    @return: void
+    """
+    text = re.sub('<[^<]+>', "", open(path).read())
+    with open(path, "w") as f:
+        f.write(text)
+
+
 def _trim_all_files_to_recipes():
     """
     Trims away all the non-recipe, non-ingredient stuff from the data files.

@@ -1,8 +1,0 @@
-A good way to get rid of some of the repeats might be to remove any items that occur only one time in the
-whole dataset. This will get rid of things like "snow water" and "juice of the lemon" while hopefully keeping
-things like "cold water" and "lemon juice".
-
-Unfortunately, there isn't really a good way to guess at how many actually unique items will be lost by this
-method.
-
-Anyway, something to try maybe.

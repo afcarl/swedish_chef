@@ -4,6 +4,7 @@ on.
 """
 
 import os
+from tqdm import tqdm
 import chef_global.config as config
 from chef_global.debug import assert_value_is_set
 from chef_global.debug import debug_print
@@ -69,9 +70,9 @@ def _apply_func_to_each_data_file(func, print_info=False):
     list_of_file_names = [os.path.join(config.DATA_DIRECTORY, file_name) for
                             file_name in os.listdir(config.DATA_DIRECTORY)]
 
-    for f in list_of_file_names:
-        if print_info:
-            print("    |-> working on " + f + "...")
+    for f in tqdm(list_of_file_names):
+        #if print_info:
+        #    print("    |-> working on " + f + "...")
         func(f)
 
 

@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 import time
 import preprocessing.preprocessing as preprocessor
@@ -32,6 +33,10 @@ def train_models(args):
     unique = args.train[1]
     unique_within = args.train[2]
 
+    print("Running word2vec on recipes...")
+    __train_word2vec()
+    # TODO
+
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
 
@@ -60,47 +65,55 @@ def __generate_linkage(recipes, table, testing=False):
     """
     print("Generating the variables heading...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
-    debug.debug_print("Variables: " + str(variables))
+    debug.debug_print("Variables: " + os.linesep + str(variables))
 
     print("Generating the labels column...")
     labels = [ingredient for ingredient in table.get_ingredients_list()]
-    debug.debug_print("Labels: " + str(labels))
+    debug.debug_print("Labels: " + os.linesep + str(labels))
 
     print("Retrieving scipy version of sparse matrix...")
     sparse_matrix = __retrieve_sparse_matrix(recipes, labels, testing).tocoo()
-    debug.debug_print("Sparse matrix: " + str(sparse_matrix))
+    debug.debug_print("Sparse matrix: " + os.linesep + str(sparse_matrix))
 
     print("Retrieving dense representation of matrix...")
     matrix = __retrieve_matrix(sparse_matrix, testing)
-    debug.debug_print("Dense matrix: " + str(matrix))
+    debug.debug_print("Dense matrix: " + os.linesep + str(pd.DataFrame(matrix)))
+
+#    print("Normalizing row vectors...")
+#    # Normalize the row vector (ingredients), so that they
+#    # all have the same length, which means that ones that
+#    # are in all kinds of recipes will have a much smaller
+#    # score in any particular dimension, whereas those
+#    # that only show up in a couple of recipes will have very
+#    # strong scores in those
+#    normalized_matrix = __normalize_rows(matrix)
+#    debug.debug_print("Normalized matrix: " + os.linesep + str(pd.DataFrame(normalized_matrix)))
+    normalized_matrix = matrix
 
     print("Running PCA on the matrix to reduce dimensionality...")
-    # TODO
+    matrix_after_pca = __run_pca(normalized_matrix)
+    debug.debug_print("Matrix after PCA: " + os.linesep + str(pd.DataFrame(matrix_after_pca)))
+#    matrix_after_pca = normalized_matrix
 
-    print("Normalizing row vectors...")
-    # Normalize the row vector (ingredients), so that they
-    # all have the same length, which means that ones that
-    # are in all kinds of recipes will have a much smaller
-    # score in any particular dimension, whereas those
-    # that only show up in a couple of recipes will have very
-    # strong scores in those
-    normalized_matrix = __normalize_rows(matrix)
-    debug.debug_print("Normalized matrix: " + str(pd.DataFrame(normalized_matrix)))
+#    print("Now scaling the row vectors so that they aren't tiny numbers...")
+#    # multiply each vector by like a thousand or something to make for reasonably
+#    # sized numbers
+#    scale_factor = 1000
+#    scaled_matrix = matrix_after_pca * scale_factor
+#    debug.debug_print("Scaled matrix: " + os.linesep + str(pd.DataFrame(scaled_matrix)))
+    scaled_matrix = matrix_after_pca
 
-    print("Now scaling the row vectors so that they aren't tiny numbers...")
-    # multiply each vector by like a thousand or something to make for reasonably
-    # sized numbers
-    scale_factor = 1000
-    scaled_matrix = normalized_matrix * scale_factor
-    debug.debug_print("Scaled matrix: " + str(scaled_matrix))
+    print("Generating the variables heading...")
+    sm_rows = [row for row in scaled_matrix]
+    variables = ["PCA comp " + str(i) for i in range(len(sm_rows[0].getA1()))]
+    debug.debug_print("Variables: " + os.linesep + str(variables))
 
     print("Retrieving dataframe...")
     df = __retrieve_dataframe(scaled_matrix, variables, labels, testing)
-    debug.debug_print("Data frame: " + str(df))
+    debug.debug_print("Data frame: " + os.linesep + str(df))
 
     print("Generating row_clusters (takes about 3 or 4 hours)...")
     print("Started at " + str(time.strftime("%I:%M:%S")))
-    #row_clusters = linkage(pdist(df, metric="euclidean"), method="complete")
     row_clusters = linkage(pdist(df, metric="jaccard"), method="ward")
 
     return row_clusters, labels
@@ -117,7 +130,10 @@ def __normalize_rows(m):
     ma = np.matrix(m)
     for i, row in enumerate(ma):
         row_flat = row.getA1()
-        normalized_row = row_flat / np.linalg.norm(row_flat)
+        if np.count_nonzero(row_flat) == 0:
+            normalized_row = row_flat
+        else:
+            normalized_row = row_flat / np.linalg.norm(row_flat)
         normalized_matrix.append(normalized_row)
 
     return np.matrix(normalized_matrix)
@@ -194,6 +210,21 @@ def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
             print("Pickling the sparse matrix...")
             myio.save_pickle(sparse_matrix, config.MATRIX_SPARSE)
     return sparse_matrix
+
+
+def __run_pca(m):
+    """
+    Runs PCA on the given matrix and returns a matrix
+    with fewer features (recipes), but which still
+    captures most of the variance.
+    @param m: The matrix before PCA
+    @return: The matrix after PCA
+    """
+    captured_variance = 0.9  # Capture 90% of the variance
+    pca = PCA(n_components=captured_variance, svd_solver="full")
+    m_pca = pca.fit_transform(m)
+
+    return np.matrix(m_pca)
 
 
 def run_unit_tests():
@@ -327,7 +358,7 @@ def __training_test():
 
         print("Plotting it...")
         plt.tight_layout()
-        plt.ylabel("Euclidean Distance")
+        plt.ylabel("Distance")
         plt.show()
 
         # Clean up
@@ -348,13 +379,15 @@ def __normalize_rows_test():
                 [0, 1, 0],
                 [2, 0, 1],
                 [3, 1, 4],
-                [0, 1, 1]
+                [0, 1, 1],
+                [0, 0, 0]
              ]
     expected = [
                 [0, 1, 0],
                 [0.894427, 0, 0.447214],
                 [0.588348, 0.1966116, 0.784465],
-                [0, 0.707107, 0.707107]
+                [0, 0.707107, 0.707107],
+                [0, 0, 0]
                ]
 
     matrix = np.matrix(matrix)
@@ -367,6 +400,26 @@ def __normalize_rows_test():
     print("Expected : " + os.linesep + str(expected))
 
     debug.print_test_banner(test_name, True)
+
+def __train_word2vec():
+    """
+    Trains word2vec on the recipe file found in config.py.
+    @return: void
+    """
+    raise NotImplementedError("WORD2VEC not yet implemented!")
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

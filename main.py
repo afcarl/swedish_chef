@@ -73,10 +73,17 @@ def print_result(result):
     else:
         print("The program didn't produce any displayable results.")
 
-if __name__ == "__main__":
+
+def main():
+    """
+    Run the main function.
+    """
     args = get_valid_args()
     result = execute_based_on_args(args)
     print_result(result)
+
+if __name__ == "__main__":
+    main()
 
 
 
