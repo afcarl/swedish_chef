@@ -3,6 +3,8 @@ This module provides the API functions for the preprocessing suite of tools
 for the chef. ALL API functions for this package are in this file.
 """
 
+import time
+import os
 from tqdm import tqdm
 import myio.myio as myio
 import random
@@ -203,6 +205,17 @@ def __do_trim(args):
 
     print("Stripping big recipe file...")
     myio.strip_file(config.RECIPE_FILE_PATH)
+
+    print("Replacing all ingredients in big recipe file with single word versions...")
+    if os.path.exists(config.RECIPE_FILE_SINGLE_PATH):
+        print("    |-> Found existing single word version at " + \
+                str(config.RECIPE_FILE_SINGLE_PATH) + ", using that one.")
+        pass
+    else:
+        print("    |-> Could not find existing version. Generating new one, this will " +\
+                        "take a while. Started at: " + str(time.strftime("%I:%M:%S")))
+        trimmer._replace_all_ingredients_with_single_words(
+                                                config.RECIPE_FILE_PATH, config.UNIQUE)
 
 
 

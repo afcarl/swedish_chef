@@ -2,6 +2,8 @@
 The main API for the statistics python package.
 """
 
+import string
+import gensim
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 import time
@@ -406,6 +408,9 @@ def __train_word2vec():
     Trains word2vec on the recipe file found in config.py.
     @return: void
     """
+    sentences = SentenceIterator(config.RECIPE_FILE_SINGLE_PATH)
+    model = gensim.models.Word2Vec(sentences, min_count=2)
+
     raise NotImplementedError("WORD2VEC not yet implemented!")
 
 
@@ -416,8 +421,15 @@ def __train_word2vec():
 
 
 
+class SentenceIterator:
+    def __init__(self, file_path):
+        self.path = file_path
 
-
+    def __iter__(self):
+        for line in open(self.path):
+            words = line.split()
+            words = [word.lower().strip(string.punctuation.replace("_", "")) for word in words]
+            yield line.split()
 
 
 

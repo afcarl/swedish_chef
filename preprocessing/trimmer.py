@@ -176,6 +176,34 @@ def _remove_xml_from_file(path):
         f.write(text)
 
 
+def _replace_all_ingredients_with_single_words(recipe_file_path, unique_path):
+    """
+    For each ingredient in unique,
+    replace all instances of it in the recipe_file with
+    it as a single word with underscores.
+    E.g.: Feathered goose -> Feathered_goose
+    @param recipe_file_path: the path to the recipe file
+    @param unique_path: the path to the ingredients
+    @return: void
+    """
+    s = ""
+    with open(recipe_file_path) as recipe_file:
+        s = recipe_file.read()
+
+    ingredients = []
+    with open(unique_path) as unique:
+        ingredients = [line.strip().lower() for line in unique]
+
+    for ingredient in tqdm(ingredients):
+        ingredient_is_more_than_one_word = " " in ingredient
+        if ingredient_is_more_than_one_word:
+            ingredient_as_one_word = ingredient.replace(" ", "_")
+            s = s.replace(ingredient, ingredient_as_one_word)
+
+    with open(recipe_file_path + "UNDERLINES", 'w') as recipe_file:
+       recipe_file.write(s)
+
+
 def _trim_all_files_to_recipes():
     """
     Trims away all the non-recipe, non-ingredient stuff from the data files.

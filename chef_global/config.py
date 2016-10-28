@@ -46,8 +46,13 @@ NEW_RECIPE_LINE = "NEW_RECIPE__________________________________LINE"
 RECIPE_FILE_NAME = "all_of_the_recipes.txt"
 
 # The path to the recipe file
-# @manual
+# @programmatic
 RECIPE_FILE_PATH = DATA_DIRECTORY + "/" + RECIPE_FILE_NAME
+
+# The path to the recipe file with ingredients replaced with single word versions
+# @programmatic
+RECIPE_FILE_SINGLE_PATH = DATA_DIRECTORY + "/" + "single_" + RECIPE_FILE_NAME
+
 
 # The unique.txt ingredient file path
 # @programmatic/manual - will overwrite with user input
