@@ -107,7 +107,7 @@ class IngredientsTable:
         f.close()
 
 
-def save_to_disk(obj, path="ingredient_table"):
+def save_to_disk(obj, path="tmp/ingredient_table"):
     """
     Saves the object to the disk in the given path - it overwrites
     the given file if it exists.

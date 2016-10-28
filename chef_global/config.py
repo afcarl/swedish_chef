@@ -53,7 +53,6 @@ RECIPE_FILE_PATH = DATA_DIRECTORY + "/" + RECIPE_FILE_NAME
 # @programmatic
 RECIPE_FILE_SINGLE_PATH = DATA_DIRECTORY + "/" + "single_" + RECIPE_FILE_NAME
 
-
 # The unique.txt ingredient file path
 # @programmatic/manual - will overwrite with user input
 UNIQUE = "tmp/unique.txt"

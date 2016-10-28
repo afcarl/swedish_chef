@@ -15,13 +15,13 @@ import chef_global.debug as debug
 import chef_global.config as config
 
 # Ingredient file
-__ing_tmp = "ing_tmp"
+__ing_tmp = config.DATA_DIRECTORY + "/" + "ing_tmp"
 
 # Unique ingredient file
-ingredient_file_name = "unique.txt"
+ingredient_file_name = config.DATA_DIRECTORY + "/" + "unique.txt"
 
 # Unique within recipe ingredient file
-within_file_name = "unique_within.txt"
+within_file_name = config.DATA_DIRECTORY + "/" + "unique_within.txt"
 
 
 
@@ -129,13 +129,26 @@ def _prepare_tabulate_ingredients():
     # Now make a unique_within.txt that is all the recipes with duplicate
     # ingredients removed and a unique.txt, which is all the unique ingredients
     print("Creating a unique_within.txt and a unique.txt...")
+    print("    |-> Renaming " + str(__ing_tmp) + " to " + str(within_file_name))
     os.rename(__ing_tmp, within_file_name)
+
+    print("    |-> Copying " + str(within_file_name) + " to " + \
+            str(ingredient_file_name))
     shutil.copy(within_file_name, ingredient_file_name)
+
+    print("    |-> Removing duplicates within recipes in " + \
+            str(ingredient_file_name))
     __remove_duplicates_between_bounds(ingredient_file_name, "SUPER_FAKE_BOUND", [])
+
+    print("    |-> Removing the new recipe lines from " + str(ingredient_file_name))
     myio.find_replace(ingredient_file_name, config.NEW_RECIPE_LINE.lower(), "")
+
+    print("    |-> Removing blank lines from " + str(ingredient_file_name))
     myio.strip_file(ingredient_file_name)
 
     # Now tell the config file where you put the ingredient files
+    print("    |-> Updating the config file to reflect location for " + \
+            str(ingredient_file_name) + " and " + str(within_file_name))
     config.UNIQUE = ingredient_file_name
     config.UNIQUE_WITHIN = within_file_name
 
@@ -200,7 +213,7 @@ def _replace_all_ingredients_with_single_words(recipe_file_path, unique_path):
             ingredient_as_one_word = ingredient.replace(" ", "_")
             s = s.replace(ingredient, ingredient_as_one_word)
 
-    with open(recipe_file_path + "UNDERLINES", 'w') as recipe_file:
+    with open(config.RECIPE_FILE_SINGLE_PATH, 'w') as recipe_file:
        recipe_file.write(s)
 
 
@@ -228,7 +241,7 @@ def __clean_ingredient_file(f=None):
 
     has_numbers = lambda x: any(char.isdigit() for char in x)
 
-    for dirty_ingredient in ing_file:
+    for dirty_ingredient in tqdm(ing_file):
         debug.debug_print("Cleaning " + str(dirty_ingredient) + "...")
         clean_ingredient = dirty_ingredient
         clean_ingredient = __remove_xml(clean_ingredient)
@@ -352,7 +365,7 @@ def __remove_duplicates_between_bounds(file_path, bound, exceptions):
     all_lines_to_keep = []
     lines_to_keep = []
     f = open(file_path, 'r')
-    for line in f:
+    for line in tqdm(f):
         if line.rstrip() == bound.rstrip():
             debug.debug_print("Found a bound, adding lines...")
             lines_to_keep.append(line)

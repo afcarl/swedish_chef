@@ -3,7 +3,6 @@ The main API for the statistics python package.
 """
 
 import string
-import gensim
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 import time
@@ -21,6 +20,11 @@ import myio.myio as myio
 import statistics.ingredients_table as it
 import chef_global.config as config
 from statistics.recipe import Recipe
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore")
+    import gensim
+
 
 
 def train_models(args):
