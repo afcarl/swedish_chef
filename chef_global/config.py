@@ -68,3 +68,7 @@ UNIT_TEST_HEADER = "============================================="
 # Whether debug output should be printed as the program executes
 # @programmatic
 VERBOSE = False
+
+# The path to the word2vec model
+# @manual
+WORD2VEC_MODEL_PATH = "tmp/word2vec.model"

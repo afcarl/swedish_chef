@@ -40,7 +40,8 @@ def train_models(args):
     unique_within = args.train[2]
 
     print("Running word2vec on recipes...")
-    __train_word2vec(table)
+    vec_model = __train_word2vec(table)
+    raise NotImplementedError("Still need to actually do stuff with the vec model.")
     # TODO
 
     print("Generating recipes...")
@@ -411,17 +412,25 @@ def __train_word2vec(ingredient_table):
     """
     Trains word2vec on the recipe file found in config.py.
     @param ingredient_table: The ingredient table to use for training.
-    @return: void
+    @return: the trained model
     """
-    print("    |-> Generating the sentence generator...")
-    sentences = SentenceIterator(config.RECIPE_FILE_SINGLE_PATH)
+    if os.path.exists(config.WORD2VEC_MODEL_PATH):
+        print("Found an existing model for word2vec at " +\
+                str(config.WORD2VEC_MODEL_PATH) + ", using that.")
+        model = gensim.models.Word2Vec.load(config.WORD2VEC_MODEL_PATH)
+    else:
+        print("    |-> Generating the sentence generator...")
+        sentences = SentenceIterator(config.RECIPE_FILE_SINGLE_PATH)
 
-    print("    |-> Generating Word2Vec on ingredient file...")
-    print("Started at " + str(time.strftime("%I:%M:%S")))
-    model = gensim.models.Word2Vec(sentences, min_count=2)
-    print("Ended at " + str(time.strftime("%I:%M:%S")))
+        print("    |-> Generating Word2Vec on ingredient file...")
+        print("Started at " + str(time.strftime("%I:%M:%S")))
+        model = gensim.models.Word2Vec(sentences, min_count=2, workers=4)
+        print("Ended at " + str(time.strftime("%I:%M:%S")))
 
-    raise NotImplementedError("WORD2VEC not yet implemented!")
+        print("Saving model as " + str(config.WORD2VEC_MODEL_PATH))
+        model.save(config.WORD2VEC_MODEL_PATH)
+
+    return model
 
 
 
