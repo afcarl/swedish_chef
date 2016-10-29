@@ -39,13 +39,13 @@ def train_models(args):
     unique = args.train[1]
     unique_within = args.train[2]
 
-    print("Running word2vec on recipes...")
-    vec_model = __train_word2vec(table)
-    raise NotImplementedError("Still need to actually do stuff with the vec model.")
-    # TODO
-
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
+
+    print("Running word2vec on recipes...")
+    vec_model = __train_word2vec(table, recipes)
+    raise NotImplementedError("Still need to actually do stuff with the vec model.")
+    # TODO
 
     row_clusters = __generate_linkage(recipes, table)
 
@@ -288,7 +288,7 @@ def __generate_recipes(table, unique_within_path):
         myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
     lines_between_tags = next(recipe_producer)
     while lines_between_tags is not None:
-        ingredients = [line.rstrip() for line in lines_between_tags]
+        ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
         recipe = Recipe(table, ingredients=ingredients)
         to_ret.append(recipe)
         debug.debug_print("Recipe Generated: " + str(recipe))
@@ -408,10 +408,11 @@ def __normalize_rows_test():
 
     debug.print_test_banner(test_name, True)
 
-def __train_word2vec(ingredient_table):
+def __train_word2vec(ingredient_table, ingredients_lists):
     """
     Trains word2vec on the recipe file found in config.py.
     @param ingredient_table: The ingredient table to use for training.
+    @param ingredients_lists: The list of list of ingredients.
     @return: the trained model
     """
     if os.path.exists(config.WORD2VEC_MODEL_PATH):
@@ -422,9 +423,21 @@ def __train_word2vec(ingredient_table):
         print("    |-> Generating the sentence generator...")
         sentences = SentenceIterator(config.RECIPE_FILE_SINGLE_PATH)
 
-        print("    |-> Generating Word2Vec on ingredient file...")
+        print("    |-> Generating the ingredients generator...")
+        generated_ingredient_lists = IngredientsGenerator(ingredients_lists)
+
+        print("    |-> Training Word2Vec on ingredient file to learn " +\
+                        "grammatical associations...")
         print("Started at " + str(time.strftime("%I:%M:%S")))
-        model = gensim.models.Word2Vec(sentences, min_count=2, workers=4)
+        model = gensim.models.Word2Vec(sentences, min_count=2, workers=4,
+                                        iter=5)
+        print("Ended at " + str(time.strftime("%I:%M:%S")))
+
+        print("    |-> Training Word2Vec on ingredient lists to learn " +\
+                        "food associations...")
+        print("Started at " + str(time.strftime("%I:%M:%S")))
+        model.train(generated_ingredient_lists,
+                        total_examples=len(generated_ingredient_lists))
         print("Ended at " + str(time.strftime("%I:%M:%S")))
 
         print("Saving model as " + str(config.WORD2VEC_MODEL_PATH))
@@ -436,7 +449,21 @@ def __train_word2vec(ingredient_table):
 
 
 
+class IngredientsGenerator:
+    def __init__(self, ingredients_lists):
+        self.recipes = ingredients_lists
 
+    def __iter__(self):
+        print("        |-> Iterating over ingredients lists...")
+        for recipe in self.recipes:
+            debug.debug_print("YIELDING: " + str(recipe))
+            yield recipe
+
+    def __len__(self):
+        length = 0
+        for recipe in self.recipes:
+            length += len(recipe)
+        return length
 
 
 
@@ -457,7 +484,7 @@ class SentenceIterator:
     def __iter__(self):
         print("        |-> Iterating over text file...")
         for sentence in self.sentences:
-            debug.debug_print("YIELDING: " + str(sentence))
+            #debug.debug_print("YIELDING: " + str(sentence))
             yield sentence
 
 

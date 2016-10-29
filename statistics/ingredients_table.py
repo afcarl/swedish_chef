@@ -74,7 +74,6 @@ class IngredientsTable:
         """
         return ingredient in self.__table
 
-
     def put(self, ingredient):
         """
         If the ingredient is not already in the table, this method updates
@@ -101,7 +100,7 @@ class IngredientsTable:
         debug.debug_print("Constructing IngredientsTable from " + path + "...")
         f = open(path, 'r')
         for line in f:
-            ingredient = line.rstrip()
+            ingredient = line.rstrip().replace(" ", "_")
             debug.debug_print("Adding '" + ingredient + "' to table.")
             self.put(ingredient)
         f.close()

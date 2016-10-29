@@ -24,6 +24,13 @@ class Recipe:
             self.__ingredients_list.append(ingredient)
         self.__ingredients_list = list(set(self.__ingredients_list))
 
+    def __iter__(self):
+        for ingredient in self.get_ingredients_list():
+            yield ingredient
+
+    def __len__(self):
+        return len(self.get_ingredients_list())
+
     def __str__(self):
         to_ret = "Recipe:" + os.linesep
         for ingredient in self.__ingredients_list:
