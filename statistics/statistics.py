@@ -40,7 +40,7 @@ def train_models(args):
     unique_within = args.train[2]
 
     print("Running word2vec on recipes...")
-    __train_word2vec()
+    __train_word2vec(table)
     # TODO
 
     print("Generating recipes...")
@@ -407,13 +407,19 @@ def __normalize_rows_test():
 
     debug.print_test_banner(test_name, True)
 
-def __train_word2vec():
+def __train_word2vec(ingredient_table):
     """
     Trains word2vec on the recipe file found in config.py.
+    @param ingredient_table: The ingredient table to use for training.
     @return: void
     """
+    print("    |-> Generating the sentence generator...")
     sentences = SentenceIterator(config.RECIPE_FILE_SINGLE_PATH)
+
+    print("    |-> Generating Word2Vec on ingredient file...")
+    print("Started at " + str(time.strftime("%I:%M:%S")))
     model = gensim.models.Word2Vec(sentences, min_count=2)
+    print("Ended at " + str(time.strftime("%I:%M:%S")))
 
     raise NotImplementedError("WORD2VEC not yet implemented!")
 
@@ -428,12 +434,22 @@ def __train_word2vec():
 class SentenceIterator:
     def __init__(self, file_path):
         self.path = file_path
+        print("        |-> Reading the recipe file into memory...")
+        with open(self.path) as file_text:
+            lines = [line for line in file_text]
+            self.sentences = [line.split() for line in lines]
+            s = []
+            for sentence in self.sentences:
+                sentence = [word.lower().strip(string.punctuation.replace("_", ""))\
+                                for word in sentence]
+                s.append(sentence)
+            self.sentences = list(s)
 
     def __iter__(self):
-        for line in open(self.path):
-            words = line.split()
-            words = [word.lower().strip(string.punctuation.replace("_", "")) for word in words]
-            yield line.split()
+        print("        |-> Iterating over text file...")
+        for sentence in self.sentences:
+            debug.debug_print("YIELDING: " + str(sentence))
+            yield sentence
 
 
 
