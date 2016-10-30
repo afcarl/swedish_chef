@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+from sklearn.cluster import KMeans
 import string
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
@@ -42,8 +43,14 @@ def train_models(args):
     print("Generating recipes...")
     recipes = __generate_recipes(table, unique_within)
 
+    variables, labels, sparse_matrix, matrix =\
+                        __generate_model_structures(recipes, table)
+
     print("Running word2vec on recipes...")
     vec_model = __train_word2vec(table, recipes)
+
+    print("Clustering using kmeans...")
+    k_model = __train_kmeans(matrix)
     raise NotImplementedError("Still need to actually do stuff with the vec model.")
     # TODO
 
@@ -61,14 +68,14 @@ def train_models(args):
 #    plt.show()
     # TODO
 
-def __generate_linkage(recipes, table, testing=False):
+def __generate_model_structures(recipes, table, testing=False):
     """
-    Generate the hierarchical linkage matrix by the clustering algorithm.
+    Generates all the necessary data structures for training the models.
     @param recipes: A list of recipe objects
     @param table: An IngredientsTable object containing all the ingredients
                   found in the list of recipes.
-    @param testing: Whether to use any files found on disk/overwrite
-                    those files. If not, temporary ones will be created.
+    @param testing: Whether we are just testing the data
+    @return: The datastructures
     """
     print("Generating the variables heading...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
@@ -86,6 +93,19 @@ def __generate_linkage(recipes, table, testing=False):
     matrix = __retrieve_matrix(sparse_matrix, testing)
     debug.debug_print("Dense matrix: " + os.linesep + str(pd.DataFrame(matrix)))
 
+    return variables, labels, sparse_matrix, matrix
+
+
+def __generate_linkage(recipes, table, matrix, testing=False):
+    """
+    Generate the hierarchical linkage matrix by the clustering algorithm.
+    @param recipes: A list of recipe objects
+    @param table: An IngredientsTable object containing all the ingredients
+                  found in the list of recipes.
+    @param matrix: A dense representation of the data matrix.
+    @param testing: Whether to use any files found on disk/overwrite
+                    those files. If not, temporary ones will be created.
+    """
 #    print("Normalizing row vectors...")
 #    # Normalize the row vector (ingredients), so that they
 #    # all have the same length, which means that ones that
@@ -120,7 +140,7 @@ def __generate_linkage(recipes, table, testing=False):
     debug.debug_print("Data frame: " + os.linesep + str(df))
 
     print("Generating row_clusters (takes about 3 or 4 hours)...")
-    print("Started at " + str(time.strftime("%I:%M:%S")))
+    print("Started at " + myio.print_time())
     row_clusters = linkage(pdist(df, metric="jaccard"), method="ward")
 
     return row_clusters, labels
@@ -299,7 +319,6 @@ def __generate_recipes(table, unique_within_path):
 
     return to_ret
 
-
 def __training_test():
     """
     Run the unit test for the training algorithms.
@@ -357,6 +376,8 @@ def __training_test():
             print(str(r))
 
         # Now generate the hierarchical linkage from the ingredients
+        variables, labels, sparse_matrix, matrix =\
+                        __generate_model_structures(recipes, table, testing=True)
         linkage, labels = __generate_linkage(recipes, table, testing=True)
 
         # Now do something interesting with the linkage
@@ -408,6 +429,29 @@ def __normalize_rows_test():
 
     debug.print_test_banner(test_name, True)
 
+def __train_kmeans(matrix):
+    """
+    Trains k-means model.
+    @param matrix: The data matrix
+    @return: The trained model, which it saves
+    """
+    if os.path.exists(config.KMEANS_MODEL_PATH):
+        print("Found an existing model for kmeans at " +\
+            str(config.KMEANS_MODEL_PATH) + ", using that.")
+        model = myio.load_pickle(config.KMEANS_MODEL_PATH)
+    else:
+        print("Generating the kmeans model...")
+        print("Started at " + myio.print_time())
+        kmeans = KMeans(n_clusters=25, random_state=0)
+        model = kmeans.fit_predict(matrix)
+        print("Ended at " + myio.print_time())
+
+        print("Saving the model...")
+        myio.save(model, config.KMEANS_MODEL_PATH)
+
+    return model
+
+
 def __train_word2vec(ingredient_table, ingredients_lists):
     """
     Trains word2vec on the recipe file found in config.py.
@@ -428,17 +472,17 @@ def __train_word2vec(ingredient_table, ingredients_lists):
 
         print("    |-> Training Word2Vec on ingredient file to learn " +\
                         "grammatical associations...")
-        print("Started at " + str(time.strftime("%I:%M:%S")))
+        print("Started at " + myio.print_time())
         model = gensim.models.Word2Vec(sentences, min_count=2, workers=4,
                                         iter=5)
-        print("Ended at " + str(time.strftime("%I:%M:%S")))
+        print("Ended at " + myio.print_time())
 
         print("    |-> Training Word2Vec on ingredient lists to learn " +\
                         "food associations...")
-        print("Started at " + str(time.strftime("%I:%M:%S")))
+        print("Started at " + myio.print_time())
         model.train(generated_ingredient_lists,
                         total_examples=len(generated_ingredient_lists))
-        print("Ended at " + str(time.strftime("%I:%M:%S")))
+        print("Ended at " + myio.print_time())
 
         print("Saving model as " + str(config.WORD2VEC_MODEL_PATH))
         model.save(config.WORD2VEC_MODEL_PATH)

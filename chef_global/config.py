@@ -20,6 +20,10 @@ DATA_FRAME = "tmp/dataframe"
 # @programmatic
 INGREDIENT_TABLE_PATH = None
 
+# The path to the saved kmeans object
+# @programmatic
+KMEANS_MODEL_PATH = "tmp/kmeans.model"
+
 # The master directory where we store data
 # @programmatic
 MASTER_DATA_DIRECTORY = None

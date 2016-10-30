@@ -2,6 +2,7 @@
 Module to provide a place to gather my random io functions.
 """
 
+import time
 import mmap
 import re
 import os
@@ -172,6 +173,14 @@ def overwrite_file_contents(src_path, dest_path):
         dest.write(line + os.linesep)
     src.close()
     dest.close()
+
+
+def print_time():
+    """
+    Returns the current time as a string.
+    @return: void
+    """
+    return str(time.strftime("%I:%M:%S"))
 
 
 def save_pickle(item, path):
