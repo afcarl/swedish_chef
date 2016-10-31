@@ -298,6 +298,8 @@ def __parse_between_tags(file_path, start_tag, stop_tag,
     # read them, until we reach the end tag, at which point we need to strip the buffer
     # of the end tag and write the resulting buffer to the tmp file. Then continue.
     for line_from_original in cookbook_file:
+        line_from_original = line_from_original.encode("utf-8")
+        line_from_original = line_from_original.decode("utf-8")
         for char in line_from_original:
             if recording:
                 tmp_buf += char

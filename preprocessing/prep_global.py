@@ -71,8 +71,8 @@ def _apply_func_to_each_data_file(func, print_info=False):
                             file_name in os.listdir(config.DATA_DIRECTORY)]
 
     for f in tqdm(list_of_file_names):
-        #if print_info:
-        #    print("    |-> working on " + f + "...")
+        if print_info:
+            print("    |-> working on " + f + "...")
         func(f)
 
 

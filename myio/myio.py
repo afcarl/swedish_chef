@@ -51,6 +51,21 @@ def count_occurrences(path, item):
         return len(all_matches)
 
 
+def encode_file(path, encoding="utf-8"):
+    """
+    Prepends the line: # -*- coding: <encoding> -*-
+    to the beginning of the given file.
+    @param path: The path to the file of interest.
+    @param encoding: The encoding to specify.
+    @return: void
+    """
+    coding_line = "# -*- coding: " + str(encoding) + " -*-"
+    with open(path, 'r+') as f:
+        content = f.read()
+        f.seek(0, 0)
+        f.write(coding_line + os.linesep + content)
+
+
 def file_contains(path, item):
     """
     Opens the path and searches the file for the given
