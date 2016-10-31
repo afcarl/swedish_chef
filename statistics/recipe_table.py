@@ -3,6 +3,7 @@ Module to hold a RecipeTable class.
 """
 
 import pickle
+import scipy.sparse as sparse
 
 
 class RecipeTable:
@@ -37,6 +38,31 @@ class RecipeTable:
         @return: The list of RecipeObjects.
         """
         return self.__recipes
+
+    def ingredient_to_feature_vector(ingredient):
+        """
+        Generates a vector of the form:
+        Recipe 0    Recipe 1    Recipe 2    ...
+            0          1           0
+        Where a 0 means the ingredient is not present in that recipe and a 1
+        means it is.
+        This means the return value is a list of the form [0, 1, 0, ...] where
+        each index represents a recipe and the value at that index represents
+        present or not.
+        @param ingredient: The ingredient for which to generate a feature vector
+        @return: The feature vector
+        """
+        to_ret = [1 if recipe.has(ingredient) else 0 for recipe in self.__recipes]
+        return to_ret
+
+    def ingredient_to_feature_vector_sparse(ingredient):
+        """
+        Does exactly the same thing as ingredient_to_feature_vector, but
+        in a sparse format, specifically, it returns a csr_matrix.
+        """
+        list_form = self.ingredient_to_feature_vector(ingredient)
+        lil_matrix_form = sparse.lil_matrix(list_form)
+        return lil_matrix_form.tocsr()
 
 
 def save_to_disk(obj, path="tmp/recipe_table"):

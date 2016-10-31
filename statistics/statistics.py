@@ -48,24 +48,25 @@ def ask_similar(args):
     ingredients = args.similar[1:]
     print("Ingredients: " + str(ingredients))
 
+    rec_table = recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
+
     if len(ingredients) == 0:
         # user passed in no ingredients, just give back some
         # similar ingredients
-        # TODO: similar._get_random_similar_ingredients(num_ingredients)
-        # TODO: print those similar ingredients
-        pass
+        sim_ingredients = similar._get_random_similar_ingredients(rec_table, num_ingredients)
+        print("Here are " + str(num_ingredients) + " similar ingredients: ")
+        print(str(sim_ingredients))
     else:
         # user wants num_ingredients ingredients that are similar
         # to the given list of ingredients. Find some random
         # ingredients that are similar to the given ones
         # TODO: similar._get_similar_ingredients_to(ingredients, num_ingredients)
         # TODO: print those
-        # TODO: Also print the similarity matrix for the list passed in:
         similarity_matrix = similar._compute_similarity_matrix(ingredients)
         similarity_score = similar._compute_similarity_score(ingredients)
         similarity_measure = similar._compute_similarity_measure(ingredients)
         print("Similarity score for these ingredients: " + str(similarity_score))
-        pass
+        print("Z-score for similarity: " + str(similarity_measure))
 
 
 def train_models(args):
@@ -85,7 +86,7 @@ def train_models(args):
     recipes = rec_table.get_recipes()
 
     variables, labels, sparse_matrix, matrix =\
-                        __generate_model_structures(recipes, table)
+                        __generate_model_structures(rec_table, table)
 
     print("Running word2vec on recipes...")
     vec_model = __train_word2vec(table, recipes)
@@ -110,15 +111,17 @@ def train_models(args):
 #    plt.show()
     # TODO
 
-def __generate_model_structures(recipes, table, testing=False):
+def __generate_model_structures(rec_table, table, testing=False):
     """
     Generates all the necessary data structures for training the models.
-    @param recipes: A list of recipe objects
+    @param rec_table: A RecipeTable object
     @param table: An IngredientsTable object containing all the ingredients
                   found in the list of recipes.
     @param testing: Whether we are just testing the data
     @return: The datastructures
     """
+    recipes = rec_table.get_recipes()
+
     print("Generating the variables heading...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
     debug.debug_print("Variables: " + os.linesep + str(variables))
@@ -128,7 +131,7 @@ def __generate_model_structures(recipes, table, testing=False):
     debug.debug_print("Labels: " + os.linesep + str(labels))
 
     print("Retrieving scipy version of sparse matrix...")
-    sparse_matrix = __retrieve_sparse_matrix(recipes, labels, testing).tocoo()
+    sparse_matrix = __retrieve_sparse_matrix(rec_table, labels, testing).tocoo()
     debug.debug_print("Sparse matrix: " + os.linesep + str(sparse_matrix))
 
     print("Retrieving dense representation of matrix...")
@@ -250,7 +253,7 @@ def __retrieve_matrix(sparse_matrix, testing=False):
     return matrix
 
 
-def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
+def __retrieve_sparse_matrix(rec_table, ingredients, testing=False):
     """
     Retrieves a sparse matrix representation of the recipes and ingredients.
     That is, retrieves a sparse matrix of the form:
@@ -259,7 +262,7 @@ def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
     ing1   0           0        ...
     Either generates it from given args or else finds
     it on the disk.
-    @param recipes: All of the recipes
+    @param rec_table: All of the recipes as a RecipeTable object
     @param ingredients: All of the ingredients
     @param testing: Whether to find a matrix on the disk or generate a tmp one.
                     True to generate a tmp one.
@@ -271,7 +274,7 @@ def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
     else:
         print("Generating sparse matrix...")
         print("  |-> Generating the rows, this may take a while...")
-        rows = [__generate_ingredient_feature_vector_sparse(ingredient, recipes)
+        rows = [rec_table.ingredient_to_feature_vector(ingredient)
                     for ingredient in tqdm(ingredients)]
         print("  |-> Generating the matrix from the rows...")
         sparse_matrix = sparse.vstack(rows)

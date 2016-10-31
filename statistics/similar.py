@@ -62,44 +62,49 @@ def _compute_sim_stats(rec_table):
     of the similarity scores for each recipe in
     the given rec_table.
     @param rec_table: The RecipeTable object.
-    @return: The standard deviation and mean (also prints them)
+    @return: The mean, standard deviation
     """
-    total = 0.0
-    N = 0
-    scores = []
-    print("    |-> Computing the mean...")
-    for rec in tqdm(rec_table):
-        try:
-            debug.debug_print("Recipe: " + str(rec))
-        except KeyError:
-            pass
-        if len(rec) == 0:
-            debug.debug_print("Skipping this recipe, it is empty.")
-            pass
-        else:
-            score = _compute_similarity_score(rec)
-            debug.debug_print("Similarity: " + str(score))
-            scores.append(score)
+    if config.SIM_MEAN is not None:
+        print("Mean has already been calculated, here it is: " + str(config.SIM_MEAN))
+        print("Standard deviation: " + str(config.SIM_STAND_DEV))
+        return config.SIM_MEAN, config.SIM_STAND_DEV
+    else:
+        total = 0.0
+        N = 0
+        scores = []
+        print("    |-> Computing the mean...")
+        for rec in tqdm(rec_table):
+            try:
+                debug.debug_print("Recipe: " + str(rec))
+            except KeyError:
+                pass
+            if len(rec) == 0:
+                debug.debug_print("Skipping this recipe, it is empty.")
+                pass
+            else:
+                score = _compute_similarity_score(rec)
+                debug.debug_print("Similarity: " + str(score))
+                scores.append(score)
+                if score is not None:
+                    total += score
+                    N += 1
+        mean = total / N
+
+        deviances = []
+        print("    |-> Computing the standard deviation...")
+        for score in tqdm(scores):
             if score is not None:
-                total += score
-                N += 1
-    mean = total / N
+                deviance = score - mean
+                deviances.append(deviance)
+        dev_squared = [deviance * deviance for deviance in deviances]
+        sum_of_squares = sum(dev_squared)
+        variance = sum_of_squares / N
+        std_dev = math.sqrt(variance)
 
-    deviances = []
-    print("    |-> Computing the standard deviation...")
-    for score in tqdm(scores):
-        if score is not None:
-            deviance = score - mean
-            deviances.append(deviance)
-    dev_squared = [deviance * deviance for deviance in deviances]
-    sum_of_squares = sum(dev_squared)
-    variance = sum_of_squares / N
-    std_dev = math.sqrt(variance)
-
-    print("You should record these values in the config.py: ")
-    print("Mean: " + str(mean))
-    print("Standard deviation: " + str(std_dev))
-    return (mean, std_dev)
+        print("You should record these values in the config.py: ")
+        print("Mean: " + str(mean))
+        print("Standard deviation: " + str(std_dev))
+        return (mean, std_dev)
 
 
 def _compute_similarity_measure(ingredients):
@@ -122,7 +127,7 @@ def _compute_similarity_measure(ingredients):
         exit(0)
     else:
         similarity = _compute_similarity_score(ingredients)
-        return (similarity_score - config.SIM_MEAN) / config.SIM_STAND_DEV
+        return (similarity - config.SIM_MEAN) / config.SIM_STAND_DEV
 
 
 def _compute_similarity_score(ingredients):
@@ -169,6 +174,32 @@ def _compute_similarity_score(ingredients):
         return None
     else:
         return score / num_scores
+
+
+def _get_random_similar_ingredients(num_ingredients, rec_table, seed=0):
+    """
+    Returns num_ingredients random ingredients that are
+    'similar' to one another.
+    @param num_ingredients: The number of ingredients to get.
+    @param rec_table: A RecipeTable object
+    @param seed: A seed for choosing the same ones everytime.
+    @return: The ingredients that are similar.
+    """
+    # Load w2v and pull out a random ingredient
+    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+    # TODO:
+    seed_ingredient = __get_random_ingredient_from_w2v(seed)
+
+    # Load kmeans and pull out n - 1 ingredients from that one's cluster
+    kmeans = __load_model(config.KMEANS_MODEL_PATH)
+    feature_vector = rec_table.ingredient_as_feature_vector(seed_ingredient)
+    seed_cluster_index = kmeans.predict(feature_vector)
+    seed_cluster = 5#TODO
+    ingredients = __get_random_ingredients_from_cluster(\
+                        kmeans, seed_cluster, num_ingredients - 1)
+
+    ingredients.append(seed_ingredient)
+    return ingredients
 
 
 def _unit_test():
