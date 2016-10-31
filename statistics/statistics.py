@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+import statistics.similar as similar
 from sklearn.cluster import KMeans
 import string
 from sklearn.decomposition import PCA
@@ -26,6 +27,41 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import gensim
 
+
+def ask_similar(args):
+    """
+    Uses any already trained models to figure out the
+    similarity between the given list of ingredients, prints
+    the similarity matrix, and then gives args.n number
+    of ingredients that are also similar to the given
+    list of ingredients.
+    @param args: ArgParse object that must have args.similar[0] (number
+                 of ingredients to get back) and args.simliar[1] (the
+                 list of ingredients to compute a matrix for and to
+                 match new ingredients with - may be an empty list,
+                 in which case the program simply gives back a
+                 list of similar ingredients of len args.similar[0])
+    @return: void
+    """
+    num_ingredients = args.similar[0]
+    ingredients = args.similar[1:]
+    print("Ingredients: " + str(ingredients))
+
+    if len(ingredients) == 0:
+        # user passed in no ingredients, just give back some
+        # similar ingredients
+        # TODO: similar._get_random_similar_ingredients(num_ingredients)
+        # TODO: print those similar ingredients
+        pass
+    else:
+        # user wants num_ingredients ingredients that are similar
+        # to the given list of ingredients. Find some random
+        # ingredients that are similar to the given ones
+        # TODO: similar._get_similar_ingredients_to(ingredients, num_ingredients)
+        # TODO: print those
+        # TODO: Also print the similarity matrix for the list passed in:
+        similarity_matrix = similar._compute_similarity_matrix(ingredients)
+        pass
 
 
 def train_models(args):
@@ -447,7 +483,7 @@ def __train_kmeans(matrix):
         print("Ended at " + myio.print_time())
 
         print("Saving the model...")
-        myio.save(model, config.KMEANS_MODEL_PATH)
+        myio.save_pickle(model, config.KMEANS_MODEL_PATH)
 
     return model
 
