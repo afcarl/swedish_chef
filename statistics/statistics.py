@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+import statistics.recipe_table as recipe_table
 import statistics.similar as similar
 from sklearn.cluster import KMeans
 import string
@@ -61,6 +62,9 @@ def ask_similar(args):
         # TODO: print those
         # TODO: Also print the similarity matrix for the list passed in:
         similarity_matrix = similar._compute_similarity_matrix(ingredients)
+        similarity_score = similar._compute_similarity_score(ingredients)
+        similarity_measure = similar._compute_similarity_measure(ingredients)
+        print("Similarity score for these ingredients: " + str(similarity_score))
         pass
 
 
@@ -77,7 +81,8 @@ def train_models(args):
     unique_within = args.train[2]
 
     print("Generating recipes...")
-    recipes = __generate_recipes(table, unique_within)
+    rec_table = __generate_recipes(table, unique_within)
+    recipes = rec_table.get_recipes()
 
     variables, labels, sparse_matrix, matrix =\
                         __generate_model_structures(recipes, table)
@@ -87,13 +92,14 @@ def train_models(args):
 
     print("Clustering using kmeans...")
     k_model = __train_kmeans(matrix)
-    raise NotImplementedError("Still need to actually do stuff with the vec model.")
-    # TODO
 
-    row_clusters = __generate_linkage(recipes, table)
+    print("Computing statistics on the data...")
+    __compute_stats(rec_table)
 
-    print("Saving row_clusters...")
-    myio.save_pickle(row_clusters, config.CLUSTERS)
+#    row_clusters = __generate_linkage(recipes, table)
+
+#    print("Saving row_clusters...")
+#    myio.save_pickle(row_clusters, config.CLUSTERS)
 
 #    This is, ludicrously, a recursive algorithm, so it stack overflows
 #    print("Generating dendrogram...")
@@ -298,6 +304,18 @@ def run_unit_tests():
     it.unit_test()
     __normalize_rows_test()
     __training_test();
+    similar._unit_test()
+
+
+def __compute_stats(rec_table):
+    """
+    Computes the similarity mean and similarity standard
+    deviation and maybe some other stats from the recipes.
+    @param rec_table: The RecipeTable object that contains
+                      all of the recipes.
+    @return: void (just prints the information)
+    """
+    similar._compute_sim_stats(rec_table)
 
 
 def __generate_ingredient_feature_vector(ingredient, recipes):
@@ -337,23 +355,31 @@ def __generate_recipes(table, unique_within_path):
     generate the IDs.
     @param table: The IngredientsTable to use
     @param unique_within_path: The path to the file containing the recipes
-    @return: A list of recipe objects
+    @return: A RecipeTable object
     """
-    to_ret = []
-    recipe_producer = \
-        myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
-    lines_between_tags = next(recipe_producer)
-    while lines_between_tags is not None:
-        ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
-        recipe = Recipe(table, ingredients=ingredients)
-        to_ret.append(recipe)
-        debug.debug_print("Recipe Generated: " + str(recipe))
-        try:
-            lines_between_tags = next(recipe_producer)
-        except StopIteration:
-            lines_between_tags = None
+    if os.path.exists(config.RECIPE_TABLE_PATH):
+        return recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
+    else:
+        to_ret = []
+        recipe_producer = \
+            myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
+        lines_between_tags = next(recipe_producer)
+        while lines_between_tags is not None:
+            ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
+            recipe = Recipe(table, ingredients=ingredients)
+            to_ret.append(recipe)
+            debug.debug_print("Recipe Generated: " + str(recipe))
+            try:
+                lines_between_tags = next(recipe_producer)
+            except StopIteration:
+                lines_between_tags = None
 
-    return to_ret
+        print("    |-> Generating a recipe table...")
+        rt = recipe_table.RecipeTable(to_ret)
+        print("    |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
+        recipe_table.save_to_disk(rt, config.RECIPE_TABLE_PATH)
+
+        return rt
 
 def __training_test():
     """
@@ -407,23 +433,23 @@ def __training_test():
 
         # Now put the chosen recipes into a reasonable format
         recipes = __generate_recipes(table, unique_within)
-        print("Generated the following recipes: ")
-        for r in recipes:
-            print(str(r))
+#        print("Generated the following recipes: ")
+#        for r in recipes:
+#            print(str(r))
 
         # Now generate the hierarchical linkage from the ingredients
-        variables, labels, sparse_matrix, matrix =\
-                        __generate_model_structures(recipes, table, testing=True)
-        linkage, labels = __generate_linkage(recipes, table, testing=True)
-
-        # Now do something interesting with the linkage
-        print("Generating dendrogram...")
-        row_dendr = dendrogram(linkage, labels=labels)
-
-        print("Plotting it...")
-        plt.tight_layout()
-        plt.ylabel("Distance")
-        plt.show()
+#        variables, labels, sparse_matrix, matrix =\
+#                        __generate_model_structures(recipes, table, testing=True)
+#        linkage, labels = __generate_linkage(recipes, table, testing=True)
+#
+#        # Now do something interesting with the linkage
+#        print("Generating dendrogram...")
+#        row_dendr = dendrogram(linkage, labels=labels)
+#
+#        print("Plotting it...")
+#        plt.tight_layout()
+#        plt.ylabel("Distance")
+#        plt.show()
 
         # Clean up
         os.remove(unique_within)

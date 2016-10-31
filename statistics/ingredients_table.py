@@ -162,7 +162,7 @@ def unit_test(path=None):
             friendship_id = None
 
         print("Pickling the unit under test...")
-        pickle_path = save_to_disk(uut)
+        pickle_path = save_to_disk(uut, path)
         print("Saved to: " + str(pickle_path))
 
         print("Loading the unit under test back from pickle...")
