@@ -18,7 +18,11 @@ DATA_FRAME = "tmp/dataframe"
 
 # The path to the saved IngredientsTable object
 # @programmatic
-INGREDIENT_TABLE_PATH = None
+INGREDIENT_TABLE_PATH = "tmp/ingredient_table"
+
+# The path to the saved kmeans object
+# @programmatic
+KMEANS_MODEL_PATH = "tmp/kmeans.model"
 
 # The master directory where we store data
 # @programmatic
@@ -52,6 +56,18 @@ RECIPE_FILE_PATH = DATA_DIRECTORY + "/" + RECIPE_FILE_NAME
 # The path to the recipe file with ingredients replaced with single word versions
 # @programmatic
 RECIPE_FILE_SINGLE_PATH = DATA_DIRECTORY + "/" + "single_" + RECIPE_FILE_NAME
+
+# The path to the recipe table
+# @manual
+RECIPE_TABLE_PATH = DATA_DIRECTORY + "/" + "recipe_table"
+
+# The similarity score average for the population of recipes
+# @manual : Get it from the computer and then hand write it
+SIM_MEAN = 0.118617649461
+
+# The standard deviation for the population of recipes' similarity scores
+# @manual: Get it from the computer and then hand write it
+SIM_STAND_DEV = 0.06918336224729744
 
 # The unique.txt ingredient file path
 # @programmatic/manual - will overwrite with user input

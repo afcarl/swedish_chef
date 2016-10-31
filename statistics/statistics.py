@@ -2,6 +2,9 @@
 The main API for the statistics python package.
 """
 
+import statistics.recipe_table as recipe_table
+import statistics.similar as similar
+from sklearn.cluster import KMeans
 import string
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
@@ -26,6 +29,45 @@ with warnings.catch_warnings():
     import gensim
 
 
+def ask_similar(args):
+    """
+    Uses any already trained models to figure out the
+    similarity between the given list of ingredients, prints
+    the similarity matrix, and then gives args.n number
+    of ingredients that are also similar to the given
+    list of ingredients.
+    @param args: ArgParse object that must have args.similar[0] (number
+                 of ingredients to get back) and args.simliar[1] (the
+                 list of ingredients to compute a matrix for and to
+                 match new ingredients with - may be an empty list,
+                 in which case the program simply gives back a
+                 list of similar ingredients of len args.similar[0])
+    @return: void
+    """
+    num_ingredients = args.similar[0]
+    ingredients = args.similar[1:]
+    print("Ingredients: " + str(ingredients))
+
+    rec_table = recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
+
+    if len(ingredients) == 0:
+        # user passed in no ingredients, just give back some
+        # similar ingredients
+        sim_ingredients = similar._get_random_similar_ingredients(rec_table, num_ingredients)
+        print("Here are " + str(num_ingredients) + " similar ingredients: ")
+        print(str(sim_ingredients))
+    else:
+        # user wants num_ingredients ingredients that are similar
+        # to the given list of ingredients. Find some random
+        # ingredients that are similar to the given ones
+        # TODO: similar._get_similar_ingredients_to(ingredients, num_ingredients)
+        # TODO: print those
+        similarity_matrix = similar._compute_similarity_matrix(ingredients)
+        similarity_score = similar._compute_similarity_score(ingredients)
+        similarity_measure = similar._compute_similarity_measure(ingredients)
+        print("Similarity score for these ingredients: " + str(similarity_score))
+        print("Z-score for similarity: " + str(similarity_measure))
+
 
 def train_models(args):
     """
@@ -40,17 +82,25 @@ def train_models(args):
     unique_within = args.train[2]
 
     print("Generating recipes...")
-    recipes = __generate_recipes(table, unique_within)
+    rec_table = __generate_recipes(table, unique_within)
+    recipes = rec_table.get_recipes()
+
+    variables, labels, sparse_matrix, matrix =\
+                        __generate_model_structures(rec_table, table)
 
     print("Running word2vec on recipes...")
     vec_model = __train_word2vec(table, recipes)
-    raise NotImplementedError("Still need to actually do stuff with the vec model.")
-    # TODO
 
-    row_clusters = __generate_linkage(recipes, table)
+    print("Clustering using kmeans...")
+    k_model = __train_kmeans(matrix)
 
-    print("Saving row_clusters...")
-    myio.save_pickle(row_clusters, config.CLUSTERS)
+    print("Computing statistics on the data...")
+    __compute_stats(rec_table)
+
+#    row_clusters = __generate_linkage(recipes, table)
+
+#    print("Saving row_clusters...")
+#    myio.save_pickle(row_clusters, config.CLUSTERS)
 
 #    This is, ludicrously, a recursive algorithm, so it stack overflows
 #    print("Generating dendrogram...")
@@ -61,15 +111,17 @@ def train_models(args):
 #    plt.show()
     # TODO
 
-def __generate_linkage(recipes, table, testing=False):
+def __generate_model_structures(rec_table, table, testing=False):
     """
-    Generate the hierarchical linkage matrix by the clustering algorithm.
-    @param recipes: A list of recipe objects
+    Generates all the necessary data structures for training the models.
+    @param rec_table: A RecipeTable object
     @param table: An IngredientsTable object containing all the ingredients
                   found in the list of recipes.
-    @param testing: Whether to use any files found on disk/overwrite
-                    those files. If not, temporary ones will be created.
+    @param testing: Whether we are just testing the data
+    @return: The datastructures
     """
+    recipes = rec_table.get_recipes()
+
     print("Generating the variables heading...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
     debug.debug_print("Variables: " + os.linesep + str(variables))
@@ -79,13 +131,26 @@ def __generate_linkage(recipes, table, testing=False):
     debug.debug_print("Labels: " + os.linesep + str(labels))
 
     print("Retrieving scipy version of sparse matrix...")
-    sparse_matrix = __retrieve_sparse_matrix(recipes, labels, testing).tocoo()
+    sparse_matrix = __retrieve_sparse_matrix(rec_table, labels, testing).tocoo()
     debug.debug_print("Sparse matrix: " + os.linesep + str(sparse_matrix))
 
     print("Retrieving dense representation of matrix...")
     matrix = __retrieve_matrix(sparse_matrix, testing)
     debug.debug_print("Dense matrix: " + os.linesep + str(pd.DataFrame(matrix)))
 
+    return variables, labels, sparse_matrix, matrix
+
+
+def __generate_linkage(recipes, table, matrix, testing=False):
+    """
+    Generate the hierarchical linkage matrix by the clustering algorithm.
+    @param recipes: A list of recipe objects
+    @param table: An IngredientsTable object containing all the ingredients
+                  found in the list of recipes.
+    @param matrix: A dense representation of the data matrix.
+    @param testing: Whether to use any files found on disk/overwrite
+                    those files. If not, temporary ones will be created.
+    """
 #    print("Normalizing row vectors...")
 #    # Normalize the row vector (ingredients), so that they
 #    # all have the same length, which means that ones that
@@ -120,7 +185,7 @@ def __generate_linkage(recipes, table, testing=False):
     debug.debug_print("Data frame: " + os.linesep + str(df))
 
     print("Generating row_clusters (takes about 3 or 4 hours)...")
-    print("Started at " + str(time.strftime("%I:%M:%S")))
+    print("Started at " + myio.print_time())
     row_clusters = linkage(pdist(df, metric="jaccard"), method="ward")
 
     return row_clusters, labels
@@ -188,7 +253,7 @@ def __retrieve_matrix(sparse_matrix, testing=False):
     return matrix
 
 
-def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
+def __retrieve_sparse_matrix(rec_table, ingredients, testing=False):
     """
     Retrieves a sparse matrix representation of the recipes and ingredients.
     That is, retrieves a sparse matrix of the form:
@@ -197,7 +262,7 @@ def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
     ing1   0           0        ...
     Either generates it from given args or else finds
     it on the disk.
-    @param recipes: All of the recipes
+    @param rec_table: All of the recipes as a RecipeTable object
     @param ingredients: All of the ingredients
     @param testing: Whether to find a matrix on the disk or generate a tmp one.
                     True to generate a tmp one.
@@ -209,7 +274,7 @@ def __retrieve_sparse_matrix(recipes, ingredients, testing=False):
     else:
         print("Generating sparse matrix...")
         print("  |-> Generating the rows, this may take a while...")
-        rows = [__generate_ingredient_feature_vector_sparse(ingredient, recipes)
+        rows = [rec_table.ingredient_to_feature_vector(ingredient)
                     for ingredient in tqdm(ingredients)]
         print("  |-> Generating the matrix from the rows...")
         sparse_matrix = sparse.vstack(rows)
@@ -242,6 +307,18 @@ def run_unit_tests():
     it.unit_test()
     __normalize_rows_test()
     __training_test();
+    similar._unit_test()
+
+
+def __compute_stats(rec_table):
+    """
+    Computes the similarity mean and similarity standard
+    deviation and maybe some other stats from the recipes.
+    @param rec_table: The RecipeTable object that contains
+                      all of the recipes.
+    @return: void (just prints the information)
+    """
+    similar._compute_sim_stats(rec_table)
 
 
 def __generate_ingredient_feature_vector(ingredient, recipes):
@@ -281,24 +358,31 @@ def __generate_recipes(table, unique_within_path):
     generate the IDs.
     @param table: The IngredientsTable to use
     @param unique_within_path: The path to the file containing the recipes
-    @return: A list of recipe objects
+    @return: A RecipeTable object
     """
-    to_ret = []
-    recipe_producer = \
-        myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
-    lines_between_tags = next(recipe_producer)
-    while lines_between_tags is not None:
-        ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
-        recipe = Recipe(table, ingredients=ingredients)
-        to_ret.append(recipe)
-        debug.debug_print("Recipe Generated: " + str(recipe))
-        try:
-            lines_between_tags = next(recipe_producer)
-        except StopIteration:
-            lines_between_tags = None
+    if os.path.exists(config.RECIPE_TABLE_PATH):
+        return recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
+    else:
+        to_ret = []
+        recipe_producer = \
+            myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
+        lines_between_tags = next(recipe_producer)
+        while lines_between_tags is not None:
+            ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
+            recipe = Recipe(table, ingredients=ingredients)
+            to_ret.append(recipe)
+            debug.debug_print("Recipe Generated: " + str(recipe))
+            try:
+                lines_between_tags = next(recipe_producer)
+            except StopIteration:
+                lines_between_tags = None
 
-    return to_ret
+        print("    |-> Generating a recipe table...")
+        rt = recipe_table.RecipeTable(to_ret)
+        print("    |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
+        recipe_table.save_to_disk(rt, config.RECIPE_TABLE_PATH)
 
+        return rt
 
 def __training_test():
     """
@@ -352,21 +436,23 @@ def __training_test():
 
         # Now put the chosen recipes into a reasonable format
         recipes = __generate_recipes(table, unique_within)
-        print("Generated the following recipes: ")
-        for r in recipes:
-            print(str(r))
+#        print("Generated the following recipes: ")
+#        for r in recipes:
+#            print(str(r))
 
         # Now generate the hierarchical linkage from the ingredients
-        linkage, labels = __generate_linkage(recipes, table, testing=True)
-
-        # Now do something interesting with the linkage
-        print("Generating dendrogram...")
-        row_dendr = dendrogram(linkage, labels=labels)
-
-        print("Plotting it...")
-        plt.tight_layout()
-        plt.ylabel("Distance")
-        plt.show()
+#        variables, labels, sparse_matrix, matrix =\
+#                        __generate_model_structures(recipes, table, testing=True)
+#        linkage, labels = __generate_linkage(recipes, table, testing=True)
+#
+#        # Now do something interesting with the linkage
+#        print("Generating dendrogram...")
+#        row_dendr = dendrogram(linkage, labels=labels)
+#
+#        print("Plotting it...")
+#        plt.tight_layout()
+#        plt.ylabel("Distance")
+#        plt.show()
 
         # Clean up
         os.remove(unique_within)
@@ -408,6 +494,29 @@ def __normalize_rows_test():
 
     debug.print_test_banner(test_name, True)
 
+def __train_kmeans(matrix):
+    """
+    Trains k-means model.
+    @param matrix: The data matrix
+    @return: The trained model, which it saves
+    """
+    if os.path.exists(config.KMEANS_MODEL_PATH):
+        print("Found an existing model for kmeans at " +\
+            str(config.KMEANS_MODEL_PATH) + ", using that.")
+        model = myio.load_pickle(config.KMEANS_MODEL_PATH)
+    else:
+        print("Generating the kmeans model...")
+        print("Started at " + myio.print_time())
+        kmeans = KMeans(n_clusters=25, random_state=0)
+        model = kmeans.fit_predict(matrix)
+        print("Ended at " + myio.print_time())
+
+        print("Saving the model...")
+        myio.save_pickle(model, config.KMEANS_MODEL_PATH)
+
+    return model
+
+
 def __train_word2vec(ingredient_table, ingredients_lists):
     """
     Trains word2vec on the recipe file found in config.py.
@@ -428,17 +537,17 @@ def __train_word2vec(ingredient_table, ingredients_lists):
 
         print("    |-> Training Word2Vec on ingredient file to learn " +\
                         "grammatical associations...")
-        print("Started at " + str(time.strftime("%I:%M:%S")))
+        print("Started at " + myio.print_time())
         model = gensim.models.Word2Vec(sentences, min_count=2, workers=4,
                                         iter=5)
-        print("Ended at " + str(time.strftime("%I:%M:%S")))
+        print("Ended at " + myio.print_time())
 
         print("    |-> Training Word2Vec on ingredient lists to learn " +\
                         "food associations...")
-        print("Started at " + str(time.strftime("%I:%M:%S")))
+        print("Started at " + myio.print_time())
         model.train(generated_ingredient_lists,
                         total_examples=len(generated_ingredient_lists))
-        print("Ended at " + str(time.strftime("%I:%M:%S")))
+        print("Ended at " + myio.print_time())
 
         print("Saving model as " + str(config.WORD2VEC_MODEL_PATH))
         model.save(config.WORD2VEC_MODEL_PATH)
