@@ -2,6 +2,7 @@
 Module to hold a RecipeTable class.
 """
 
+import random
 import pickle
 import scipy.sparse as sparse
 
@@ -32,6 +33,26 @@ class RecipeTable:
         """
         self.__recipes.append(recipe)
 
+    def get_random_ingredient(self, seed=0):
+        """
+        Gets a random ingredient from the table.
+        @param seed: The random seed.
+        @return: random ingredient
+        """
+        random.seed(seed)
+        recipe = []
+        while len(recipe) == 0:
+            recipe_index = random.randint(0, len(self.__recipes) - 1)
+            recipe = self.__recipes[recipe_index]
+
+        print("Randomly chosen recipe: " + str(recipe))
+        if len(recipe) == 0:
+            return recipe[0]
+        else:
+            ingredient_index = random.randint(0, len(recipe) - 1)
+            ingredient = recipe[ingredient_index]
+            return ingredient
+
     def get_recipes(self):
         """
         Gets all the recipes from the table.
@@ -39,7 +60,7 @@ class RecipeTable:
         """
         return self.__recipes
 
-    def ingredient_to_feature_vector(ingredient):
+    def ingredient_to_feature_vector(self, ingredient):
         """
         Generates a vector of the form:
         Recipe 0    Recipe 1    Recipe 2    ...
@@ -55,7 +76,7 @@ class RecipeTable:
         to_ret = [1 if recipe.has(ingredient) else 0 for recipe in self.__recipes]
         return to_ret
 
-    def ingredient_to_feature_vector_sparse(ingredient):
+    def ingredient_to_feature_vector_sparse(self, ingredient):
         """
         Does exactly the same thing as ingredient_to_feature_vector, but
         in a sparse format, specifically, it returns a csr_matrix.

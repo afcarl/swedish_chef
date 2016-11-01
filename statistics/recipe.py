@@ -24,6 +24,9 @@ class Recipe:
             self.__ingredients_list.append(ingredient)
         self.__ingredients_list = list(set(self.__ingredients_list))
 
+    def __getitem__(self, key):
+        return self.__ingredients_list[key]
+
     def __iter__(self):
         for ingredient in self.get_ingredients_list():
             yield ingredient

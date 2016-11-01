@@ -185,16 +185,20 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=0):
     @param seed: A seed for choosing the same ones everytime.
     @return: The ingredients that are similar.
     """
-    # Load w2v and pull out a random ingredient
-    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
-    # TODO:
-    seed_ingredient = __get_random_ingredient_from_w2v(seed)
+#   Currently no need to load w2v
+#    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+    seed_ingredient = rec_table.get_random_ingredient(seed)
+    print("Got random ingredient: " + str(seed_ingredient))
 
     # Load kmeans and pull out n - 1 ingredients from that one's cluster
     kmeans = __load_model(config.KMEANS_MODEL_PATH)
-    feature_vector = rec_table.ingredient_as_feature_vector(seed_ingredient)
+    print("Loaded kmeans model: " + str(kmeans))
+    feature_vector = rec_table.ingredient_to_feature_vector(seed_ingredient)
     seed_cluster_index = kmeans.predict(feature_vector)
-    seed_cluster = 5#TODO
+    print("Cluster index for this feature vector: " + str(seed_cluster_index))
+    print("Now regenerating the seed's cluster...")
+    seed_cluster = [data for data in tqdm(kmeans.labels_) if kmeans.predict(data) == seed_cluster_index]
+    print("Retrieving some random ingredients from this cluster...")
     ingredients = __get_random_ingredients_from_cluster(\
                         kmeans, seed_cluster, num_ingredients - 1)
 

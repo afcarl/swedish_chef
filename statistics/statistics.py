@@ -44,7 +44,7 @@ def ask_similar(args):
                  list of similar ingredients of len args.similar[0])
     @return: void
     """
-    num_ingredients = args.similar[0]
+    num_ingredients = int(args.similar[0])
     ingredients = args.similar[1:]
     print("Ingredients: " + str(ingredients))
 
@@ -53,7 +53,7 @@ def ask_similar(args):
     if len(ingredients) == 0:
         # user passed in no ingredients, just give back some
         # similar ingredients
-        sim_ingredients = similar._get_random_similar_ingredients(rec_table, num_ingredients)
+        sim_ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
         print("Here are " + str(num_ingredients) + " similar ingredients: ")
         print(str(sim_ingredients))
     else:
@@ -507,12 +507,12 @@ def __train_kmeans(matrix):
     else:
         print("Generating the kmeans model...")
         print("Started at " + myio.print_time())
-        kmeans = KMeans(n_clusters=25, random_state=0)
-        model = kmeans.fit_predict(matrix)
+        kmeans = KMeans(n_clusters=500, random_state=0)
+        kmeans.fit(matrix)
         print("Ended at " + myio.print_time())
 
         print("Saving the model...")
-        myio.save_pickle(model, config.KMEANS_MODEL_PATH)
+        myio.save_pickle(kmeans, config.KMEANS_MODEL_PATH)
 
     return model
 
