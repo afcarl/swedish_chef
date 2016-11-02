@@ -4,9 +4,9 @@ Some of these are marked as to be changed by hand, while some
 are marked to be changed programmatically. Please pay attention.
 """
 
-# Clusters
+# Clusters directory where each kmeans cluster is stored
 # @manual
-CLUSTERS = "tmp/clusters"
+CLUSTERS = "tmp/clusters/"
 
 # The directory wherein we can find the data for the chef
 # @programmatic/manual - can be overwritten by user, but default is manually set

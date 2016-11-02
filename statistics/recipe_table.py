@@ -2,9 +2,14 @@
 Module to hold a RecipeTable class.
 """
 
+import warnings
 import random
 import pickle
 import scipy.sparse as sparse
+from tqdm import tqdm
+import myio.myio as myio
+import statistics.cluster as cluster
+import chef_global.debug as debug
 
 
 class RecipeTable:
@@ -16,6 +21,7 @@ class RecipeTable:
         self.__recipes = []
         for recipe in recipes:
             self.__recipes.append(recipe)
+        self.__clusters = []
 
     def __iter__(self):
         for recipe in self.__recipes:
@@ -32,6 +38,14 @@ class RecipeTable:
         @return: void
         """
         self.__recipes.append(recipe)
+
+    def get_cluster(self, index):
+        """
+        Gets the cluster with the given index.
+        @param index: The index to use to retrieve the cluster
+        @return: A cluster object whose index is index
+        """
+        return self.__clusters[index]
 
     def get_random_ingredient(self, seed=0):
         """
@@ -85,6 +99,16 @@ class RecipeTable:
         lil_matrix_form = sparse.lil_matrix(list_form)
         return lil_matrix_form.tocsr()
 
+    def load_in_clusters(self, clusters):
+        """
+        Loads the clusters into the recipe table.
+        @param clusters: list of cluster objects
+        @return: void
+        """
+        for c in clusters:
+            self.__clusters.append("empty")
+        for c in clusters:
+            self.__clusters[c.index] = c
 
 def save_to_disk(obj, path="tmp/recipe_table"):
     """

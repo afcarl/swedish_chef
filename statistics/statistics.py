@@ -24,6 +24,7 @@ import statistics.ingredients_table as it
 import chef_global.config as config
 from statistics.recipe import Recipe
 import warnings
+import statistics.cluster as cluster
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import gensim
@@ -49,6 +50,8 @@ def ask_similar(args):
     print("Ingredients: " + str(ingredients))
 
     rec_table = recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
+    clusters = cluster.load_clusters()
+    rec_table.load_in_clusters(clusters)
 
     if len(ingredients) == 0:
         # user passed in no ingredients, just give back some
@@ -92,7 +95,13 @@ def train_models(args):
     vec_model = __train_word2vec(table, recipes)
 
     print("Clustering using kmeans...")
-    k_model = __train_kmeans(matrix)
+    kmeans = __train_kmeans(matrix)
+
+    print("Regenerating all of the kmeans clusters and saving them to disk. This will take a while...")
+    clusters = cluster.regenerate_clusters(kmeans, rec_table)
+
+    print("Saving the recipe table now that it is loaded with clusters...")
+    recipe_table.save_to_disk(rec_table)
 
     print("Computing statistics on the data...")
     __compute_stats(rec_table)
@@ -274,7 +283,7 @@ def __retrieve_sparse_matrix(rec_table, ingredients, testing=False):
     else:
         print("Generating sparse matrix...")
         print("  |-> Generating the rows, this may take a while...")
-        rows = [rec_table.ingredient_to_feature_vector(ingredient)
+        rows = [sparse.coo_matrix(rec_table.ingredient_to_feature_vector(ingredient))
                     for ingredient in tqdm(ingredients)]
         print("  |-> Generating the matrix from the rows...")
         sparse_matrix = sparse.vstack(rows)
@@ -282,6 +291,29 @@ def __retrieve_sparse_matrix(rec_table, ingredients, testing=False):
             print("Pickling the sparse matrix...")
             myio.save_pickle(sparse_matrix, config.MATRIX_SPARSE)
     return sparse_matrix
+
+
+
+def __sparse_matrix_test():
+    """
+    Run the unit test for the sparse matrix algorithm.
+    """
+    test_name = "Sparse Matrix Test"
+    debug.print_test_banner(test_name, False)
+
+    table = it.load_from_disk("tmp/ingredient_table")
+
+    ingredients = ["apple", "pear", "salt", "pepper", "pork", "chocolate", "caramel"]
+    recipes = [Recipe(table, ingredients=["apple", "coffee"]),
+               Recipe(table, ingredients=["salt, apple", "pork"]),
+                Recipe(table, ingredients=["caramel"])]
+    rec_table = recipe_table.RecipeTable(recipes=recipes)
+    sm = __retrieve_sparse_matrix(rec_table, ingredients, testing=True)
+    print("Generated this sparse matrix: " + str(sm))
+
+    debug.print_test_banner(test_name, True)
+
+
 
 
 def __run_pca(m):
@@ -307,6 +339,7 @@ def run_unit_tests():
     it.unit_test()
     __normalize_rows_test()
     __training_test();
+    __sparse_matrix_test()
     similar._unit_test()
 
 
@@ -503,7 +536,7 @@ def __train_kmeans(matrix):
     if os.path.exists(config.KMEANS_MODEL_PATH):
         print("Found an existing model for kmeans at " +\
             str(config.KMEANS_MODEL_PATH) + ", using that.")
-        model = myio.load_pickle(config.KMEANS_MODEL_PATH)
+        kmeans = myio.load_pickle(config.KMEANS_MODEL_PATH)
     else:
         print("Generating the kmeans model...")
         print("Started at " + myio.print_time())
@@ -514,7 +547,7 @@ def __train_kmeans(matrix):
         print("Saving the model...")
         myio.save_pickle(kmeans, config.KMEANS_MODEL_PATH)
 
-    return model
+    return kmeans
 
 
 def __train_word2vec(ingredient_table, ingredients_lists):
