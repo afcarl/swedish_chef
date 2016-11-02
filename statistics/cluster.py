@@ -7,6 +7,7 @@ from tqdm import tqdm
 import warnings
 import myio.myio as myio
 import chef_global.debug as debug
+import chef_global.config as config
 
 
 class Cluster:

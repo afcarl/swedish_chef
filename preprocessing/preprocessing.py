@@ -122,6 +122,18 @@ def trim_all_files_to_recipes():
     trimmer._trim_all_files_to_recipes()
 
 
+def __do_single_word():
+    print("Replacing all ingredients in big recipe file with single word versions...")
+    if os.path.exists(config.RECIPE_FILE_SINGLE_PATH):
+        print("    |-> Found existing single word version at " + \
+                str(config.RECIPE_FILE_SINGLE_PATH) + ", using that one.")
+        pass
+    else:
+        print("    |-> Could not find existing version. Generating new one, this will " +\
+                        "take a while. Started at: " + str(time.strftime("%I:%M:%S")))
+        trimmer._replace_all_ingredients_with_single_words(
+                                                config.RECIPE_FILE_PATH, config.UNIQUE)
+ 
 
 
 
@@ -134,6 +146,7 @@ def __do_pipeline(args):
     __do_reset(args)
     __do_trim(args)
     __do_tabulate_ingredients(args)
+    __do_single_word()
     __do_reset(args)
 
 
@@ -212,20 +225,7 @@ def __do_trim(args):
 
         print("Stripping big recipe file...")
         myio.strip_file(config.RECIPE_FILE_PATH)
-
-    print("Replacing all ingredients in big recipe file with single word versions...")
-    if os.path.exists(config.RECIPE_FILE_SINGLE_PATH):
-        print("    |-> Found existing single word version at " + \
-                str(config.RECIPE_FILE_SINGLE_PATH) + ", using that one.")
-        pass
-    else:
-        print("    |-> Could not find existing version. Generating new one, this will " +\
-                        "take a while. Started at: " + str(time.strftime("%I:%M:%S")))
-        trimmer._replace_all_ingredients_with_single_words(
-                                                config.RECIPE_FILE_PATH, config.UNIQUE)
-
-
-
+    
 
 
 

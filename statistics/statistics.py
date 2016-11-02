@@ -10,7 +10,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import normalize
 import time
 import preprocessing.preprocessing as preprocessor
-import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
 import scipy.sparse as sparse
@@ -28,7 +27,10 @@ import statistics.cluster as cluster
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import gensim
-
+import matplotlib
+if os.environ["SSH_CONNECTION"]:
+    matplotlib.use("Pdf")
+import matplotlib.pyplot as plt
 
 def ask_similar(args):
     """
@@ -87,15 +89,19 @@ def train_models(args):
     print("Generating recipes...")
     rec_table = __generate_recipes(table, unique_within)
     recipes = rec_table.get_recipes()
+    print("Length of recipe table: " + str(len(recipes)))
 
     variables, labels, sparse_matrix, matrix =\
                         __generate_model_structures(rec_table, table)
+
+    # If we ran out of memory, matrix is none. We must use the sparse matrix
+    # to regenerate the matrix on the fly from now on
 
     print("Running word2vec on recipes...")
     vec_model = __train_word2vec(table, recipes)
 
     print("Clustering using kmeans...")
-    kmeans = __train_kmeans(matrix)
+    kmeans = __train_kmeans(matrix, sparse_matrix)
 
     print("Regenerating all of the kmeans clusters and saving them to disk. This will take a while...")
     clusters = cluster.regenerate_clusters(kmeans, rec_table)
@@ -257,9 +263,13 @@ def __retrieve_matrix(sparse_matrix, testing=False):
 #        matrix = sparse_matrix.toarray()
 #        if not testing:
 #            myio.save_pickle(matrix, config.MATRIX)
-    print("Generating dense matrix from sparse one...")
-    matrix = sparse_matrix.toarray()
-    return matrix
+    try:
+        print("Generating dense matrix from sparse one...")
+        matrix = sparse_matrix.toarray()
+        return matrix
+    except MemoryError:
+        print("Out of memory, working around this. Life will be slower from now on...")
+        return None
 
 
 def __retrieve_sparse_matrix(rec_table, ingredients, testing=False):
@@ -527,10 +537,13 @@ def __normalize_rows_test():
 
     debug.print_test_banner(test_name, True)
 
-def __train_kmeans(matrix):
+def __train_kmeans(matrix, sparse_matrix):
     """
     Trains k-means model.
-    @param matrix: The data matrix
+    @param matrix: The data matrix or None if sparse matrix to be used instead
+    @param sparse_matrix: The sparse data matrix (numpy sparse format), to
+                          be used in case out of memory when trying to repopulate
+                          the dense one.
     @return: The trained model, which it saves
     """
     if os.path.exists(config.KMEANS_MODEL_PATH):
@@ -541,7 +554,10 @@ def __train_kmeans(matrix):
         print("Generating the kmeans model...")
         print("Started at " + myio.print_time())
         kmeans = KMeans(n_clusters=500, random_state=0)
-        kmeans.fit(matrix)
+        if matrix:
+            kmeans.fit(matrix)
+        else:
+            kmeans.fit(sparse_matrix)
         print("Ended at " + myio.print_time())
 
         print("Saving the model...")
