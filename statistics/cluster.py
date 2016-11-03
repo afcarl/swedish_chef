@@ -65,60 +65,32 @@ def regenerate_clusters(kmeans, rec_table):
         for recipe in tqdm(rec_table):
             for ingredient in recipe:
                 ingredients.append(ingredient)
-        print("Number of ingredients: " + str(len(ingredients)))
-        print("Removing duplicates from ingredients...")
+        print("    |-> Number of ingredients: " + str(len(ingredients)))
+        print("    |-> Removing duplicates from ingredients...")
         ingredients = set(ingredients)
-        print("Number of unique ingredients: " + str(len(ingredients)))
-        print("Pairing each ingredient with its predicted index...")
+        print("    |-> Number of unique ingredients: " + str(len(ingredients)))
+        print("    |-> Pairing each ingredient with its predicted index...")
         tups = []
         for ingredient in tqdm(ingredients):
             fv = rec_table.ingredient_to_feature_vector(ingredient)
             predicted_index = (kmeans.predict(fv))[0]
             as_tup = (ingredient, predicted_index)
             tups.append(as_tup)
-        print("Sorting ingredients...")
+        print("    |-> Sorting ingredients...")
         sorted(tups, key=lambda t: t[1])
-        print("Looping over sorted ingredients and clusters...")
+        print("    |-> Looping over sorted ingredients and clusters...")
         tups = list(tups)
         last_index = (tups[0])[1]
-        print("last index: " + str(last_index))
         for tup in tqdm(tups):
             ingredient, this_index = tup
             if this_index != last_index:
-                print("Done with cluster index: " + str(last_index))
+                print("    |-> Done with cluster index: " + str(last_index))
                 cluster = clusters[last_index]
                 myio.save_pickle(cluster, config.CLUSTERS + "cluster" + str(cluster.get_index()))
             else:
-                print("This index: " + str(this_index))
+                print("    |-> This index: " + str(this_index))
                 cluster = clusters[this_index]
                 cluster.add(ingredient)
-
-        # Untenably slow
-        #already_done = {}
-        #for cluster in clusters:
-        #    print("Working on cluster " + str(cluster.get_index()) + " of 499...")
-        #    for recipe in tqdm(rec_table):
-        #        for ingredient in recipe:
-        #            if ingredient not in already_done:
-        #                fv = rec_table.ingredient_to_feature_vector(ingredient)
-        #                predicted_index = (kmeans.predict(fv))[0]
-        #                if (cluster.get_index() == predicted_index):
-        #                    cluster.add(ingredient)
-        #                    already_done[ingredient] = True
-        #    myio.save_pickle(cluster, config.CLUSTERS + "cluster" + str(cluster.get_index()))
-
-        #print("    |-> Started at: " + myio.print_time())
-        #for recipe in tqdm(rec_table):
-        #    for ingredient in recipe:
-        #        fv = rec_table.ingredient_to_feature_vector(ingredient)
-        #        predicted_index = (kmeans.predict(fv))[0]
-        #        clusters[predicted_index].add(ingredient)
-        #        debug.debug_print("Adding " + str(ingredient) + " to " + str(predicted_index))
-        #print("    |-> Finished at: " + myio.print_time())
-
-        #for cluster in clusters:
-        #    myio.save_pickle(cluster, config.CLUSTERS + "cluster" + str(cluster.get_index()))
-
 
 
 
