@@ -117,7 +117,10 @@ class RecipeTable:
         @param clusters: list of cluster objects
         @return: void
         """
+        max_index = 0
         for c in clusters:
+            max_index = c.index if c.index > max_index else max_index
+        for i in range(max_index + 1):
             self.__clusters.append("empty")
         for c in clusters:
             self.__clusters[c.index] = c
