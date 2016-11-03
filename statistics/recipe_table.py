@@ -2,6 +2,7 @@
 Module to hold a RecipeTable class.
 """
 
+import math
 import warnings
 import random
 import pickle
@@ -38,6 +39,27 @@ class RecipeTable:
         @return: void
         """
         self.__recipes.append(recipe)
+
+    def compute_stats(self):
+        """
+        Computes the average and standard deviation of
+        recipe lengths.
+        @return: tuple of the form (avg, stdev)
+        """
+        s = 0
+        for rec in self:
+            s += len(rec)
+        avg = s / len(self)
+
+        s = 0
+        for rec in self:
+            l = len(rec)
+            diff = l - avg
+            diff_sqr = diff * diff
+            s += diff_sqr
+        std = math.sqrt(s / len(self))
+
+        return avg, std
 
     def get_all_ingredients(self):
         """

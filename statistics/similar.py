@@ -171,7 +171,8 @@ def _compute_similarity_score(ingredients, w2v=None):
                     combos_already_seen.append((other, ingredient))
                     num_scores += 1
                 except KeyError as e:
-                    print(str(e))
+                    #print(str(e))
+                    pass
 
     if num_scores == 0:
         debug.debug_print("Can't compute z score.")
@@ -284,9 +285,7 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, w2v=None, seed=N
         print("Could not converge on " + str(num_ingredients) + " similar items.")
         return None
     else:
-        print("Ingredients: " + str(ingredients))
-
-    return ingredients
+        return ingredients
 
 
 def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):

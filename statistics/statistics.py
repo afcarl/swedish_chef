@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+import random
 import pandas
 import statistics.recipe_table as recipe_table
 import statistics.similar as similar
@@ -65,6 +66,13 @@ def ask_similar(args):
         except KeyError:
             print("Ingredient: " + str(ingredient) + " not found in models. Please replace.")
             return
+
+    if num_ingredients == 0:
+        avg, std = rec_table.compute_stats()
+        num_ingredients = random.gauss(avg, std)
+        if num_ingredients < 3:
+            num_ingredients = 3
+        num_ingredients = int(num_ingredients + 0.5)
 
     if len(ingredients) == 0:
         # user passed in no ingredients, just give back some
