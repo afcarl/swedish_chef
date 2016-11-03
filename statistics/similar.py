@@ -16,7 +16,7 @@ import chef_global.config as config
 import myio.myio as myio
 
 
-def _compute_similarity_matrix(ingredients):
+def _compute_similarity_matrix(ingredients, w2v=None):
     """
     Computes and returns the similarity matrix
     for the given ingredients using models that
@@ -24,7 +24,8 @@ def _compute_similarity_matrix(ingredients):
     @param ingredients: The ingredients of interest.
     @return: The similarity matrix
     """
-    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+    if w2v is None:
+        w2v = __load_model(config.WORD2VEC_MODEL_PATH)
 
     sim_mat = np.matrix([[0.0 for ing in ingredients]\
                         for ing in ingredients])
@@ -82,7 +83,7 @@ def _compute_sim_stats(rec_table):
                 debug.debug_print("Skipping this recipe, it is empty.")
                 pass
             else:
-                score = _compute_similarity_score(rec)
+                score = _compute_similarity_score(rec, w2v=w2v)
                 debug.debug_print("Similarity: " + str(score))
                 scores.append(score)
                 if score is not None:
@@ -107,7 +108,7 @@ def _compute_sim_stats(rec_table):
         return (mean, std_dev)
 
 
-def _compute_similarity_measure(ingredients):
+def _compute_similarity_measure(ingredients, w2v=None):
     """
     Computes a similarity measure of the ingredients. The
     similarity measure is, under the hood, a z-score of how
@@ -120,27 +121,31 @@ def _compute_similarity_measure(ingredients):
              is a good proxy for how likely these ingredients
              are to make a good recipe.
     """
+    if w2v is None:
+        w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+
     if config.SIM_STAND_DEV == 0 or config.SIM_MEAN == 0:
         print("Doesn't look like standard deviation or " +\
               "the mean of similarities make sense, you need "+\
               "to run the model generator first.")
         exit(0)
     else:
-        similarity = _compute_similarity_score(ingredients)
+        similarity = _compute_similarity_score(ingredients, w2v=w2v)
         if similarity is None:
             return None
         else:
             return (similarity - config.SIM_MEAN) / config.SIM_STAND_DEV
 
 
-def _compute_similarity_score(ingredients):
+def _compute_similarity_score(ingredients, w2v=None):
     """
     Computes an average similarity for all the ingredients
     in the given list and returns it.
     @param ingredients: The list of ingredients.
     @return: The similarity score.
     """
-    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+    if w2v is None:
+        w2v = __load_model(config.WORD2VEC_MODEL_PATH)
     try:
         debug.debug_print("Computing sim score for ingredients: " + str(ingredients))
         pass
@@ -176,22 +181,24 @@ def _compute_similarity_score(ingredients):
         return score / num_scores
 
 
-def _compute_similarity_stats(ingredients):
+def _compute_similarity_stats(ingredients, w2v=None):
     """
     Computes a similarity matrix, a similarity score, and
     a similarity measure.
     @param ingredients: The list of ingredients to deal with
     @return: A tuple: (sim_matrix, sim_score, sim_measure)
     """
-    similarity_matrix = _compute_similarity_matrix(ingredients)
-    similarity_score = _compute_similarity_score(ingredients)
-    similarity_measure = _compute_similarity_measure(ingredients)
+    if w2v is None:
+        w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+    similarity_matrix = _compute_similarity_matrix(ingredients, w2v=w2v)
+    similarity_score = _compute_similarity_score(ingredients, w2v=w2v)
+    similarity_measure = _compute_similarity_measure(ingredients, w2v=w2v)
     return (similarity_matrix, similarity_score, similarity_measure)
 
 
 
 
-def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
+def _get_random_similar_ingredients(num_ingredients, rec_table, w2v=None, seed=None):
     """
     Returns num_ingredients random ingredients that are
     'similar' to one another.
@@ -204,7 +211,8 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
         raise ValueError("Number of ingredients must be more than 0. Given: " + str(num_ingredients))
 
     # TODO: in desperate need of refactor
-    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+    if w2v is None:
+        w2v = __load_model(config.WORD2VEC_MODEL_PATH)
     kmeans = __load_model(config.KMEANS_MODEL_PATH)
 
     all_ingredients_in_w2v = False
@@ -244,7 +252,7 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
             else:
                 debug.debug_print("No cluster to pull from.")
             #print("On iteration " + str(j) + " found these ingredients: " + str(ingredients))
-            similarity = _compute_similarity_measure(ingredients)
+            similarity = _compute_similarity_measure(ingredients, w2v)
             #print("Similarity for these ingredients: " + str(similarity))
             if similarity is None or similarity < 0.2:
                 debug.debug_print("Did not converge on iteration: " + str(j))
@@ -265,7 +273,7 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
 
         debug.debug_print("Going to attempt to calculate similarity matrix now...")
         try:
-            _compute_similarity_matrix(ingredients)
+            _compute_similarity_matrix(ingredients, w2v)
             all_ingredients_in_w2v = True
             debug.debug_print("And they are all in w2v, so we can move on.")
         except KeyError:
@@ -289,11 +297,13 @@ def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
     @param rec_table: The recipe table
     @return: New ingredients, which are similar to the passed in ones
     """
+    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
+
     print("    |-> Finding a seed ingredient...")
     seed_sim = 0.0
     while seed_sim is None or seed_sim < 0.2:
-        seed_ingredient = (_get_random_similar_ingredients(1, rec_table))[0]
-        seed_sim = _compute_similarity_measure([seed_ingredient, ingredients[0]])
+        seed_ingredient = (_get_random_similar_ingredients(1, rec_table, w2v=w2v))[0]
+        seed_sim = _compute_similarity_measure([seed_ingredient, ingredients[0]], w2v=w2v)
         print("Got: " + str(seed_ingredient))
         print("Sim measure: " + str(seed_sim))
 
@@ -309,9 +319,9 @@ def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
         while sim is None or sim < 0.2 or ingredient_already_found:
             next_not_in_w2v = True
             while next_not_in_w2v:
-                next_ingredient = (_get_random_similar_ingredients(1, rec_table))[0]
+                next_ingredient = (_get_random_similar_ingredients(1, rec_table, w2v=w2v))[0]
                 try:
-                    _compute_similarity_stats([next_ingredient, "water"])
+                    _compute_similarity_stats([next_ingredient, "water"], w2v=w2v)
                     next_not_in_w2v = False
                     ingredient_already_found = next_ingredient in sims
                 except KeyError:
@@ -319,7 +329,7 @@ def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
 
             nexts = [ing for ing in sims]
             nexts.append(next_ingredient)
-            sim = _compute_similarity_measure(nexts)
+            sim = _compute_similarity_measure(nexts, w2v=w2v)
         print("    |-> Found an ingredient to add: " + str(next_ingredient))
         sims.append(next_ingredient)
 
@@ -343,6 +353,7 @@ def __load_model(path):
     @param path: The path to the given model.
     @return: The loaded model.
     """
+    print("Loading model: " + str(path))
     model = myio.load_pickle(path)
     return model
 
