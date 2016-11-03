@@ -28,8 +28,11 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import gensim
 import matplotlib
-if os.environ["SSH_CONNECTION"]:
-    matplotlib.use("Pdf")
+try:
+    if os.environ["SSH_CONNECTION"]:
+        matplotlib.use("Pdf")
+except KeyError:
+    pass
 import matplotlib.pyplot as plt
 
 def ask_similar(args):
@@ -58,18 +61,20 @@ def ask_similar(args):
     if len(ingredients) == 0:
         # user passed in no ingredients, just give back some
         # similar ingredients
-        sim_ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
+        ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
         print("Here are " + str(num_ingredients) + " similar ingredients: ")
-        print(str(sim_ingredients))
+        print(str(ingredients))
+        similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
+        print("Similarity score for these ingredients: " + str(similarity_score))
+        print("Z-score for similarity: " + str(similarity_measure))
     else:
         # user wants num_ingredients ingredients that are similar
         # to the given list of ingredients. Find some random
         # ingredients that are similar to the given ones
-        # TODO: similar._get_similar_ingredients_to(ingredients, num_ingredients)
-        # TODO: print those
-        similarity_matrix = similar._compute_similarity_matrix(ingredients)
-        similarity_score = similar._compute_similarity_score(ingredients)
-        similarity_measure = similar._compute_similarity_measure(ingredients)
+        sims = similar._get_similar_ingredients_to(ingredients, num_ingredients, rec_table)
+        print("Got these ingredients: " + str(sims))
+        ingredients.extend(sims)
+        similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
         print("Similarity score for these ingredients: " + str(similarity_score))
         print("Z-score for similarity: " + str(similarity_measure))
 
@@ -553,8 +558,8 @@ def __train_kmeans(matrix, sparse_matrix):
     else:
         print("Generating the kmeans model...")
         print("Started at " + myio.print_time())
-        kmeans = KMeans(n_clusters=500, random_state=0)
-        if matrix:
+        kmeans = KMeans(n_clusters=6, verbose=1)
+        if matrix is not None:
             kmeans.fit(matrix)
         else:
             kmeans.fit(sparse_matrix)

@@ -178,6 +178,21 @@ def _compute_similarity_score(ingredients):
         return score / num_scores
 
 
+def _compute_similarity_stats(ingredients):
+    """
+    Computes a similarity matrix, a similarity score, and
+    a similarity measure.
+    @param ingredients: The list of ingredients to deal with
+    @return: A tuple: (sim_matrix, sim_score, sim_measure)
+    """
+    similarity_matrix = _compute_similarity_matrix(ingredients)
+    similarity_score = _compute_similarity_score(ingredients)
+    similarity_measure = _compute_similarity_measure(ingredients)
+    return (similarity_matrix, similarity_score, similarity_measure)
+
+
+
+
 def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
     """
     Returns num_ingredients random ingredients that are
@@ -201,20 +216,73 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
     print("Size of this cluster is: " + str(len(cluster.ingredients)))
 
     ingredients = []
-    for i in range(num_ingredients):
-        index = random.randint(0, len(cluster.ingredients) - 1)
-        ingredients.append(cluster.ingredients[index])
-    print("Ingredients: " + str(ingredients))
+    converged = False
+    for j in range(100):
+        for i in range(num_ingredients):
+            index = random.randint(0, len(cluster.ingredients) - 1)
+            ingredients.append(cluster.ingredients[index])
+        similarity = _compute_similarity_measure(ingredients)
+        if (similarity > -0.2) and (similarity < 0.2):
+            print("Did not converge on iteration: " + str(j))
+            converged = False
+            ingredients = []
+        else:
+            print("Converged!")
+            converged = True
+            break
+    if not converged:
+        print("Could not converge on " + str(num_ingredients) + " similar items.")
+    else:
+        print("Ingredients: " + str(ingredients))
 
 
+    print("=====Just printing what each ingredient belongs to====")
     ingredients = rec_table.get_all_ingredients()
     for i in ingredients:
         fv = rec_table.ingredient_to_feature_vector(i)
         index = (kmeans.predict(np.array(fv).reshape(1, -1)))[0]
         print("Ingredient " + str(i) + "'s cluster: " + str(index))
+    exit(0)
 
 
     return ingredients
+
+
+def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
+    """
+    Gets num_ingredients which are similar to ingredients.
+    @param ingredients: The ingredients to compare to when getting new ones
+    @param num_ingredients: The number of new ingredients to get.
+    @param rec_table: The recipe table
+    @return: New ingredients, which are similar to the passed in ones
+    """
+    print("    |-> Finding a seed ingredient...")
+    seed_sim = 0.0
+    while (seed_sim < 0.2) and (seed_sim > -0.2):
+        seed_ingredient = _get_random_similar_ingredients(1, rec_table)
+        seed_sim = _compute_similarity_measure([seed_sim, ingredients[0]])
+
+    print("    |-> Found seed ingredient: " + str(seed_ingredient))
+
+    sims = [i for i in ingredients]
+    sims.append(seed_ingredient)
+
+    print("    |-> Gathering ingredients...")
+    for i in range(num_ingredients - 1):
+        sim = 0.0
+        while (sim < 0.2) and (sim > -0.2):
+            next_ingredient = _get_random_similar_ingredients(1, rec_table)
+            nexts = [ing for ing in sims]
+            nexts.append(next_ingredient)
+            sim = _compute_similarity_measure(nexts)
+        print("    |-> Found an ingredient to add " + str(next_ingredient))
+        sims.append(next_ingredient)
+
+    for i in ingredients:
+        sims.remove(i)
+
+    print("    |-> Here are the ingredients: " + str(sims))
+    return sims
 
 
 def _unit_test():

@@ -60,6 +60,7 @@ def regenerate_clusters(kmeans, rec_table):
         for i, label in enumerate(labels):
             clusters.append(Cluster(i))
 
+        print("    |-> Total number of clusters to regenerate: " + str(len(clusters)))
         print("    |-> Started at: " + myio.print_time())
         for recipe in tqdm(rec_table):
             for ingredient in recipe:
