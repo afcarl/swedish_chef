@@ -59,19 +59,30 @@ def ask_similar(args):
     clusters = cluster.load_clusters()
     rec_table.load_in_clusters(clusters)
 
+    for ingredient in ingredients:
+        try:
+            similar._compute_similarity_stats([ingredient, "water"])
+        except KeyError:
+            print("Ingredient: " + str(ingredient) + " not found in models. Please replace.")
+            return
+
     if len(ingredients) == 0:
         # user passed in no ingredients, just give back some
         # similar ingredients
         ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
         if ingredients is None:
             print("Could not get that many random similar ingredients.")
-            exit(0)
-        print("Here are " + str(num_ingredients) + " similar ingredients: ")
-        print(str(ingredients))
-        similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
-        print(str(pandas.DataFrame(similarity_matrix, columns = ingredients, index=ingredients)))
-        print("Similarity score for these ingredients: " + str(similarity_score))
-        print("Z-score for similarity: " + str(similarity_measure))
+            return
+        elif len(ingredients) == 1:
+            print("Here is your random ingredient: " + str(ingredients[0]))
+            return
+        else:
+            print("Here are " + str(num_ingredients) + " similar ingredients: ")
+            print(str(ingredients))
+            similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
+            print(str(pandas.DataFrame(similarity_matrix, columns = ingredients, index=ingredients)))
+            print("Similarity score for these ingredients: " + str(similarity_score))
+            print("Z-score for similarity: " + str(similarity_measure))
     else:
         # user wants num_ingredients ingredients that are similar
         # to the given list of ingredients. Find some random

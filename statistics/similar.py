@@ -200,6 +200,9 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
     @param seed: A seed for choosing the same ones everytime.
     @return: The ingredients that are similar.
     """
+    if num_ingredients < 1:
+        raise ValueError("Number of ingredients must be more than 0. Given: " + str(num_ingredients))
+
     # TODO: in desperate need of refactor
     w2v = __load_model(config.WORD2VEC_MODEL_PATH)
     kmeans = __load_model(config.KMEANS_MODEL_PATH)
@@ -210,6 +213,8 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
         cluster = None
         while cluster is None:
             seed_ingredient = rec_table.get_random_ingredient(seed)
+            if num_ingredients == 1:
+                return [seed_ingredient]
             stored.append(seed_ingredient)
             if len(stored) == num_ingredients:
                 break
@@ -238,9 +243,9 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
                         ingredients.append(cluster.ingredients[index])
             else:
                 debug.debug_print("No cluster to pull from.")
-            print("On iteration " + str(j) + " found these ingredients: " + str(ingredients))
+            #print("On iteration " + str(j) + " found these ingredients: " + str(ingredients))
             similarity = _compute_similarity_measure(ingredients)
-            print("Similarity for these ingredients: " + str(similarity))
+            #print("Similarity for these ingredients: " + str(similarity))
             if similarity is None or similarity < 0.2:
                 debug.debug_print("Did not converge on iteration: " + str(j))
                 converged = False
@@ -286,9 +291,11 @@ def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
     """
     print("    |-> Finding a seed ingredient...")
     seed_sim = 0.0
-    while seed_sim < 0.2:
-        seed_ingredient = _get_random_similar_ingredients(1, rec_table)
-        seed_sim = _compute_similarity_measure([seed_sim, ingredients[0]])
+    while seed_sim is None or seed_sim < 0.2:
+        seed_ingredient = (_get_random_similar_ingredients(1, rec_table))[0]
+        seed_sim = _compute_similarity_measure([seed_ingredient, ingredients[0]])
+        print("Got: " + str(seed_ingredient))
+        print("Sim measure: " + str(seed_sim))
 
     print("    |-> Found seed ingredient: " + str(seed_ingredient))
 
@@ -298,12 +305,22 @@ def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
     print("    |-> Gathering ingredients...")
     for i in range(num_ingredients - 1):
         sim = 0.0
-        while (sim < 0.2) and (sim > -0.2):
-            next_ingredient = _get_random_similar_ingredients(1, rec_table)
+        ingredient_already_found = False
+        while sim is None or sim < 0.2 or ingredient_already_found:
+            next_not_in_w2v = True
+            while next_not_in_w2v:
+                next_ingredient = (_get_random_similar_ingredients(1, rec_table))[0]
+                try:
+                    _compute_similarity_stats([next_ingredient, "water"])
+                    next_not_in_w2v = False
+                    ingredient_already_found = next_ingredient in sims
+                except KeyError:
+                    next_not_in_w2v = True
+
             nexts = [ing for ing in sims]
             nexts.append(next_ingredient)
             sim = _compute_similarity_measure(nexts)
-        print("    |-> Found an ingredient to add " + str(next_ingredient))
+        print("    |-> Found an ingredient to add: " + str(next_ingredient))
         sims.append(next_ingredient)
 
     for i in ingredients:
