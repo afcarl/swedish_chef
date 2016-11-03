@@ -4,6 +4,10 @@ Module to hold the encoder model.
 
 import tensorflow as tf
 import numpy as np
+import os
+import matplotlib
+if os.environ["SSH_CONNECTION"]:
+    matplotlib.use("Pdf")
 import matplotlib.pyplot as plt
 
 # Import MNIST data
