@@ -35,8 +35,6 @@ def _compute_similarity_matrix(ingredients):
             similarity = w2v.similarity(ingredients[i], ingredients[j])
             sim_mat[i, j] = similarity
 
-    df = pandas.DataFrame(sim_mat, columns=ingredients, index=ingredients)
-    print(str(df))
     return sim_mat
 
 
@@ -129,7 +127,10 @@ def _compute_similarity_measure(ingredients):
         exit(0)
     else:
         similarity = _compute_similarity_score(ingredients)
-        return (similarity - config.SIM_MEAN) / config.SIM_STAND_DEV
+        if similarity is None:
+            return None
+        else:
+            return (similarity - config.SIM_MEAN) / config.SIM_STAND_DEV
 
 
 def _compute_similarity_score(ingredients):
@@ -139,10 +140,10 @@ def _compute_similarity_score(ingredients):
     @param ingredients: The list of ingredients.
     @return: The similarity score.
     """
-    debug.debug_print("Compute similarity score...")
     w2v = __load_model(config.WORD2VEC_MODEL_PATH)
     try:
-        debug.debug_print("Ingredients: " + str(ingredients))
+        debug.debug_print("Computing sim score for ingredients: " + str(ingredients))
+        pass
     except KeyError:
         pass
 
@@ -150,15 +151,11 @@ def _compute_similarity_score(ingredients):
     num_scores = 0
     score = 0.0
     for ingredient in ingredients:
-        debug.debug_print("Ingredient: " + str(ingredient))
         for other in ingredients:
-            debug.debug_print("Other: " + str(other))
             combo = (ingredient, other)
-            debug.debug_print("Combo: " + str(combo))
             already_seen = combo in combos_already_seen
             ingredient_and_other_are_same = ingredient == other
             if already_seen or ingredient_and_other_are_same:
-                debug.debug_print("Already seen this combo.")
                 pass
             else:
                 try:
@@ -168,13 +165,14 @@ def _compute_similarity_score(ingredients):
                     # Also append the reverse of the combo
                     combos_already_seen.append((other, ingredient))
                     num_scores += 1
-                    debug.debug_print("num_scores: " + str(num_scores))
                 except KeyError as e:
                     print(str(e))
 
     if num_scores == 0:
+        debug.debug_print("Can't compute z score.")
         return None
     else:
+        debug.debug_print("Can compute z score: " + str(score / num_scores))
         return score / num_scores
 
 
@@ -202,48 +200,78 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
     @param seed: A seed for choosing the same ones everytime.
     @return: The ingredients that are similar.
     """
-#   Currently no need to load w2v
-#    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
-    seed_ingredient = rec_table.get_random_ingredient(seed)
-    print("Got random ingredient: " + str(seed_ingredient))
-
+    # TODO: in desperate need of refactor
+    w2v = __load_model(config.WORD2VEC_MODEL_PATH)
     kmeans = __load_model(config.KMEANS_MODEL_PATH)
-    feature_vector = rec_table.ingredient_to_feature_vector(seed_ingredient)
-    seed_cluster_index = (kmeans.predict(np.array(feature_vector).reshape(1, -1)))[0]
-    print("Cluster index for this feature vector: " + str(seed_cluster_index))
 
-    cluster = rec_table.get_cluster(seed_cluster_index)
-    print("Size of this cluster is: " + str(len(cluster.ingredients)))
+    all_ingredients_in_w2v = False
+    while not all_ingredients_in_w2v:
+        stored = []
+        cluster = None
+        while cluster is None:
+            seed_ingredient = rec_table.get_random_ingredient(seed)
+            stored.append(seed_ingredient)
+            if len(stored) == num_ingredients:
+                break
+            else:
+                debug.debug_print("Got random ingredient: " + str(seed_ingredient))
+                feature_vector = rec_table.ingredient_to_feature_vector(seed_ingredient)
+                seed_cluster_index = (kmeans.predict(np.array(feature_vector).reshape(1, -1)))[0]
+                debug.debug_print("Cluster index for this feature vector: " + str(seed_cluster_index))
+                cluster = rec_table.get_cluster(seed_cluster_index)
 
-    ingredients = []
-    converged = False
-    for j in range(100):
-        for i in range(num_ingredients):
-            index = random.randint(0, len(cluster.ingredients) - 1)
-            ingredients.append(cluster.ingredients[index])
-        similarity = _compute_similarity_measure(ingredients)
-        if (similarity > -0.2) and (similarity < 0.2):
-            print("Did not converge on iteration: " + str(j))
-            converged = False
-            ingredients = []
-        else:
-            print("Converged!")
-            converged = True
+        debug.debug_print("Stored ingredients: " + str(stored))
+        stored = list(set(stored))
+        ingredients = []
+        if stored:
+            ingredients.extend(stored)
+        debug.debug_print("Ingredients after adding stored: " + str(ingredients))
+        converged = False
+        for j in range(1000):
+            debug.debug_print("Attempting to find some similar ingredients, iteration: " + str(j))
+            if cluster is not None:
+                while len(ingredients) != num_ingredients:
+                    index = random.randint(0, len(cluster.ingredients) - 1)
+                    if cluster.ingredients[index] in ingredients:
+                        pass
+                    else:
+                        ingredients.append(cluster.ingredients[index])
+            else:
+                debug.debug_print("No cluster to pull from.")
+            print("On iteration " + str(j) + " found these ingredients: " + str(ingredients))
+            similarity = _compute_similarity_measure(ingredients)
+            print("Similarity for these ingredients: " + str(similarity))
+            if similarity is None or similarity < 0.2:
+                debug.debug_print("Did not converge on iteration: " + str(j))
+                converged = False
+                if len(stored) == num_ingredients:
+                    # we walked through with just the random seed ingredients, and they didn't
+                    # work together. Empty them out.
+                    ingredients = []
+                else:
+                    ingredients = stored
+                debug.debug_print("Trying again...")
+            else:
+                debug.debug_print("Converged!")
+                converged = True
+                break
+        if not converged:
             break
+
+        debug.debug_print("Going to attempt to calculate similarity matrix now...")
+        try:
+            _compute_similarity_matrix(ingredients)
+            all_ingredients_in_w2v = True
+            debug.debug_print("And they are all in w2v, so we can move on.")
+        except KeyError:
+            all_ingredients_in_w2v = False
+            debug.debug_print("But they were not all in w2v, so we try again.")
+
     if not converged:
         print("Could not converge on " + str(num_ingredients) + " similar items.")
+        return None
     else:
         print("Ingredients: " + str(ingredients))
-
-
-    print("=====Just printing what each ingredient belongs to====")
-    ingredients = rec_table.get_all_ingredients()
-    for i in ingredients:
-        fv = rec_table.ingredient_to_feature_vector(i)
-        index = (kmeans.predict(np.array(fv).reshape(1, -1)))[0]
-        print("Ingredient " + str(i) + "'s cluster: " + str(index))
-    exit(0)
-
 
     return ingredients
 
@@ -258,7 +286,7 @@ def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
     """
     print("    |-> Finding a seed ingredient...")
     seed_sim = 0.0
-    while (seed_sim < 0.2) and (seed_sim > -0.2):
+    while seed_sim < 0.2:
         seed_ingredient = _get_random_similar_ingredients(1, rec_table)
         seed_sim = _compute_similarity_measure([seed_sim, ingredients[0]])
 

@@ -57,7 +57,10 @@ class RecipeTable:
         @param index: The index to use to retrieve the cluster
         @return: A cluster object whose index is index
         """
-        return self.__clusters[index]
+        if index >= len(self.__clusters):
+            return None
+        else:
+            return self.__clusters[index]
 
     def get_random_ingredient(self, seed=0):
         """
@@ -71,7 +74,6 @@ class RecipeTable:
             recipe_index = random.randint(0, len(self.__recipes) - 1)
             recipe = self.__recipes[recipe_index]
 
-        print("Randomly chosen recipe: " + str(recipe))
         if len(recipe) == 0:
             return recipe[0]
         else:
@@ -117,7 +119,10 @@ class RecipeTable:
         @param clusters: list of cluster objects
         @return: void
         """
+        max_index = 0
         for c in clusters:
+            max_index = c.index if c.index > max_index else max_index
+        for i in range(max_index + 1):
             self.__clusters.append("empty")
         for c in clusters:
             self.__clusters[c.index] = c

@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+import pandas
 import statistics.recipe_table as recipe_table
 import statistics.similar as similar
 from sklearn.cluster import KMeans
@@ -62,9 +63,13 @@ def ask_similar(args):
         # user passed in no ingredients, just give back some
         # similar ingredients
         ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
+        if ingredients is None:
+            print("Could not get that many random similar ingredients.")
+            exit(0)
         print("Here are " + str(num_ingredients) + " similar ingredients: ")
         print(str(ingredients))
         similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
+        print(str(pandas.DataFrame(similarity_matrix, columns = ingredients, index=ingredients)))
         print("Similarity score for these ingredients: " + str(similarity_score))
         print("Z-score for similarity: " + str(similarity_measure))
     else:
@@ -75,6 +80,7 @@ def ask_similar(args):
         print("Got these ingredients: " + str(sims))
         ingredients.extend(sims)
         similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
+        print(str(pandas.DataFrame(similarity_matrix, columns = ingredients, index=ingredients)))
         print("Similarity score for these ingredients: " + str(similarity_score))
         print("Z-score for similarity: " + str(similarity_measure))
 
@@ -592,7 +598,7 @@ def __train_word2vec(ingredient_table, ingredients_lists):
         print("    |-> Training Word2Vec on ingredient file to learn " +\
                         "grammatical associations...")
         print("Started at " + myio.print_time())
-        model = gensim.models.Word2Vec(sentences, min_count=2, workers=4,
+        model = gensim.models.Word2Vec(sentences, min_count=1, workers=4,
                                         iter=5)
         print("Ended at " + myio.print_time())
 
