@@ -7,6 +7,7 @@ from tqdm import tqdm
 import warnings
 import myio.myio as myio
 import chef_global.debug as debug
+import chef_global.config as config
 
 
 class Cluster:
@@ -33,7 +34,7 @@ def load_clusters():
     of clusters.
     @return: List of clusters
     """
-    cluster_paths = [f for f in os.listdir(config.CLUSTERS)\
+    cluster_paths = [os.path.join(config.CLUSTERS, f) for f in os.listdir(config.CLUSTERS)\
                         if os.path.isfile(os.path.join(config.CLUSTERS, f))]
     clusters = [myio.load_pickle(cluster_path) for cluster_path in cluster_paths]
     return clusters

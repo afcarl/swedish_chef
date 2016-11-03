@@ -2,6 +2,7 @@
 This module computes similarity between ingredients.
 """
 
+import random
 import warnings
 import statistics.ingredients_table as ingredients_table
 import chef_global.debug as debug
@@ -177,7 +178,7 @@ def _compute_similarity_score(ingredients):
         return score / num_scores
 
 
-def _get_random_similar_ingredients(num_ingredients, rec_table, seed=0):
+def _get_random_similar_ingredients(num_ingredients, rec_table, seed=None):
     """
     Returns num_ingredients random ingredients that are
     'similar' to one another.
@@ -193,11 +194,27 @@ def _get_random_similar_ingredients(num_ingredients, rec_table, seed=0):
 
     kmeans = __load_model(config.KMEANS_MODEL_PATH)
     feature_vector = rec_table.ingredient_to_feature_vector(seed_ingredient)
-    seed_cluster_index = (kmeans.predict(feature_vector))[0]
+    seed_cluster_index = (kmeans.predict(np.array(feature_vector).reshape(1, -1)))[0]
     print("Cluster index for this feature vector: " + str(seed_cluster_index))
 
     cluster = rec_table.get_cluster(seed_cluster_index)
-    return cluster.ingredients
+    print("Size of this cluster is: " + str(len(cluster.ingredients)))
+
+    ingredients = []
+    for i in range(num_ingredients):
+        index = random.randint(0, len(cluster.ingredients) - 1)
+        ingredients.append(cluster.ingredients[index])
+    print("Ingredients: " + str(ingredients))
+
+
+    ingredients = rec_table.get_all_ingredients()
+    for i in ingredients:
+        fv = rec_table.ingredient_to_feature_vector(i)
+        index = (kmeans.predict(np.array(fv).reshape(1, -1)))[0]
+        print("Ingredient " + str(i) + "'s cluster: " + str(index))
+
+
+    return ingredients
 
 
 def _unit_test():

@@ -39,6 +39,18 @@ class RecipeTable:
         """
         self.__recipes.append(recipe)
 
+    def get_all_ingredients(self):
+        """
+        Gets the set of all unique ingredients found in all
+        of the recipes.
+        @return: The ingredients
+        """
+        ingredients = []
+        for recipe in self:
+            for ingredient in recipe:
+                ingredients.append(ingredient)
+        return set(ingredients)
+
     def get_cluster(self, index):
         """
         Gets the cluster with the given index.
