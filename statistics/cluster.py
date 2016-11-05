@@ -56,7 +56,7 @@ def regenerate_clusters(kmeans, rec_table):
     cluster_files = [fname for fname in os.listdir(config.CLUSTERS)]
     if cluster_files:
         print("    |-> Found cluster file(s) in " + str(config.CLUSTERS) + ", using those.")
-        return [myio.load_pickle(config.CLUSTER + "/" + fname) for fname in cluster_files]
+        return [myio.load_pickle(config.CLUSTERS + "/" + fname) for fname in cluster_files]
 
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)

@@ -26,6 +26,7 @@ import chef_global.config as config
 from statistics.recipe import Recipe
 import warnings
 import statistics.cluster as cluster
+import statistics.recipe_generator as recipe_generator
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import gensim
@@ -54,7 +55,8 @@ def ask_similar(args):
     """
     # Get the number of ingredients the user wants and the ingredients they want to include
     num_ingredients = int(args.similar[0])
-    ingredients = args.similar[1:]
+    generate_a_recipe = True if args.similar[1].strip().lower() == "y" else False
+    ingredients = args.similar[2:]
     print("Ingredients: " + str(ingredients))
 
     # Load models and datastructures needed
@@ -68,6 +70,7 @@ def ask_similar(args):
         if not ingredient_exists:
             print("Ingredient: " + str(ingredient) + " not found in models. Please replace.")
             return
+
     # If the user asked for zero ingredients, they want a random amount of ingredients
     # Get a random number, centered around the average number of ingredients in a recipe
     # Don't use anything less than three
@@ -98,6 +101,10 @@ def ask_similar(args):
         print("Similarity score for these ingredients: " + str(similarity_score))
         print("Z-score for similarity: " + str(similarity_measure))
 
+    # If the user wants to generate a recipe, use the ingredients in that recipe
+    if generate_a_recipe:
+        recipe_generator._generate_recipe(ingredients, rec_table)
+
 
 
 def train_models(args):
@@ -114,9 +121,11 @@ def train_models(args):
 
     print("Generating recipes...")
     rec_table = __generate_recipes(table, unique_within)
+    myio.save_pickle(rec_table, config.RECIPE_TABLE_PATH)
     recipes = rec_table.get_recipes()
     print("Length of recipe table: " + str(len(recipes)))
 
+    print("Generating the data structures...")
     variables, labels, sparse_matrix, matrix =\
                         __generate_model_structures(rec_table, table)
 
@@ -133,12 +142,10 @@ def train_models(args):
     clusters = cluster.regenerate_clusters(kmeans, rec_table)
 
     print("Using a compression algorithm to encode training data...")
-    print("------TODO-------")
-    # statistics._encode_training_data(rec_table)
+    recipe_generator._encode_training_data(rec_table)
 
     print("Training the RNN and saving it...")
-    print("------TODO-------")
-    # statistics._train_rnn()
+    recipe_generator._train_rnn(rec_table)
 
     print("Computing statistics on the data...")
     __compute_stats(rec_table)
@@ -168,19 +175,19 @@ def __generate_model_structures(rec_table, table, testing=False):
     """
     recipes = rec_table.get_recipes()
 
-    print("Generating the variables heading...")
+    print("    |-> Generating the variables heading...")
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
     debug.debug_print("Variables: " + os.linesep + str(variables))
 
-    print("Generating the labels column...")
+    print("    |-> Generating the labels column (takes a moment)...")
     labels = [ingredient for ingredient in table.get_ingredients_list()]
     debug.debug_print("Labels: " + os.linesep + str(labels))
 
-    print("Retrieving scipy version of sparse matrix...")
+    print("    |-> Retrieving scipy version of sparse matrix...")
     sparse_matrix = __retrieve_sparse_matrix(rec_table, labels, testing).tocoo()
     debug.debug_print("Sparse matrix: " + os.linesep + str(sparse_matrix))
 
-    print("Retrieving dense representation of matrix...")
+    print("    |-> Retrieving dense representation of matrix...")
     matrix = __retrieve_matrix(sparse_matrix, testing)
     debug.debug_print("Dense matrix: " + os.linesep + str(pd.DataFrame(matrix)))
 
@@ -295,11 +302,11 @@ def __retrieve_matrix(sparse_matrix, testing=False):
 #        if not testing:
 #            myio.save_pickle(matrix, config.MATRIX)
     try:
-        print("Generating dense matrix from sparse one...")
+        print("        |-> Generating dense matrix from sparse one...")
         matrix = sparse_matrix.toarray()
         return matrix
     except MemoryError:
-        print("Out of memory, working around this. Life will be slower from now on...")
+        print("        |-> Out of memory, working around this.")
         return None
 
 
@@ -320,16 +327,16 @@ def __retrieve_sparse_matrix(rec_table, ingredients, testing=False):
     """
     if not testing and os.path.isfile(config.MATRIX_SPARSE):
         sparse_matrix = myio.load_pickle(config.MATRIX_SPARSE)
-        print("Found sparse matrix.")
+        print("        |-> Found sparse matrix.")
     else:
-        print("Generating sparse matrix...")
-        print("  |-> Generating the rows, this may take a while...")
+        print("        |-> Generating sparse matrix...")
+        print("            |-> Generating the rows, this may take a while...")
         rows = [sparse.coo_matrix(rec_table.ingredient_to_feature_vector(ingredient))
                     for ingredient in tqdm(ingredients)]
-        print("  |-> Generating the matrix from the rows...")
+        print("            |-> Generating the matrix from the rows...")
         sparse_matrix = sparse.vstack(rows)
         if not testing:
-            print("Pickling the sparse matrix...")
+            print("            |-> Pickling the sparse matrix...")
             myio.save_pickle(sparse_matrix, config.MATRIX_SPARSE)
     return sparse_matrix
 
@@ -595,20 +602,20 @@ def __train_kmeans(matrix, sparse_matrix):
     @return: The trained model, which it saves
     """
     if os.path.exists(config.KMEANS_MODEL_PATH):
-        print("Found an existing model for kmeans at " +\
+        print("    |-> Found an existing model for kmeans at " +\
             str(config.KMEANS_MODEL_PATH) + ", using that.")
         kmeans = myio.load_pickle(config.KMEANS_MODEL_PATH)
     else:
-        print("Generating the kmeans model...")
-        print("Started at " + myio.print_time())
+        print("    |-> Generating the kmeans model...")
+        print("    |-> Started at " + myio.print_time())
         kmeans = KMeans(n_clusters=6, verbose=1)
         if matrix is not None:
             kmeans.fit(matrix)
         else:
             kmeans.fit(sparse_matrix)
-        print("Ended at " + myio.print_time())
+        print("    |-> Ended at " + myio.print_time())
 
-        print("Saving the model...")
+        print("    |-> Saving the model...")
         myio.save_pickle(kmeans, config.KMEANS_MODEL_PATH)
 
     return kmeans
@@ -622,7 +629,7 @@ def __train_word2vec(ingredient_table, ingredients_lists):
     @return: the trained model
     """
     if os.path.exists(config.WORD2VEC_MODEL_PATH):
-        print("Found an existing model for word2vec at " +\
+        print("    |-> Found an existing model for word2vec at " +\
                 str(config.WORD2VEC_MODEL_PATH) + ", using that.")
         model = gensim.models.Word2Vec.load(config.WORD2VEC_MODEL_PATH)
     else:
@@ -634,19 +641,19 @@ def __train_word2vec(ingredient_table, ingredients_lists):
 
         print("    |-> Training Word2Vec on ingredient file to learn " +\
                         "grammatical associations...")
-        print("Started at " + myio.print_time())
+        print("    |-> Started at " + myio.print_time())
         model = gensim.models.Word2Vec(sentences, min_count=1, workers=4,
                                         iter=5)
-        print("Ended at " + myio.print_time())
+        print("    |-> Ended at " + myio.print_time())
 
         print("    |-> Training Word2Vec on ingredient lists to learn " +\
                         "food associations...")
-        print("Started at " + myio.print_time())
+        print("    |-> Started at " + myio.print_time())
         model.train(generated_ingredient_lists,
                         total_examples=len(generated_ingredient_lists))
-        print("Ended at " + myio.print_time())
+        print("    |-> Ended at " + myio.print_time())
 
-        print("Saving model as " + str(config.WORD2VEC_MODEL_PATH))
+        print("    |-> Saving model as " + str(config.WORD2VEC_MODEL_PATH))
         model.save(config.WORD2VEC_MODEL_PATH)
 
     return model

@@ -4,25 +4,30 @@ Some of these are marked as to be changed by hand, while some
 are marked to be changed programmatically. Please pay attention.
 """
 
-# Clusters directory where each kmeans cluster is stored
-# @manual
-CLUSTERS = "tmp/clusters/"
-
 # The directory wherein we can find the data for the chef
 # @programmatic/manual - can be overwritten by user, but default is manually set
 DATA_DIRECTORY = "tmp"
 
+
+
+
+
+
+# Clusters directory where each kmeans cluster is stored
+# @manual
+CLUSTERS = DATA_DIRECTORY + "/" + "clusters/"
+
 # The dataframe
 # @manual
-DATA_FRAME = "tmp/dataframe"
+DATA_FRAME = DATA_DIRECTORY + "/" + "dataframe"
 
 # The path to the saved IngredientsTable object
 # @programmatic
-INGREDIENT_TABLE_PATH = "tmp/ingredient_table"
+INGREDIENT_TABLE_PATH = DATA_DIRECTORY + "/" + "ingredient_table"
 
 # The path to the saved kmeans object
 # @programmatic
-KMEANS_MODEL_PATH = "tmp/kmeans.model"
+KMEANS_MODEL_PATH = DATA_DIRECTORY + "/" + "kmeans.model"
 
 # The master directory where we store data
 # @programmatic
@@ -30,11 +35,11 @@ MASTER_DATA_DIRECTORY = None
 
 # The path to the dense matrix
 # @manual
-MATRIX = "tmp/matrix"
+MATRIX = DATA_DIRECTORY + "/" + "matrix"
 
 # The path to the sparse data matrix
 # @manual
-MATRIX_SPARSE = "tmp/sparsematrix"
+MATRIX_SPARSE = DATA_DIRECTORY + "/" + "sparsematrix"
 
 # The new cookbook marker
 # @manual
@@ -69,13 +74,17 @@ SIM_MEAN = 0.118617649461
 # @manual: Get it from the computer and then hand write it
 SIM_STAND_DEV = 0.06918336224729744
 
+# The path to the training data for the RNN
+# @manual
+TRAINING_PATH = DATA_DIRECTORY + "/" + "rnn_training_data"
+
 # The unique.txt ingredient file path
 # @programmatic/manual - will overwrite with user input
-UNIQUE = "tmp/unique.txt"
+UNIQUE = DATA_DIRECTORY + "/" + "unique.txt"
 
 # The unique_within.txt ingredient file path
 # @programmatic/manual - will overwrite with user input
-UNIQUE_WITHIN = "tmp/unique_within.txt"
+UNIQUE_WITHIN = DATA_DIRECTORY + "/" + "unique_within.txt"
 
 # The unit test banner to print around a unit test start and ending
 # @manual
@@ -87,4 +96,4 @@ VERBOSE = False
 
 # The path to the word2vec model
 # @manual
-WORD2VEC_MODEL_PATH = "tmp/word2vec.model"
+WORD2VEC_MODEL_PATH = DATA_DIRECTORY + "/" + "word2vec.model"

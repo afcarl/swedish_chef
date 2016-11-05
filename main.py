@@ -36,7 +36,7 @@ def execute_based_on_args(args):
 
     if args.similar:
         statistics.ask_similar(args)
-        return "Similarity calculation complete."
+        return ""
 
 
 def get_valid_args():
@@ -60,7 +60,10 @@ def get_valid_args():
                              "to just recipes and ingredients. You must " +
                              "also specify the data directory.", metavar="DATA_DIR")
     parser.add_argument("-s", "--similar", help="Get n ingredients that are similar to " +
-                              "the given list of ingredients.", nargs='+', metavar=("N", "LIST"))
+                              "the given list of ingredients. If n equals 0, generates a " +
+                              "random list of ingredients centered around the average number " +
+                              "of ingredients in a recipe. If second argument is 'y', " +
+                              "also generates a random recipe.", nargs='+', metavar=("N", "LIST"))
     parser.add_argument("-u", "--unit_test", help="Run the unit tests " +
                              "for each module.", action="store_true")
     parser.add_argument("-v", "--verbose", help="Set verbose debug output.",

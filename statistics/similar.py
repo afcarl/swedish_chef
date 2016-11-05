@@ -66,8 +66,8 @@ def _compute_sim_stats(rec_table):
     @return: The mean, standard deviation
     """
     if config.SIM_MEAN is not None:
-        print("Mean has already been calculated, here it is: " + str(config.SIM_MEAN))
-        print("Standard deviation: " + str(config.SIM_STAND_DEV))
+        print("    |-> Mean has already been calculated, here it is: " + str(config.SIM_MEAN))
+        print("    |-> Standard deviation: " + str(config.SIM_STAND_DEV))
         return config.SIM_MEAN, config.SIM_STAND_DEV
     else:
         total = 0.0
@@ -102,9 +102,9 @@ def _compute_sim_stats(rec_table):
         variance = sum_of_squares / N
         std_dev = math.sqrt(variance)
 
-        print("You should record these values in the config.py: ")
-        print("Mean: " + str(mean))
-        print("Standard deviation: " + str(std_dev))
+        print("    |-> You should record these values in the config.py: ")
+        print("    |-> Mean: " + str(mean))
+        print("    |-> Standard deviation: " + str(std_dev))
         return (mean, std_dev)
 
 
