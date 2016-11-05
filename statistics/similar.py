@@ -303,8 +303,6 @@ def _get_similar_ingredients_to(ingredients, num_ingredients, rec_table):
     while seed_sim is None or seed_sim < 0.2:
         seed_ingredient = (_get_random_similar_ingredients(1, rec_table, w2v=w2v))[0]
         seed_sim = _compute_similarity_measure([seed_ingredient, ingredients[0]], w2v=w2v)
-        print("Got: " + str(seed_ingredient))
-        print("Sim measure: " + str(seed_sim))
 
     print("    |-> Found seed ingredient: " + str(seed_ingredient))
 
@@ -352,7 +350,6 @@ def __load_model(path):
     @param path: The path to the given model.
     @return: The loaded model.
     """
-    print("Loading model: " + str(path))
     model = myio.load_pickle(path)
     return model
 

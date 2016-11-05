@@ -74,6 +74,7 @@ def ask_similar(args):
             num_ingredients = 3
         num_ingredients = int(num_ingredients + 0.5)
 
+    print_stuff = False
     if len(ingredients) == 0:
         # user passed in no ingredients, just give back some
         # similar ingredients
@@ -87,10 +88,7 @@ def ask_similar(args):
         else:
             print("Here are " + str(num_ingredients) + " similar ingredients: ")
             print(str(ingredients))
-            similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
-            print(str(pandas.DataFrame(similarity_matrix, columns = ingredients, index=ingredients)))
-            print("Similarity score for these ingredients: " + str(similarity_score))
-            print("Z-score for similarity: " + str(similarity_measure))
+            print_stuff = True
     else:
         # user wants num_ingredients ingredients that are similar
         # to the given list of ingredients. Find some random
@@ -98,10 +96,16 @@ def ask_similar(args):
         sims = similar._get_similar_ingredients_to(ingredients, num_ingredients, rec_table)
         print("Got these ingredients: " + str(sims))
         ingredients.extend(sims)
-        similarity_matrix, similarity_score, similarity_measure = similar._compute_similarity_stats(ingredients)
-        print(str(pandas.DataFrame(similarity_matrix, columns = ingredients, index=ingredients)))
+        print_stuff = True
+
+    if print_stuff:
+        similarity_matrix, similarity_score, similarity_measure = \
+                                similar._compute_similarity_stats(ingredients)
+        print(str(pandas.DataFrame(similarity_matrix,
+                                columns=ingredients, index=ingredients)))
         print("Similarity score for these ingredients: " + str(similarity_score))
         print("Z-score for similarity: " + str(similarity_measure))
+
 
 
 def train_models(args):
