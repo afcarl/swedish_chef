@@ -184,6 +184,22 @@ def _remove_xml_from_file(path):
     @param path: The path to the file to clean.
     @return: void
     """
+    # So it turns out that for some reason, all of the lines of the form:
+    # *class1=* are missing their "<", so that the xml remover removes
+    # Anything between the last xml line and this one, which includes the
+    # New recipe lines. So remove thos lines first.
+    lines = []
+    with open(path) as f:
+        for line in f:
+            if "class1=" in line:
+                pass
+            else:
+                lines.append(line)
+    with open(path, "w") as f:
+        for line in lines:
+            f.write(line)
+
+    # Then remove all xml
     text = re.sub('<[^<]+>', "", open(path).read())
     with open(path, "w") as f:
         f.write(text)

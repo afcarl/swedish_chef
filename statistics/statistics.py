@@ -471,56 +471,130 @@ def __generate_recipes(table, unique_within_path):
         list_of_ingredients_lists = []
         while lines_between_tags is not None:
             ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
-            list_of_ingredients_lists += ingredients
-            debug.debug_print("Recipe Generated: " + str(recipe))
+            debug.debug_print("        |-> Ingredients from this iteration: " +\
+                              str(ingredients))
+            list_of_ingredients_lists.append(ingredients)
             try:
                 lines_between_tags = next(ingredients_producer)
             except StopIteration:
                 lines_between_tags = None
 
-        # Now we have a list of the form: [[ingreds for rec 1], [..rec2], ...]
-        # Now let's generate the text for each recipe
         print("        |-> Gathering all of the recipe steps...")
         to_ret = []
         recipe_producer=\
             myio.get_lines_between_tags(\
-                    config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE.lower())
+                    config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE)
         lines_between_tags = next(recipe_producer)
-        index = 0
+        list_of_recipe_texts= []
         while lines_between_tags is not None:
-            # Get the text for this recipe
-            recipe_text = [line.rstrip() for line in lines_between_tags]
-
-            # Validate that this is the right recipe; if it doesn't have the ingredients
-            # from list_of_ingredients_lists[index], then we should skip it until we
-            # do find a recipe that has it. We have somehow gotten off kilter.
-            is_right_recipe = True
-            for ingredient in list_of_ingredients_lists[index]:
-                if ingredient not in recipe_text:
-                    is_right_recipe = False
-                    break
-
-            # If this is the right recipe, go ahead and add it to the recipe list
-            if is_right_recipe:
-                recipe = Recipe(table, ingredients=list_of_ingredients_lists[index],\
-                                text=recipe_text)
-                to_ret.append(recipe)
-            else:
-                print("        |-> Off kilter at index: " + str(index) + "!")
-
-            # Get next iteration
+            recipe = [line.rstrip() for line in lines_between_tags]
+            debug.debug_print("        |-> Recipe from this iteration: " +\
+                                str(recipe))
+            list_of_recipe_texts.append(recipe)
             try:
                 lines_between_tags = next(recipe_producer)
             except StopIteration:
                 lines_between_tags = None
 
+        # KMeans needs to be retrained if use this
+        #list_of_ingredients_lists = [l for l in list_of_ingredients_lists if len(l) > 0]
+        #list_of_recipe_texts = [l for l in list_of_recipe_texts if len(l) > 0]
+
+
+        # Now we have a list of the form: [[ingreds for rec 1], [..rec2], ...]
+        # And we have a list of recipes of the form: [[recipe text 1], [..rec2], ...]
+        print("Recipes: " + str(list_of_recipe_texts))
+        print("Number of recipes: " + str(len(list_of_recipe_texts)))
+        print("Number of ingredients lists: " + str(len(list_of_ingredients_lists)))
+#=============================================================================
+        # These lines gaurantee a working recipe table if uncommented, but
+        # it will have no text or text that doesn't make any sense
+        to_ret = []
+        for index, _ in enumerate(list_of_ingredients_lists):
+            ings = list_of_ingredients_lists[index]
+            t = "" if index >= len(list_of_recipe_texts) else list_of_recipe_texts[index]
+            to_ret.append(Recipe(table, ingredients=ings, text=t))
         print("        |-> Creating a table of recipes from the data...")
         rt = recipe_table.RecipeTable(to_ret)
-
         print("        |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
         recipe_table.save_to_disk(rt, config.RECIPE_TABLE_PATH)
-
         return rt
+#=============================================================================
+
+
+#        TODO: Figure out how to get the recipes alligned with the ingredients
+
+
+
+
+
+#        index = 0
+#        while lines_between_tags is not None:
+#            ingredients = list_of_ingredients_lists[index]
+#            recipe_text = [line.rstrip() for line in lines_between_tags]
+#            if len(ingredients) is 0:
+#                continue
+#            elif len(recipe_text) is 0:
+#                continue
+#
+#            if index < 100:
+#                print("Ingredients : " + str(ingredients))
+#                print("Recipe: " + str(recipe_text))
+#                index += 1
+#                continue
+#            else:
+#                exit(0)
+#
+#            # Validate that this is the right recipe; if it doesn't have the ingredients
+#            # from list_of_ingredients_lists[index], then we should skip it until we
+#            # do find a recipe that has it. We have somehow gotten off kilter.
+#            is_right_recipe = False
+#            while not is_right_recipe:
+#                for ingredient in list_of_ingredients_lists[index]:
+#                    print("Ingredients to check: " + str(list_of_ingredients_lists[index]))
+#                    for text in recipe_text:
+#                        if ingredient not in text:
+#                            is_right_recipe = False
+#                            index += 1
+#                        else:
+#                            # Only need one recipe to be good enough
+#                            is_right_recipe = True
+#                            print("Found recipe: " + str(recipe_text))
+#                            print("Ingredient found in it: " + str(ingredient))
+#                            break
+#                    if is_right_recipe:
+#                        break
+#
+#            # If this is the right recipe, go ahead and add it to the recipe list
+#            if len(recipe_text) is 0:
+#                print("SKIP========================================================")
+#                is_right_recipe = False
+#            else:
+#                is_right_recipe = True
+#
+#            if is_right_recipe:
+#                recipe = Recipe(table, ingredients=list_of_ingredients_lists[index],\
+#                                text=recipe_text)
+#                to_ret.append(recipe)
+#                print("Index: " + str(index))
+#                print("Length of list_of_ingredients_lists: " + str(len(list_of_ingredients_lists)))
+#            else:
+#                print("        |-> Off kilter at index: " + str(index) + "!")
+#
+#            index += 1
+#            # Get next iteration
+#            try:
+#                lines_between_tags = next(recipe_producer)
+#            except StopIteration:
+#                lines_between_tags = None
+#
+#        print("        |-> Creating a table of recipes from the data...")
+#        rt = recipe_table.RecipeTable(to_ret)
+#
+#        print("        |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
+#        recipe_table.save_to_disk(rt, config.RECIPE_TABLE_PATH)
+#
+#        return rt
 
 def __training_test():
     """
