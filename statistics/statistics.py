@@ -488,10 +488,27 @@ def __generate_recipes(table, unique_within_path):
         lines_between_tags = next(recipe_producer)
         index = 0
         while lines_between_tags is not None:
+            # Get the text for this recipe
             recipe_text = [line.rstrip() for line in lines_between_tags]
-            recipe = Recipe(table, ingredients=list_of_ingredients_lists[index],\
+
+            # Validate that this is the right recipe; if it doesn't have the ingredients
+            # from list_of_ingredients_lists[index], then we should skip it until we
+            # do find a recipe that has it. We have somehow gotten off kilter.
+            is_right_recipe = True
+            for ingredient in list_of_ingredients_lists[index]:
+                if ingredient not in recipe_text:
+                    is_right_recipe = False
+                    break
+
+            # If this is the right recipe, go ahead and add it to the recipe list
+            if is_right_recipe:
+                recipe = Recipe(table, ingredients=list_of_ingredients_lists[index],\
                                 text=recipe_text)
-            to_ret.append(recipe)
+                to_ret.append(recipe)
+            else:
+                print("        |-> Off kilter at index: " + str(index) + "!")
+
+            # Get next iteration
             try:
                 lines_between_tags = next(recipe_producer)
             except StopIteration:
