@@ -52,55 +52,47 @@ def ask_similar(args):
                  list of similar ingredients of len args.similar[0])
     @return: void
     """
+    # Get the number of ingredients the user wants and the ingredients they want to include
     num_ingredients = int(args.similar[0])
     ingredients = args.similar[1:]
     print("Ingredients: " + str(ingredients))
 
+    # Load models and datastructures needed
     rec_table = recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
     clusters = cluster.load_clusters()
     rec_table.load_in_clusters(clusters)
 
+    # Make sure all the ingredients the user asked to include actually exist
     for ingredient in ingredients:
-        try:
-            similar._compute_similarity_stats([ingredient, "water"])
-        except KeyError:
+        ingredient_exists = __check_for_ingredient(ingredient)
+        if not ingredient_exists:
             print("Ingredient: " + str(ingredient) + " not found in models. Please replace.")
             return
+    # If the user asked for zero ingredients, they want a random amount of ingredients
+    # Get a random number, centered around the average number of ingredients in a recipe
+    # Don't use anything less than three
+    num_ingredients = rec_table.get_random_number()\
+                        if num_ingredients is 0 else num_ingredients
+    num_ingredients = 3 if num_ingredients < 3 else num_ingredients
 
-    if num_ingredients == 0:
-        avg, std = rec_table.compute_stats()
-        num_ingredients = random.gauss(avg, std)
-        if num_ingredients < 3:
-            num_ingredients = 3
-        num_ingredients = int(num_ingredients + 0.5)
-
-    print_stuff = False
-    if len(ingredients) == 0:
-        # user passed in no ingredients, just give back some
-        # similar ingredients
+    # Do what the user asked (get all new ingredients or get similar ones to given ones)
+    if len(ingredients) is 0:
         ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
-        if ingredients is None:
-            print("Could not get that many random similar ingredients.")
-            return
-        elif len(ingredients) == 1:
-            print("Here is your random ingredient: " + str(ingredients[0]))
-            return
-        else:
-            print("Here are " + str(num_ingredients) + " similar ingredients: ")
-            print(str(ingredients))
-            print_stuff = True
     else:
-        # user wants num_ingredients ingredients that are similar
-        # to the given list of ingredients. Find some random
-        # ingredients that are similar to the given ones
         sims = similar._get_similar_ingredients_to(ingredients, num_ingredients, rec_table)
-        print("Got these ingredients: " + str(sims))
         ingredients.extend(sims)
-        print_stuff = True
 
-    if print_stuff:
+    if ingredients is None:
+        print("Could not get that many random similar ingredients. Maybe just try again.")
+    elif len(ingredients) is 1:
+        print("Here is your random ingredient: " + str(ingredients[0]))
+    else:
+        print("Here are: " + str(num_ingredients) + " similar ingredients: ")
+        print(str(ingredients))
+
         similarity_matrix, similarity_score, similarity_measure = \
                                 similar._compute_similarity_stats(ingredients)
+
         print(str(pandas.DataFrame(similarity_matrix,
                                 columns=ingredients, index=ingredients)))
         print("Similarity score for these ingredients: " + str(similarity_score))
@@ -390,6 +382,23 @@ def run_unit_tests():
     __training_test();
     __sparse_matrix_test()
     similar._unit_test()
+
+
+def __check_for_ingredient(ingredient):
+    """
+    Checks whether the given ingredient is found in the word2vec model (which
+    doesn't contain all of the ingredients).
+    @param ingredient: The ingredient of interest
+    @return: True if word2vec has the ingredient, False otherwise
+    """
+    try:
+        # Check the similarity against water, and if it throws an exception,
+        # it is because it is not in the model
+        similar._compute_similarity_stats([ingredient, "water"])
+        return True
+    except KeyError:
+        return False
+
 
 
 def __compute_stats(rec_table):

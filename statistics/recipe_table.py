@@ -141,6 +141,18 @@ class RecipeTable:
             ingredient = recipe[ingredient_index]
             return ingredient
 
+    def get_random_number(self):
+        """
+        Gets a random number of ingredients from a Gaussian distribution
+        centered around the average number of ingredients in a recipe.
+        Can return 0, but no negatives.
+        @return: The random number.
+        """
+        avg, std = self.compute_stats()
+        num = random.gauss(avg, std)
+        num = 0 if num < 0 else num
+        return int(num + 0.5)
+
     def get_recipes(self):
         """
         Gets all the recipes from the table.
