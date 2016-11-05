@@ -16,14 +16,24 @@ except KeyError:
 import matplotlib.pyplot as plt
 
 
-
-fv_length = 256
 random.seed(456)
-# Best so far: 84% accuracy
-n_hidden_1 = 200#100
-n_hidden_2 = 100#50
-n_input = fv_length
 
+# Model parameters
+fv_length = 200#fixed
+n_hidden_1 = 64#
+n_hidden_2 = 32#
+n_input = fv_length
+training_epochs = 100
+batch_size = 256#fixed
+
+# 200, 100, 50, 10, 256 -> 55%
+# 200, 128, 50, 10, 256 -> 57%
+# 200, 100, 80, 10, 256 -> 57%
+# 200, 100, 100, 10, 256 -> 55%
+# 200, 64, 32, 10, 256 -> 56%
+
+# 200, 64, 32, 40, 256 -> 63%
+# 200, 64, 32, 100, 256 -> 57%
 
 def get_random_batch(batch_size):
     """
@@ -113,15 +123,12 @@ optimizer = tf.train.RMSPropOptimizer(learning_rate).minimize(cost)
 init = tf.initialize_all_variables()
 
 # Launch the graph
-training_epochs = 10
-# TODO: Do I need to change the batch_size?
-batch_size = 28
 print("Launch the tensorflow session...")
 with tf.Session() as sess:
     print("    |-> Run the session...")
     sess.run(init)
     # TODO: Compute this
-    total_batch = 256 * 10
+    total_batch = 214
     #total_batch = int(mnist.train.num_examples/batch_size)
     print("    |-> Run the training...")
     for epoch in range(training_epochs):

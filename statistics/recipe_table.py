@@ -40,6 +40,44 @@ class RecipeTable:
         """
         self.__recipes.append(recipe)
 
+    def calculate_typical_consecutive_zeros(self):
+        """
+        Calculates the typical number of consecutive zeros
+        in a typical feature vector. Useful for Golomb compression.
+        @return: The typical number of consecutive zeros
+        """
+        return 1268.1495099738602 # Cached value (since calculating it takes 5 hours)
+
+        print("Calculating the typical number of zeros...")
+        num_ingredients = 0
+        total_total = 0
+        for recipe in tqdm(self):
+            for ingredient in recipe:
+                num_ingredients += 1
+                fv = self.ingredient_to_feature_vector(ingredient)
+                last = 0
+                num_sequences = 0
+                num_consec = 0
+                total = 0
+                for r in fv:
+                    if r is 1 and last is 0:
+                        num_sequences += 1
+                        total += num_consec
+                        num_consec = 0
+                        last = 1
+                    elif r is 1 and last is 1:
+                        last = 1
+                    elif r is 0 and last is 1:
+                        num_consec += 1
+                        last = 0
+                    elif r is 0 and last is 0:
+                        num_consec += 1
+                        last = 0
+                avg_consec = total / num_sequences
+                total_total += avg_consec
+        total_avg = total_total / num_ingredients
+        return total_avg
+
     def compute_stats(self):
         """
         Computes the average and standard deviation of

@@ -53,6 +53,11 @@ def regenerate_clusters(kmeans, rec_table):
     @param rec_table: The table
     @return: list of all of the clusters
     """
+    cluster_files = [fname for fname in os.listdir(config.CLUSTERS)]
+    if cluster_files:
+        print("    |-> Found cluster file(s) in " + str(config.CLUSTERS) + ", using those.")
+        return [myio.load_pickle(config.CLUSTER + "/" + fname) for fname in cluster_files]
+
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=DeprecationWarning)
         labels = set(kmeans.labels_)

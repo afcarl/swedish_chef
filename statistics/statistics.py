@@ -136,8 +136,13 @@ def train_models(args):
     print("Regenerating all of the kmeans clusters and saving them to disk. This will take a while...")
     clusters = cluster.regenerate_clusters(kmeans, rec_table)
 
-    print("Saving the recipe table now that it is loaded with clusters...")
-    recipe_table.save_to_disk(rec_table)
+    print("Using a compression algorithm to encode training data...")
+    print("------TODO-------")
+    # statistics._encode_training_data(rec_table)
+
+    print("Training the RNN and saving it...")
+    print("------TODO-------")
+    # statistics._train_rnn()
 
     print("Computing statistics on the data...")
     __compute_stats(rec_table)
