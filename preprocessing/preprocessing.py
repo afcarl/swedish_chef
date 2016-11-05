@@ -130,11 +130,10 @@ def __do_single_word():
         pass
     else:
         print("    |-> Could not find existing version. Generating new one, this will " +\
-                        "take a while. Started at: " + str(time.strftime("%I:%M:%S")))
+                        "take a while...")
+        print("    |-> Started at: " + myio.print_time())
         trimmer._replace_all_ingredients_with_single_words(
                                                 config.RECIPE_FILE_PATH, config.UNIQUE)
- 
-
 
 
 def __do_pipeline(args):
@@ -220,14 +219,12 @@ def __do_trim(args):
         print("Trimming big recipe file...")
         trimmer._remove_xml_from_file(config.RECIPE_FILE_PATH)
 
-        print("Removing all new_recipe lines from the big recipe file...")
-        myio.find_replace(config.RECIPE_FILE_PATH, config.NEW_RECIPE_LINE, "")
+        # We actually don't want to do this. Just filter them out later.
+#        print("Removing all new_recipe lines from the big recipe file...")
+#        myio.find_replace(config.RECIPE_FILE_PATH, config.NEW_RECIPE_LINE, "")
 
         print("Stripping big recipe file...")
         myio.strip_file(config.RECIPE_FILE_PATH)
-    
-
-
 
 
 

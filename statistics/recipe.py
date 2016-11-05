@@ -9,7 +9,7 @@ class Recipe:
     Class to represent a recipe - a list of ingredients (and potentially steps).
     """
 
-    def __init__(self, table, ingredients=[]):
+    def __init__(self, table, ingredients=[], text=None):
         """
         Constructor.
         @param table: The IngredientsTable to use as a reference.
@@ -17,9 +17,11 @@ class Recipe:
                             recipe with. Duplicate items in the list are ignored.
                             The ingredients must be found in the
                             table or a KeyError will be thrown.
+        @param text: The text (directions) for this recipe in plain english.
         """
         self.__table = table
         self.__ingredients_list = []
+        self.__text = text
         for ingredient in ingredients:
             self.__ingredients_list.append(ingredient)
         self.__ingredients_list = list(set(self.__ingredients_list))
@@ -74,6 +76,13 @@ class Recipe:
         to_ret = [i for i in self.__ingredients_list]
         return to_ret
 
+    def get_text(self):
+        """
+        Returns the text of the recipe, or None, if there isn't
+        any.
+        """
+        return self.__text
+
     def has(self, ingredient):
         """
         Returns whether or not this recipe has the given ingredient.
@@ -81,3 +90,8 @@ class Recipe:
         @return: True if ingredient is present, False otherwise
         """
         return ingredient in self.__ingredients_list
+
+
+
+
+

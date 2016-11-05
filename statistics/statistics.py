@@ -459,25 +459,48 @@ def __generate_recipes(table, unique_within_path):
     @return: A RecipeTable object
     """
     if os.path.exists(config.RECIPE_TABLE_PATH):
+        print("    |-> Found existing recipe table at " + str(config.RECIPE_TABLE_PATH) +\
+              ", using that one...")
         return recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
     else:
-        to_ret = []
-        recipe_producer = \
+        print("    |-> Generating a recipe table...")
+        print("        |-> Gathering all of the ingredients...")
+        ingredients_producer= \
             myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
-        lines_between_tags = next(recipe_producer)
+        lines_between_tags = next(ingredients_producer)
+        list_of_ingredients_lists = []
         while lines_between_tags is not None:
             ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
-            recipe = Recipe(table, ingredients=ingredients)
-            to_ret.append(recipe)
+            list_of_ingredients_lists += ingredients
             debug.debug_print("Recipe Generated: " + str(recipe))
+            try:
+                lines_between_tags = next(ingredients_producer)
+            except StopIteration:
+                lines_between_tags = None
+
+        # Now we have a list of the form: [[ingreds for rec 1], [..rec2], ...]
+        # Now let's generate the text for each recipe
+        print("        |-> Gathering all of the recipe steps...")
+        to_ret = []
+        recipe_producer=\
+            myio.get_lines_between_tags(\
+                    config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE.lower())
+        lines_between_tags = next(recipe_producer)
+        index = 0
+        while lines_between_tags is not None:
+            recipe_text = [line.rstrip() for line in lines_between_tags]
+            recipe = Recipe(table, ingredients=list_of_ingredients_lists[index],\
+                                text=recipe_text)
+            to_ret.append(recipe)
             try:
                 lines_between_tags = next(recipe_producer)
             except StopIteration:
                 lines_between_tags = None
 
-        print("    |-> Generating a recipe table...")
+        print("        |-> Creating a table of recipes from the data...")
         rt = recipe_table.RecipeTable(to_ret)
-        print("    |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
+
+        print("        |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
         recipe_table.save_to_disk(rt, config.RECIPE_TABLE_PATH)
 
         return rt
@@ -691,6 +714,8 @@ class SentenceIterator:
             for sentence in self.sentences:
                 sentence = [word.lower().strip(string.punctuation.replace("_", ""))\
                                 for word in sentence]
+                sentence = [word for word in sentence\
+                                if word != config.NEW_RECIPE_LINE.lower()]
                 s.append(sentence)
             self.sentences = list(s)
 
