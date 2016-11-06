@@ -164,6 +164,56 @@ def train_models(args):
 #    plt.show()
     # TODO
 
+
+def __gather_all_ingredients(unique_within_path):
+    """
+    Gathers all the ingredients into a list of the form:
+    [[ingredients from recipe 1], [ingredients from recipe 2], etc.]
+    @param unique_within_path: The path to the unique within text file.
+    @return: list of ingredients lists
+    """
+    print("        |-> Gathering all of the ingredients...")
+    ingredients_producer= \
+        myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
+    lines_between_tags = next(ingredients_producer)
+    list_of_ingredients_lists = []
+    while lines_between_tags is not None:
+        ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
+        debug.debug_print("        |-> Ingredients from this iteration: " +\
+                          str(ingredients))
+        list_of_ingredients_lists.append(ingredients)
+        try:
+            lines_between_tags = next(ingredients_producer)
+        except StopIteration:
+            lines_between_tags = None
+    return list_of_ingredients_lists
+
+
+def __gather_all_recipe_texts():
+    """
+    Gathers all of the recipes' texts into a list of the form:
+    ["text from recipe 1", "text from recipe 2", etc.]
+    @return: A list of recipe texts.
+    """
+    print("        |-> Gathering all of the recipe steps...")
+    to_ret = []
+    recipe_producer=\
+        myio.get_lines_between_tags(\
+                config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE)
+    lines_between_tags = next(recipe_producer)
+    list_of_recipe_texts= []
+    while lines_between_tags is not None:
+        recipe = [line.rstrip() for line in lines_between_tags]
+        debug.debug_print("        |-> Recipe from this iteration: " +\
+                            str(recipe))
+        list_of_recipe_texts.append(recipe)
+        try:
+            lines_between_tags = next(recipe_producer)
+        except StopIteration:
+            lines_between_tags = None
+    return list_of_recipe_texts
+
+
 def __generate_model_structures(rec_table, table, testing=False):
     """
     Generates all the necessary data structures for training the models.
@@ -464,137 +514,47 @@ def __generate_recipes(table, unique_within_path):
         return recipe_table.load_from_disk(config.RECIPE_TABLE_PATH)
     else:
         print("    |-> Generating a recipe table...")
-        print("        |-> Gathering all of the ingredients...")
-        ingredients_producer= \
-            myio.get_lines_between_tags(unique_within_path, config.NEW_RECIPE_LINE.lower())
-        lines_between_tags = next(ingredients_producer)
-        list_of_ingredients_lists = []
-        while lines_between_tags is not None:
-            ingredients = [line.rstrip().replace(" ", "_") for line in lines_between_tags]
-            debug.debug_print("        |-> Ingredients from this iteration: " +\
-                              str(ingredients))
-            list_of_ingredients_lists.append(ingredients)
-            try:
-                lines_between_tags = next(ingredients_producer)
-            except StopIteration:
-                lines_between_tags = None
-
-        print("        |-> Gathering all of the recipe steps...")
-        to_ret = []
-        recipe_producer=\
-            myio.get_lines_between_tags(\
-                    config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE)
-        lines_between_tags = next(recipe_producer)
-        list_of_recipe_texts= []
-        while lines_between_tags is not None:
-            recipe = [line.rstrip() for line in lines_between_tags]
-            debug.debug_print("        |-> Recipe from this iteration: " +\
-                                str(recipe))
-            list_of_recipe_texts.append(recipe)
-            try:
-                lines_between_tags = next(recipe_producer)
-            except StopIteration:
-                lines_between_tags = None
+        list_of_ingredients_lists = __gather_all_ingredients(unique_within_path)
+        list_of_recipe_texts = __gather_all_recipe_texts()
 
         # KMeans needs to be retrained if use this
         #list_of_ingredients_lists = [l for l in list_of_ingredients_lists if len(l) > 0]
-        #list_of_recipe_texts = [l for l in list_of_recipe_texts if len(l) > 0]
+        #list_of_recipe_texts = [t for t in list_of_recipe_texts if t != ""]
 
-
-        # Now we have a list of the form: [[ingreds for rec 1], [..rec2], ...]
-        # And we have a list of recipes of the form: [[recipe text 1], [..rec2], ...]
-        print("Recipes: " + str(list_of_recipe_texts))
-        print("Number of recipes: " + str(len(list_of_recipe_texts)))
-        print("Number of ingredients lists: " + str(len(list_of_ingredients_lists)))
-#=============================================================================
-        # These lines gaurantee a working recipe table if uncommented, but
-        # it will have no text or text that doesn't make any sense
-        to_ret = []
-        for index, _ in enumerate(list_of_ingredients_lists):
-            ings = list_of_ingredients_lists[index]
-            t = "" if index >= len(list_of_recipe_texts) else list_of_recipe_texts[index]
-            to_ret.append(Recipe(table, ingredients=ings, text=t))
+        recipes = __generate_recipes_from_lists(\
+                    list_of_ingredients_lists, list_of_recipe_texts, table)
         print("        |-> Creating a table of recipes from the data...")
-        rt = recipe_table.RecipeTable(to_ret)
+        rec_table = recipe_table.RecipeTable(recipes)
         print("        |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
-        recipe_table.save_to_disk(rt, config.RECIPE_TABLE_PATH)
-        return rt
-#=============================================================================
+        recipe_table.save_to_disk(rec_table, config.RECIPE_TABLE_PATH)
+        return rec_table
 
+def __generate_recipes_from_lists(ingredients, texts, table):
+    """
+    Generates a list of Recipe objects, using the given
+    ingredients and texts. Tries to do so intelligently
+    so that the texts make sense with the ingredients.
+    @param ingredients: A list of the form:
+                        [[ingredients from recipe 1], [..rec 2], ...]
+    @param texts: A list of the form:
+                  ["recipe text 1", "recipe text 2", ...]
+    @param table: An IngredientsTable object with ingredients from ingredients
+    @return: A list of Recipe objects.
+    """
+    recipes = []
+    for index, _ in enumerate(ingredients):
+        ings = ingredients[index]
+        #TODO: rather than using this line to get the text, you should
+        #      search through the recipes until you find one that has a majority
+        #      of the ingredients in it. Use that recipe for it and add it to
+        #      a list of back up recipes. If you can't find a recipe, find the
+        #      first recipe in the back ups that matches at least two of the ingredients
+        #      (if there are two ingredients, otherwise one) and use that one. Then
+        #      shuffle the backup list
+        t = "" if index >= len(ingredients) else texts[index]
+        recipes.append(Recipe(table, ingredients=ings, text=t))
+    return recipes
 
-#        TODO: Figure out how to get the recipes alligned with the ingredients
-
-
-
-
-
-#        index = 0
-#        while lines_between_tags is not None:
-#            ingredients = list_of_ingredients_lists[index]
-#            recipe_text = [line.rstrip() for line in lines_between_tags]
-#            if len(ingredients) is 0:
-#                continue
-#            elif len(recipe_text) is 0:
-#                continue
-#
-#            if index < 100:
-#                print("Ingredients : " + str(ingredients))
-#                print("Recipe: " + str(recipe_text))
-#                index += 1
-#                continue
-#            else:
-#                exit(0)
-#
-#            # Validate that this is the right recipe; if it doesn't have the ingredients
-#            # from list_of_ingredients_lists[index], then we should skip it until we
-#            # do find a recipe that has it. We have somehow gotten off kilter.
-#            is_right_recipe = False
-#            while not is_right_recipe:
-#                for ingredient in list_of_ingredients_lists[index]:
-#                    print("Ingredients to check: " + str(list_of_ingredients_lists[index]))
-#                    for text in recipe_text:
-#                        if ingredient not in text:
-#                            is_right_recipe = False
-#                            index += 1
-#                        else:
-#                            # Only need one recipe to be good enough
-#                            is_right_recipe = True
-#                            print("Found recipe: " + str(recipe_text))
-#                            print("Ingredient found in it: " + str(ingredient))
-#                            break
-#                    if is_right_recipe:
-#                        break
-#
-#            # If this is the right recipe, go ahead and add it to the recipe list
-#            if len(recipe_text) is 0:
-#                print("SKIP========================================================")
-#                is_right_recipe = False
-#            else:
-#                is_right_recipe = True
-#
-#            if is_right_recipe:
-#                recipe = Recipe(table, ingredients=list_of_ingredients_lists[index],\
-#                                text=recipe_text)
-#                to_ret.append(recipe)
-#                print("Index: " + str(index))
-#                print("Length of list_of_ingredients_lists: " + str(len(list_of_ingredients_lists)))
-#            else:
-#                print("        |-> Off kilter at index: " + str(index) + "!")
-#
-#            index += 1
-#            # Get next iteration
-#            try:
-#                lines_between_tags = next(recipe_producer)
-#            except StopIteration:
-#                lines_between_tags = None
-#
-#        print("        |-> Creating a table of recipes from the data...")
-#        rt = recipe_table.RecipeTable(to_ret)
-#
-#        print("        |-> Saving the recipe_table at " + str(config.RECIPE_TABLE_PATH))
-#        recipe_table.save_to_disk(rt, config.RECIPE_TABLE_PATH)
-#
-#        return rt
 
 def __training_test():
     """
