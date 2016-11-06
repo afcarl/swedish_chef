@@ -541,19 +541,95 @@ def __generate_recipes_from_lists(ingredients, texts, table):
     @param table: An IngredientsTable object with ingredients from ingredients
     @return: A list of Recipe objects.
     """
+#=================WORKS=======================#
+#    recipes = []
+#    for index, _ in enumerate(ingredients):
+#        ings = ingredients[index]
+#        #TODO: rather than using this line to get the text, you should
+#        #      search through the recipes until you find one that has a majority
+#        #      of the ingredients in it. Use that recipe for it and add it to
+#        #      a list of back up recipes. If you can't find a recipe, find the
+#        #      first recipe in the back ups that matches at least two of the ingredients
+#        #      (if there are two ingredients, otherwise one) and use that one. Then
+#        #      shuffle the backup list
+#        t = "" if index >= len(ingredients) else texts[index]
+#        recipes.append(Recipe(table, ingredients=ings, text=t))
+#    return recipes
+#=================END=======================#
+    the_texts = []
+    for t in texts:
+        st = ""
+        for line in t:
+            st += line
+        the_texts.append(st)
+
     recipes = []
-    for index, _ in enumerate(ingredients):
-        ings = ingredients[index]
-        #TODO: rather than using this line to get the text, you should
-        #      search through the recipes until you find one that has a majority
-        #      of the ingredients in it. Use that recipe for it and add it to
-        #      a list of back up recipes. If you can't find a recipe, find the
-        #      first recipe in the back ups that matches at least two of the ingredients
-        #      (if there are two ingredients, otherwise one) and use that one. Then
-        #      shuffle the backup list
-        t = "" if index >= len(ingredients) else texts[index]
-        recipes.append(Recipe(table, ingredients=ings, text=t))
+    backup = []
+    batches_to_check_later = []
+    for time in range(2):
+        if time is 0:
+            print("            |-> Doing it the first time of two...")
+            to_iterate = list(ingredients)
+            print("            |-> This time list length: " + str(len(to_iterate)))
+        else:
+            print("            |-> Doing it the second time of two...")
+            to_iterate = batches_to_check_later
+            print("            |-> This time list length: " + str(len(to_iterate)))
+
+        for batch in tqdm(to_iterate):
+            found, recipe_text = __check_for_batch_in_list(batch, the_texts)
+            if found:
+                # We found what we believe is the right recipe in the list of
+                # recipes.
+                # Now that we've used it, move it from the list to a backup
+                # list
+                backup.append(recipe_text)
+                the_texts.remove(recipe_text)
+                recipe = Recipe(table, ingredients=batch, text=recipe_text)
+                recipes.append(recipe)
+            else:
+                # We failed to find a recipe that has the majority of ingredients
+                # from this ingredient batch in the normal list of recipes
+                # This may be because we moved the recipe text to the backup list
+                # So check that list
+                found_in_backup, recipe_text = __check_for_batch_in_list(batch, backup)
+                if not found_in_backup:
+                    # We still couldn't find it, so it could be that this recipe text
+                    # says something like "see recipe for foo", where foo is something
+                    # that we haven't seen yet (and therefore isn't in the backup list)
+                    # So add this batch to the list to check later
+                    if time is 0:
+                        batches_to_check_later.append(batch)
+                    else:
+                        # Just give up
+                        recipe = Recipe(table, ingredients=batch, text="")
+                        recipes.append(recipe)
+                else:
+                    # We found it in the backup list, so use it
+                    recipe = Recipe(table, ingredients=batch, text=recipe_text)
+                    recipes.append(recipe)
+
     return recipes
+
+
+def __check_for_batch_in_list(batch, list_to_search):
+    """
+    Searches for a recipe text in list_to_search that contains a majority
+    of the ingredients in batch. If it finds one, it returns it
+    along with True. Else, False and None.
+    @param batch: The batch of ingredients to search for
+    @param list_to_search: The list of recipe texts to search through
+    @return: A tuple: (True if found, recipe text if found otherwise None)
+    """
+    for recipe_text in list_to_search:
+        majority = int((len(batch) / 2.0) + 0.5)
+        num_found = 0
+        for ingredient in batch:
+            if ingredient in recipe_text:
+                num_found += 1
+            if num_found >= majority:
+                return True, recipe_text
+    return False, None
 
 
 def __training_test():
