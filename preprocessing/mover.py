@@ -49,8 +49,10 @@ def _copy_master_to_data_location():
 
     for f in list_of_file_names:
         f_name = os.path.split(f)[-1]
-        debug.debug_print("Copying " + f_name + " to new directory...")
-        shutil.copyfile(f, os.path.join(config.DATA_DIRECTORY, f_name))
+        if f_name != "zuni.xml":
+            # Don't include zuni - it is super weird
+            debug.debug_print("Copying " + f_name + " to new directory...")
+            shutil.copyfile(f, os.path.join(config.DATA_DIRECTORY, f_name))
 
 
 

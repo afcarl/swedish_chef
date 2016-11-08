@@ -5,6 +5,9 @@ This is the module responsible for generating new recipes.
 from tqdm import tqdm
 import myio.myio as myio
 import chef_global.config as config
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
 
 def _encode_bit_vector(bit_vector):
     """
@@ -72,6 +75,7 @@ def _train_rnn(rec_table):
     @return: void
     """
     # TODO
+    rnn = MyRNN()
     pass
 
 
@@ -90,10 +94,11 @@ def __get_recipe_from_rnn(encoded_feature_vectors):
 
 
 
-
-
-
-
-
+class MyRNN:
+    """
+    RNN class.
+    """
+    def __init__(self):
+        pass
 
 
