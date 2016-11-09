@@ -239,17 +239,19 @@ def strip_file(path):
     os.remove(tmp_path)
 
 
-def write_list_to_file(path, the_list):
+def write_list_to_file(path, the_list, inter=""):
     """
     Writes the given list to the given file by appending an
     os.linesep between each item.
     @param path: The file path
     @param the_list: The iterable to write to the file
+    @param inter: A string to print between each item in the list.
     @return: void
     """
     f = open(path, 'w')
     for item in the_list:
         f.write(str(item) + os.linesep)
+        f.write(str(inter) + os.linesep)
     f.close()
 
 

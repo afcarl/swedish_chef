@@ -146,6 +146,9 @@ def train_models(args):
     print("Using a compression algorithm to encode training data...")
     recipe_generator._encode_training_data(rec_table)
 
+    print("Shuffling the training data for the RNN and choosing a subsection of it to save in input.txt...")
+    __save_recipes_for_rnn(recipes)
+
     print("Training the RNN and saving it...")
     recipe_generator._train_rnn(rec_table)
 
@@ -809,6 +812,36 @@ def __train_word2vec(ingredient_table, ingredients_lists):
         model.save(config.WORD2VEC_MODEL_PATH)
 
     return model
+
+
+def __save_recipes_for_rnn(recipes):
+    """
+    Shuffles the recipes and prints their text to an input file with the
+    END_OF_RECIPE tag after each recipe.
+    @param recipes: The list of recipe objects
+    @return: void
+    """
+    random.shuffle(recipes)
+    index = int(len(recipes) / 1000)#int(len(recipes) / 10)
+    training_data = recipes[:index]
+    training_data = [r.get_text().lower().strip() for r in training_data]
+    tmp = []
+    for s in training_data:
+        s_as_list = s.split(" ")
+        new_list = []
+        for word in s_as_list:
+            word = word.rstrip(\
+                string.punctuation.replace(",", "").replace(".", "").replace(\
+                        "!", "").replace("?", "").replace(":", "").replace(";", ""))
+            word = word.lstrip(string.punctuation)
+            new_list.append(word)
+        new_s = " ".join(new_list)
+        tmp.append(new_s)
+    training_data = tmp
+    print("    |-> Length of training data: " + str(len(training_data)))
+    myio.write_list_to_file(\
+            os.path.join(config.RNN_DATA_DIR, "input.txt"), training_data,\
+                                inter=config.NEW_RECIPE_LINE.lower())
 
 
 

@@ -12,6 +12,9 @@ DATA_DIRECTORY = "tmp"
 
 
 
+# RNN checkpoint directory
+# @manual
+CHECKPOINT_DIR = DATA_DIRECTORY + "/" + "rnn_checkpoints"
 
 # Clusters directory where each kmeans cluster is stored
 # @manual
@@ -69,6 +72,10 @@ RECIPE_FILE_SINGLE_PATH = DATA_DIRECTORY + "/" + "single_" + RECIPE_FILE_NAME
 # The path to the recipe table
 # @manual
 RECIPE_TABLE_PATH = DATA_DIRECTORY + "/" + "recipe_table"
+
+# The directory that the RNN data lives in
+# @manual
+RNN_DATA_DIR = DATA_DIRECTORY + "/" + "rnn_data"
 
 # The similarity score average for the population of recipes
 # @manual : Get it from the computer and then hand write it
