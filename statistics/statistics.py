@@ -136,6 +136,8 @@ def train_models(args):
     vec_model = __train_word2vec(table, recipes)
 
     print("Clustering using kmeans...")
+    del matrix
+    matrix = None
     kmeans = __train_kmeans(matrix, sparse_matrix)
 
     print("Regenerating all of the kmeans clusters and saving them to disk. This will take a while...")
