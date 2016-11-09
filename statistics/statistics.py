@@ -822,7 +822,7 @@ def __save_recipes_for_rnn(recipes):
     @return: void
     """
     random.shuffle(recipes)
-    index = int(len(recipes) / 1000)#int(len(recipes) / 10)
+    index = int(len(recipes) / 6)
     training_data = recipes[:index]
     training_data = [r.get_text().lower().strip() for r in training_data]
     tmp = []
