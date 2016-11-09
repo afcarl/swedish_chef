@@ -25,6 +25,7 @@ import statistics.ingredients_table as it
 import chef_global.config as config
 from statistics.recipe import Recipe
 import warnings
+import re
 import statistics.cluster as cluster
 import statistics.recipe_generator as recipe_generator
 with warnings.catch_warnings():
@@ -822,7 +823,7 @@ def __save_recipes_for_rnn(recipes):
     @return: void
     """
     random.shuffle(recipes)
-    index = int(len(recipes) / 100)#int(len(recipes) / 10)
+    index = int(len(recipes) / 90)#int(len(recipes) / 10)
     training_data = recipes[:index]
     training_data = [r.get_text().lower().strip() for r in training_data]
     tmp = []
@@ -834,6 +835,7 @@ def __save_recipes_for_rnn(recipes):
                 string.punctuation.replace(",", "").replace(".", "").replace(\
                         "!", "").replace("?", "").replace(":", "").replace(";", ""))
             word = word.lstrip(string.punctuation)
+            word = re.sub(r"\d+", "", word)
             new_list.append(word)
         new_s = " ".join(new_list)
         tmp.append(new_s)

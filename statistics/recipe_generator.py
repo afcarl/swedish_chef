@@ -226,7 +226,7 @@ class MyRNN:
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    def sample(self, session, words, vocab, num=200, prime="first"):
+    def sample(self, session, words, vocab, num=0, prime="first"):
         """
         Samples the model's results by feeding it words, vocabulary, and asking
         for a number of words to get out.
@@ -256,7 +256,8 @@ class MyRNN:
 
         ret = prime
         word = prime.split()[-1]
-        for n in range(num):
+
+        def choose_next_word(state):
             x = np.zeros((1, 1))
             x[0, 0] = vocab.get(word, 0)
             feed = {self.input_data: x, self.initial_state: state}
@@ -267,12 +268,41 @@ class MyRNN:
 
             # TODO: This is a hack for now until I figure out why sample can
             # sometimes be bigger than len(words)
+            # May have been solved - try without the hack TODO
             while sample > len(words):
                 sample = weighted_pick(p)
 
             pred = words[sample]
-            ret += " " + pred
-            word = pred
+            return pred
+
+
+        if num is 0:
+            n = 0
+            while True:
+                word = choose_next_word(state)
+                if word.lower() == config.NEW_RECIPE_LINE.lower():
+                    break
+                else:
+                    n += 1
+                    ret += " " + word
+                   # TODO:
+                   # if word is semantically (word2vec over whole input.txt) similar
+                   # to any ingredient, pick the closest one from the list of ingredients
+                   # Then need to somehow show the model that we made an adjustment, and
+                   # that the last thing it picked was not what it thought it picked
+
+
+        else:
+            for n in range(num):
+                word = choose_next_word(state)
+                ret += " " + word
+               # if word is semantically (word2vec over whole input.txt) similar
+               # to any ingredient, pick the closest one from the list of ingredients
+               # Then need to somehow show the model that we made an adjustment, and
+               # that the last thing it picked was not what it thought it picked
+
+
+
         return ret
 
 
