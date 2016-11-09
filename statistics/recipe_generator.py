@@ -226,7 +226,7 @@ class MyRNN:
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    def sample(self, session, words, vocab, num=200, prime="first all"):
+    def sample(self, session, words, vocab, num=200, prime="first"):
         """
         Samples the model's results by feeding it words, vocabulary, and asking
         for a number of words to get out.
