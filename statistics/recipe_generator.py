@@ -18,6 +18,11 @@ from statistics.textloader import TextLoader
 from six.moves import cPickle
 import os
 import random
+from statistics.statsutils import SentenceIterator
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore")
+    import gensim
 
 rnn_size = 256
 num_layers = 2
@@ -94,6 +99,11 @@ def _train_rnn(rec_table):
     @param rec_table: A fully loaded RecipeTable object
     @return: void
     """
+    print("    |-> Generating word2vec model for the RNN and saving it...")
+    sentences = SentenceIterator(os.path.join(config.RNN_DATA_DIR, "input.txt"))
+    vec_model = gensim.models.Word2Vec(sentences, min_count=1, workers=4, iter=5)
+    vec_model.save(os.path.join(config.CHECKPOINT_DIR, "word2vec.model"))
+
     data_loader = TextLoader(config.RNN_DATA_DIR, batch_size, seq_length)
     vocab_size = data_loader.vocab_size
 
@@ -157,7 +167,9 @@ def __get_recipe_from_rnn(encoded_feature_vectors, ingredients):
         ckpt = tf.train.get_checkpoint_state(config.CHECKPOINT_DIR)
         if ckpt and ckpt.model_checkpoint_path:
             saver.restore(sess, ckpt.model_checkpoint_path)
-            return model.sample(sess, words, vocab )#prime="apple")#ingredients)
+            vec_model = gensim.models.Word2Vec.load(os.path.join(\
+                                config.CHECKPOINT_DIR, "word2vec.model"))
+            return model.sample(sess, words, vocab, vec_model, ingredients)#prime="apple")#ingredients)
         else:
             print("Could not locate trained model in " + str(config.CHECKPOINT_DIR))
             return None
@@ -226,7 +238,7 @@ class MyRNN:
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    def sample(self, session, words, vocab, num=0, prime="first"):
+    def sample(self, session, words, vocab, word2vec_model, ingredients, num=0, prime="first"):
         """
         Samples the model's results by feeding it words, vocabulary, and asking
         for a number of words to get out.
@@ -275,7 +287,30 @@ class MyRNN:
             pred = words[sample]
             return pred
 
+        def is_too_similar(word):
+            threshold = 0.6
+            for ingredient in ingredients:
+                try:
+                    if word2vec_model.similarity(ingredient, word) > threshold:
+                        return True
+                except KeyError:
+                    return False
+            return False
 
+        def get_most_similar(word):
+            if len(ingredients) > 0:
+                best_match = ingredients[0]
+                best_sim = -100;
+                for ingredient in ingredients:
+                    try:
+                        similarity = word2vec_model.similarity(word, ingredient)
+                        if similarity > best_sim:
+                            best_match = ingredient
+                            best_sim = similarity
+                    except KeyError:
+                        pass
+
+        #num = 200
         if num is 0:
             n = 0
             while True:
@@ -285,17 +320,22 @@ class MyRNN:
                 else:
                     n += 1
                     ret += " " + word
+                    if is_too_similar(word):
+                        word = get_most_similar(word)
                    # TODO:
                    # if word is semantically (word2vec over whole input.txt) similar
                    # to any ingredient, pick the closest one from the list of ingredients
                    # Then need to somehow show the model that we made an adjustment, and
                    # that the last thing it picked was not what it thought it picked
-
-
+                   # ALSO: If the word is in the ingredient table (do a hashtable lookup)
+                   # make sure to replace it with the most similar ingredient in our
+                   # list of ingredients
         else:
             for n in range(num):
                 word = choose_next_word(state)
                 ret += " " + word
+                if is_too_similar(word):
+                    word = get_most_similar(word)
                # if word is semantically (word2vec over whole input.txt) similar
                # to any ingredient, pick the closest one from the list of ingredients
                # Then need to somehow show the model that we made an adjustment, and

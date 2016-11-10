@@ -18,10 +18,10 @@ class TextLoader():
 
         # Let's not read voca and data from file. We many change them.
         if True or not (os.path.exists(vocab_file) and os.path.exists(tensor_file)):
-            print("reading text file")
+            print("    |-> Reading text file")
             self.preprocess(input_file, vocab_file, tensor_file)
         else:
-            print("loading preprocessed files")
+            print("    |-> Loading preprocessed files")
             self.load_preprocessed(vocab_file, tensor_file)
         self.create_batches()
         self.reset_batch_pointer()
