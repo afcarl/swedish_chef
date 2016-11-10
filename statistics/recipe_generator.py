@@ -68,7 +68,7 @@ def _encode_training_data(rec_table):
 
 
 
-def _generate_recipe(ingredients, rec_table):
+def _generate_recipe(ingredients, rec_table, ing_table):
     """
     The main API function for this module.
     Takes a list of ingredients and a recipe table.
@@ -86,7 +86,7 @@ def _generate_recipe(ingredients, rec_table):
 
     encoded_fvs = [_encode_bit_vector(fv) for fv in feature_vectors]
 
-    generated_recipe = __get_recipe_from_rnn(encoded_fvs, " ".join(ingredients))
+    generated_recipe = __get_recipe_from_rnn(encoded_fvs, " ".join(ingredients), ing_table)
 
     print("Generated this recipe for you: ")
     print(str(generated_recipe))
@@ -144,7 +144,7 @@ def _train_rnn(rec_table):
                     print("Model saved to " + str(checkpoint_path))
 
 
-def __get_recipe_from_rnn(encoded_feature_vectors, ingredients):
+def __get_recipe_from_rnn(encoded_feature_vectors, ingredients, ing_table):
     """
     Feeds the given bit vectors into the neural network
     and has it generate a recipe.
@@ -169,7 +169,7 @@ def __get_recipe_from_rnn(encoded_feature_vectors, ingredients):
             saver.restore(sess, ckpt.model_checkpoint_path)
             vec_model = gensim.models.Word2Vec.load(os.path.join(\
                                 config.CHECKPOINT_DIR, "word2vec.model"))
-            return model.sample(sess, words, vocab, vec_model, ingredients)#prime="apple")#ingredients)
+            return model.sample(sess, words, vocab, vec_model, ingredients, ing_table)#prime="apple")#ingredients)
         else:
             print("Could not locate trained model in " + str(config.CHECKPOINT_DIR))
             return None
@@ -238,13 +238,15 @@ class MyRNN:
         optimizer = tf.train.AdamOptimizer(self.lr)
         self.train_op = optimizer.apply_gradients(zip(grads, tvars))
 
-    def sample(self, session, words, vocab, word2vec_model, ingredients, num=0, prime="first"):
+    def sample(self, session, words, vocab, word2vec_model, ingredients, table,\
+                         num=0, prime="first"):
         """
         Samples the model's results by feeding it words, vocabulary, and asking
         for a number of words to get out.
         @param session:
         @param words:
         @param vocab:
+        @param table: An ingredients table
         @param num:
         @param prime:
         @return:
@@ -288,29 +290,40 @@ class MyRNN:
             return pred
 
         def is_too_similar(word):
-            threshold = 0.6
-            for ingredient in ingredients:
+            threshold = 0.25
+            for ingredient in ingredients.split(" "):
                 try:
-                    if word2vec_model.similarity(ingredient, word) > threshold:
+                    similarity = word2vec_model.similarity(ingredient, word)
+                    if similarity > threshold and len(ingredient) > 1:
                         return True
                 except KeyError:
                     return False
             return False
 
+        def word_is_ingredient(word):
+            return table.has(word) and word not in ingredients.split(" ")
+
+        def get_best_match(word):
+            return word2vec_model.most_similar(positive=[word])[0]
+
         def get_most_similar(word):
             if len(ingredients) > 0:
-                best_match = ingredients[0]
+                best_match = ""
                 best_sim = -100;
-                for ingredient in ingredients:
+                for ingredient in ingredients.split(" "):
                     try:
                         similarity = word2vec_model.similarity(word, ingredient)
-                        if similarity > best_sim:
+                        if similarity > best_sim and len(ingredient) > 1:
                             best_match = ingredient
                             best_sim = similarity
                     except KeyError:
                         pass
+                return best_match
+            else:
+                return word
 
-        #num = 200
+        # TODO
+        num = 200
         if num is 0:
             n = 0
             while True:
@@ -319,30 +332,19 @@ class MyRNN:
                     break
                 else:
                     n += 1
-                    ret += " " + word
                     if is_too_similar(word):
                         word = get_most_similar(word)
-                   # TODO:
-                   # if word is semantically (word2vec over whole input.txt) similar
-                   # to any ingredient, pick the closest one from the list of ingredients
-                   # Then need to somehow show the model that we made an adjustment, and
-                   # that the last thing it picked was not what it thought it picked
-                   # ALSO: If the word is in the ingredient table (do a hashtable lookup)
-                   # make sure to replace it with the most similar ingredient in our
-                   # list of ingredients
+                    elif word_is_ingredient(word):
+                        word = get_most_similar(word)
+                    ret += " " + word
         else:
             for n in range(num):
                 word = choose_next_word(state)
-                ret += " " + word
                 if is_too_similar(word):
                     word = get_most_similar(word)
-               # if word is semantically (word2vec over whole input.txt) similar
-               # to any ingredient, pick the closest one from the list of ingredients
-               # Then need to somehow show the model that we made an adjustment, and
-               # that the last thing it picked was not what it thought it picked
-
-
-
+                elif word_is_ingredient(word):
+                    word = get_most_similar(word)
+                ret += " " + word
         return ret
 
 

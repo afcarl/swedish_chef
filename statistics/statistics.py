@@ -81,6 +81,7 @@ def ask_similar(args):
     num_ingredients = 3 if num_ingredients < 3 else num_ingredients
 
     # Do what the user asked (get all new ingredients or get similar ones to given ones)
+    print(str(ingredients))
     if len(ingredients) is 0:
         ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
     else:
@@ -89,6 +90,7 @@ def ask_similar(args):
 
     if ingredients is None:
         print("Could not get that many random similar ingredients. Maybe just try again.")
+        return
     elif len(ingredients) is 1:
         print("Here is your random ingredient: " + str(ingredients[0]))
     else:
@@ -105,7 +107,8 @@ def ask_similar(args):
 
     # If the user wants to generate a recipe, use the ingredients in that recipe
     if generate_a_recipe:
-        recipe_generator._generate_recipe(ingredients, rec_table)
+        ing_table = myio.load_pickle(config.INGREDIENT_TABLE_PATH)
+        recipe_generator._generate_recipe(ingredients, rec_table, ing_table)
 
 
 
