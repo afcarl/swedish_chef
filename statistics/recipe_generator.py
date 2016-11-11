@@ -24,12 +24,12 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import gensim
 
-rnn_size = 256
+rnn_size = 1028
 num_layers = 2
-batch_size = 50
-seq_length = 25
+batch_size = 17
+seq_length = 65
 grad_clip = 5
-num_epochs = 50
+num_epochs = 100
 learning_rate = 0.002
 decay_rate = 0.97
 save_every = 500
@@ -195,11 +195,13 @@ class MyRNN:
         @param grad_clip: The point at which to clip the gradient in the gradient descent
         @param infer:
         """
+        #TODO: During training, (and when sampling), the input to the RNN should be
+        #      the list of ingredients that goes with that recipe text.
         if infer:
             batch_size = 1
             seq_length = 1
 
-        cell_fn = rnn_cell.BasicLSTMCell
+        cell_fn = rnn_cell.GRUCell#BasicLSTMCell
         cell = cell_fn(rnn_size)
         self.cell = cell = rnn_cell.MultiRNNCell([cell] * num_layers)
 
@@ -226,7 +228,9 @@ class MyRNN:
                                         cell, loop_function=loop_func, scope="rnnlm")
         output = tf.reshape(tf.concat(1, outputs), [-1, rnn_size])
         self.logits = tf.matmul(output, softmax_w) + softmax_b
+
         self.probs = tf.nn.softmax(self.logits)
+
         loss = seq2seq.sequence_loss_by_example([self.logits],\
                             [tf.reshape(self.targets, [-1])],\
                             [tf.ones([batch_size * seq_length])], vocab_size)
@@ -276,7 +280,7 @@ class MyRNN:
             x[0, 0] = vocab.get(word, 0)
             feed = {self.input_data: x, self.initial_state: state}
             [probs, state] = session.run([self.probs, self.final_state], feed)
-            p = probs[0]
+            p = probs[0] * 0.5#Added temperature
 
             sample = weighted_pick(p)
 
@@ -324,58 +328,19 @@ class MyRNN:
 
         # TODO
         num = 200
-        if num is 0:
-            n = 0
-            while True:
-                word = choose_next_word(state)
-                if word.lower() == config.NEW_RECIPE_LINE.lower():
-                    break
-                else:
-                    n += 1
-                    if is_too_similar(word):
-                        word = get_most_similar(word)
-                    elif word_is_ingredient(word):
-                        word = get_most_similar(word)
-                    ret += " " + word
-        else:
-            for n in range(num):
-                word = choose_next_word(state)
-                if is_too_similar(word):
-                    word = get_most_similar(word)
-                elif word_is_ingredient(word):
-                    word = get_most_similar(word)
+        n = 0
+        while True:
+            word = choose_next_word(state)
+            if n >= num or word.lower() == config.NEW_RECIPE_LINE.lower():
+                break
+            else:
+                n += 1
+                #if is_too_similar(word):
+                #    word = get_most_similar(word)
+                #elif word_is_ingredient(word):
+                #    word = get_most_similar(word)
                 ret += " " + word
         return ret
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
