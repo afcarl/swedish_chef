@@ -209,7 +209,7 @@ def __gather_all_recipe_texts():
     to_ret = []
     recipe_producer=\
         myio.get_lines_between_tags(\
-                config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE)
+                config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE.lower())
     lines_between_tags = next(recipe_producer)
     list_of_recipe_texts= []
     while lines_between_tags is not None:
