@@ -4,6 +4,8 @@ trimming and parsing the text files of the data.
 """
 
 from tqdm import tqdm
+import random
+import enchant
 import os
 import re
 import string
@@ -24,10 +26,16 @@ ingredient_file_name = config.DATA_DIRECTORY + "/" + "unique.txt"
 within_file_name = config.DATA_DIRECTORY + "/" + "unique_within.txt"
 
 
+def _clean_all(path):
+    """
+    Cleans all of the files in the given path.
+    """
+    prep._apply_func_to_each_data_file(_clean_file, print_info=False)
+
 
 def _clean_ingredient_test():
     """
-    Run the __clean_ingredient_file method with some fake data and print the results.
+    Run the _clean_file method with some fake data and print the results.
     @return: void
     """
     test_data = ["<tag color=blue>blah de bloop</tag>", "most delICIOUS ingredient!",
@@ -37,7 +45,7 @@ def _clean_ingredient_test():
     clean_data = ["blah de bloop", "most delicious ingredient", "very good pie",
                   "really good stuff", "wieners (the best you can get)", "(cookies)",
                    "peanut butter, bathed in clams", "money", "", "", "beep"]
-    __unit_test(test_data, clean_data, "clean_ingredient", __clean_ingredient_file)
+    __unit_test(test_data, clean_data, "clean_ingredient", _clean_file)
 
 
 def _get_recipe_at_index(index, recipe_file_path):
@@ -105,10 +113,10 @@ def _prepare_tabulate_ingredients():
     @return: void
     """
     print("Parsing ingredients...")
-    prep._apply_func_to_each_data_file(__parse_ingredients, print_info=True)
+    prep._apply_func_to_each_data_file(__parse_ingredients, print_info=False)
 
     print("Cleaning ingredients...")
-    __clean_ingredient_file()
+    _clean_file()
 
     print("Replacing 'yelk' with 'yolk'...")
     myio.find_replace(__ing_tmp, "yelk", "yolk")
@@ -177,7 +185,7 @@ def _remove_plurals_test():
     answer_data = ["money", "", "", "money", "fun", "funds", ""]
     __unit_test(test_data, answer_data, "remove_plurals", __remove_plurals)
 
-
+# TODO: Deprecate
 def _remove_xml_from_file(path):
     """
     Removes all xml tags from the given file at path.
@@ -238,39 +246,69 @@ def _trim_all_files_to_recipes():
     Trims away all the non-recipe, non-ingredient stuff from the data files.
     @return: void
     """
-    prep._apply_func_to_each_data_file(__trim_non_recipe, print_info=True)
+    prep._apply_func_to_each_data_file(__trim_non_recipe, print_info=False)
 
 
 
 
 
 
-def __clean_ingredient_file(f=None):
+def _clean_file(f=None):
     """
     Cleans up the ing_tmp file so that it no longer contains ingredients with xml tags,
     uppercase letters, or trailing punctuation.
     @param f: Optional file to read from (otherwise just uses __ing_tmp).
     @return: void
     """
+    d = enchant.Dict("en_US")
     ing_file = open(__ing_tmp, 'r') if not f else open(f, 'r')
     tmp_tmp = open("tmp_tmp", 'w')
 
-    has_numbers = lambda x: any(char.isdigit() for char in x)
+    print("        |-> Reading in the file...")
+    ing_words = [line.split(" ") for line in ing_file]
+    ing_file.close()
 
-    for dirty_ingredient in tqdm(ing_file):
-        debug.debug_print("Cleaning " + str(dirty_ingredient) + "...")
-        clean_ingredient = dirty_ingredient
-        clean_ingredient = __remove_xml(clean_ingredient)
-        clean_ingredient = "" if has_numbers(clean_ingredient) else clean_ingredient
-        clean_ingredient = clean_ingredient.lower()
-        clean_ingredient = clean_ingredient.rstrip()
-        clean_ingredient = clean_ingredient.strip(
-                                    string.punctuation.replace(")", "").replace("(", ""))
-        clean_ingredient = clean_ingredient.lstrip(string.punctuation.replace("(", ""))
-        clean_ingredient = clean_ingredient.rstrip(string.punctuation.replace(")", ""))
-        clean_ingredient = clean_ingredient + os.linesep
-        debug.debug_print("Writing clean ingredient " + str(clean_ingredient.rstrip()) + "...")
-        tmp_tmp.write(clean_ingredient)
+    if not f:
+        # For each line, the whole line is an ingredient, put it back together with underscores
+        ing_words = ["_".join(line) for line in ing_words]
+    else:
+        # Just a random line of crap to clean from some file
+        ing_words = [word for line in ing_words for word in line]
+
+    print("        |-> Removing xml from each word...")
+    ing_words = [__remove_xml(word) for word in ing_words]
+
+    has_numbers = lambda x: any(char.isdigit() for char in x)
+    print("        |-> Removing equals signs and numbers...")
+    ing_words = ["" if '=' in word or '&' in word or has_numbers(word)\
+                            else word for word in ing_words]
+
+    print("        |-> Replacing any 'yelk(s)' with 'yolk'...")
+    ing_words = ["yolk" if word == "yelk" or word == "yelks" else word for word in ing_words]
+
+    print("        |-> Stripping words...")
+    ing_words = [word.lower().strip().strip(string.punctuation) for word in ing_words]
+
+#    print("       |-> Correcting spelling errors (takes a while)...")
+#    tmp_list = []
+#    for word in tqdm(ing_words):
+#        if word != "" and word != config.NEW_RECIPE_LINE:
+#            if not d.check(word):
+#                suggestions = d.suggest(word)
+#                if suggestions:
+#                    word = suggestions[0]
+#                else:
+#                    word = ""
+
+    print("        |-> Writing words to file...")
+    for word in tqdm(ing_words):
+        sep = os.linesep if not f or word == config.NEW_RECIPE_LINE.lower()\
+                                    or random.randint(1, 30) is 30 else " "
+        if word.strip() == config.NEW_RECIPE_LINE.lower():
+            word = os.linesep + word
+        tmp_tmp.write(word + sep)
+    tmp_tmp.close()
+
     ing_file.close()
     tmp_tmp.close()
 
@@ -485,7 +523,24 @@ def __remove_xml(s):
     @param s: The string to remove xml from.
     @return: (str) s with xml stuff removed.
     """
+    # First check if the string is well formed xml, because if it isn't, this will not
+    # give the result you want, for example:
+    # "placement="heading"><ingredient>BARLEY</ingredient>" --> "placement"
+    # So if there are any missing < or >, put them in
+    # currently only bother with the beginning and end of the string, since in my case,
+    # these seem to be the only places that this can happen; check assumption later
+    if "<" in s or ">" in s:
+        num_less_than = s.count('<')
+        num_greater_than = s.count('>')
+        if num_less_than < num_greater_than:
+            s = "<" + s
+        elif num_less_than > num_greater_than:
+            s += ">"
     s = re.sub("<[^>]*>", "", s)
+
+    # If s still has xml crap in it, give up and delete it
+    if "<" in s or ">" in s:
+        s = ""
 
     return s
 

@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+from statistics.statsutils import IngredientsGenerator, SentenceIterator
 import random
 import pandas
 import statistics.recipe_table as recipe_table
@@ -80,6 +81,7 @@ def ask_similar(args):
     num_ingredients = 3 if num_ingredients < 3 else num_ingredients
 
     # Do what the user asked (get all new ingredients or get similar ones to given ones)
+    print(str(ingredients))
     if len(ingredients) is 0:
         ingredients = similar._get_random_similar_ingredients(num_ingredients, rec_table)
     else:
@@ -88,6 +90,7 @@ def ask_similar(args):
 
     if ingredients is None:
         print("Could not get that many random similar ingredients. Maybe just try again.")
+        return
     elif len(ingredients) is 1:
         print("Here is your random ingredient: " + str(ingredients[0]))
     else:
@@ -104,7 +107,8 @@ def ask_similar(args):
 
     # If the user wants to generate a recipe, use the ingredients in that recipe
     if generate_a_recipe:
-        recipe_generator._generate_recipe(ingredients, rec_table)
+        ing_table = myio.load_pickle(config.INGREDIENT_TABLE_PATH)
+        recipe_generator._generate_recipe(ingredients, rec_table, ing_table)
 
 
 
@@ -205,7 +209,7 @@ def __gather_all_recipe_texts():
     to_ret = []
     recipe_producer=\
         myio.get_lines_between_tags(\
-                config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE)
+                config.RECIPE_FILE_SINGLE_PATH, config.NEW_RECIPE_LINE.lower())
     lines_between_tags = next(recipe_producer)
     list_of_recipe_texts= []
     while lines_between_tags is not None:
@@ -823,7 +827,7 @@ def __save_recipes_for_rnn(recipes):
     @return: void
     """
     random.shuffle(recipes)
-    index = int(len(recipes) / 6)#int(len(recipes) / 10)
+    index = int(len(recipes) / 500)#int(len(recipes) / 10)
     training_data = recipes[:index]
     training_data = [r.get_text().lower().strip() for r in training_data]
     tmp = []
@@ -844,51 +848,6 @@ def __save_recipes_for_rnn(recipes):
     myio.write_list_to_file(\
             os.path.join(config.RNN_DATA_DIR, "input.txt"), training_data,\
                                 inter=config.NEW_RECIPE_LINE.lower())
-
-
-
-
-
-class IngredientsGenerator:
-    def __init__(self, ingredients_lists):
-        self.recipes = ingredients_lists
-
-    def __iter__(self):
-        print("        |-> Iterating over ingredients lists...")
-        for recipe in self.recipes:
-            debug.debug_print("YIELDING: " + str(recipe))
-            yield recipe
-
-    def __len__(self):
-        length = 0
-        for recipe in self.recipes:
-            length += len(recipe)
-        return length
-
-
-
-class SentenceIterator:
-    def __init__(self, file_path):
-        self.path = file_path
-        print("        |-> Reading the recipe file into memory...")
-        with open(self.path) as file_text:
-            lines = [line for line in file_text]
-            self.sentences = [line.split() for line in lines]
-            s = []
-            for sentence in self.sentences:
-                sentence = [word.lower().strip(string.punctuation.replace("_", ""))\
-                                for word in sentence]
-                sentence = [word for word in sentence\
-                                if word != config.NEW_RECIPE_LINE.lower()]
-                s.append(sentence)
-            self.sentences = list(s)
-
-    def __iter__(self):
-        print("        |-> Iterating over text file...")
-        for sentence in self.sentences:
-            #debug.debug_print("YIELDING: " + str(sentence))
-            yield sentence
-
 
 
 

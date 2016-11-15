@@ -216,14 +216,10 @@ def __do_trim(args):
         print("    |-> Could not find existing version. Generating new one...")
         mover._append_all_recipe_files()
 
-        print("Trimming big recipe file...")
-        trimmer._remove_xml_from_file(config.RECIPE_FILE_PATH)
+        print("    |-> Cleaning the big recipe file, this will take a while...")
+        trimmer._clean_file(config.RECIPE_FILE_PATH)
 
-        # We actually don't want to do this. Just filter them out later.
-#        print("Removing all new_recipe lines from the big recipe file...")
-#        myio.find_replace(config.RECIPE_FILE_PATH, config.NEW_RECIPE_LINE, "")
-
-        print("Stripping big recipe file...")
+        print("    |-> Stripping big recipe file...")
         myio.strip_file(config.RECIPE_FILE_PATH)
 
 
