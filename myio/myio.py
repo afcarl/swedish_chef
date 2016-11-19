@@ -8,6 +8,7 @@ import re
 import os
 import pickle
 import chef_global.debug as debug
+import h5py
 
 def append_to_file(src_path, dest_path):
     """
@@ -161,6 +162,16 @@ def join_all_files(list_of_file_paths, new_file_path):
     for path in list_of_file_paths:
         append_to_file(path, new_file_path)
 
+def load_hdf5(path):
+    """
+    Loads the given path as a single dataset in an hd5f file.
+    @param path: The path
+    @return: The dataset to return
+    """
+    h5f = h5py.File(path, 'r')
+    item = h5f["dataset_1"][:]
+    h5f.close()
+
 
 def load_pickle(path):
     """
@@ -196,6 +207,17 @@ def print_time():
     @return: void
     """
     return str(time.strftime("%I:%M:%S"))
+
+def save_hdf5(item, path):
+    """
+    Saves the item at path in h5 format.
+    @param item: The item to save as a single dataset
+    @param path: The path to save at
+    @return: void
+    """
+    h5f = h5py.File("data.h5", 'w')
+    h5f.create_dataset("dataset_1", data=item)
+    h5f.close()
 
 
 def save_pickle(item, path):

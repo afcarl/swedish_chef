@@ -2,6 +2,7 @@
 The main API for the statistics python package.
 """
 
+from six.moves import cPickle
 from statistics.statsutils import IngredientsGenerator, SentenceIterator
 import random
 import pandas
@@ -239,8 +240,7 @@ def __generate_model_structures(rec_table, table, testing=False):
     variables = ["Recipe " + str(i) for i in range(len(recipes))]
     debug.debug_print("Variables: " + os.linesep + str(variables))
 
-    print("    |-> Generating the labels column (takes a moment)...")
-    labels = [ingredient for ingredient in table.get_ingredients_list()]
+    labels = list(table.get_ingredients_list())
     debug.debug_print("Labels: " + os.linesep + str(labels))
 
     print("    |-> Retrieving scipy version of sparse matrix...")
@@ -351,20 +351,18 @@ def __retrieve_matrix(sparse_matrix, testing=False):
     @param testing: If True, generate a new matrix and don't save it.
     @return: The numpy array
     """
-#    if not testing and os.path.isfile(config.MATRIX):
-#        # This is too big on the disk - you might consider
-#        # using HDF5 if this gets to be a problem
-#        matrix = myio.load_pickle(config.MATRIX)
-#        print("Found matrix.")
-#    else:
-#        print("Generating dense matrix...")
-#        matrix = sparse_matrix.toarray()
-#        if not testing:
-#            myio.save_pickle(matrix, config.MATRIX)
     try:
-        print("        |-> Generating dense matrix from sparse one...")
-        matrix = sparse_matrix.toarray()
-        return matrix
+        if not testing and os.path.isfile(config.MATRIX):
+            print("        |-> Found matrix")
+            matrix = myio.load_hdf5(config.MATRIX)
+            return matrix
+        else:
+            print("        |-> Generating dense matrix from sparse one...")
+            matrix = sparse_matrix.toarray()
+            #print("        |-> Saving the dense matrix...")
+            #myio.save_hdf5(matrix, config.MATRIX)
+            ###### The matrix is too big to write even in hdf5 ########
+            return matrix
     except MemoryError:
         print("        |-> Out of memory, working around this.")
         return None
@@ -827,7 +825,7 @@ def __save_recipes_for_rnn(recipes):
     @return: void
     """
     random.shuffle(recipes)
-    index = int(len(recipes) / 500)#int(len(recipes) / 10)
+    index = int(len(recipes) / 2000)#int(len(recipes) / 10)
     training_data = recipes[:index]
     training_data = [r.get_text().lower().strip() for r in training_data]
     tmp = []

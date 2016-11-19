@@ -24,12 +24,12 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import gensim
 
-rnn_size = 1028
+rnn_size = 256
 num_layers = 2
-batch_size = 17
-seq_length = 65
+batch_size = 30
+seq_length = 50
 grad_clip = 5
-num_epochs = 100
+num_epochs = 50
 learning_rate = 0.002
 decay_rate = 0.97
 save_every = 500
