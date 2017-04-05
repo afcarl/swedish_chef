@@ -3,13 +3,7 @@ This project explores the usefulness of several machine learning algorithms appl
 
 The data lives in master_data/cookbook_textencoded as 75 or so cookbooks hand-uploaded and tagged with XML.
 
-Before use, you will likely need to set up the directories:
-* tmp
-* tmp/rnn_data
-* tmp/rnn_checkpoints
-* tmp/clusters
-* data
-* data/cookbook_textencoded
+Before use, you will likely need to set up the directories by running `install.sh`
 
 The main.py provides an interface (which is pretty clunky, I'm sad to say) to several activities:
 It can preprocess the data, which should be done by using the pipeline command like so:
